@@ -211,11 +211,9 @@ class SnookrGame {
             this.firstTouched = this.firstTouched || recalculateResult.firstTouched;
             this.ballsPotted.add(recalculateResult.ballsPotted);
 
-            const shotResult = this.currentRule.getShotResult(this.firstTouched, this.ballsPotted, this.ballSet.unpotted());
-
             if (recalculateResult.ballsPotted.count()) {
                 this.eventListener.trigger(SnookrEvent.BALL_POTTED);
-                if (!shotResult.isFaul()) {
+                if (this.currentRule.getPoints(this.firstTouched, this.ballsPotted) >= 0) {
                     this.eventListener.trigger(SnookrEvent.RIGHT_BALL_POTTED);
                 } else {
                     this.eventListener.trigger(SnookrEvent.WRONG_BALL_POTTED);
@@ -227,6 +225,7 @@ class SnookrGame {
             }
 
             if (allStopped) {
+                const shotResult = this.currentRule.getShotResult(this.firstTouched, this.ballsPotted, this.ballSet.unpotted());
                 this.eventListener.trigger(SnookrEvent.BALLS_STOPPED, shotResult);
             }
         }

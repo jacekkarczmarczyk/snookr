@@ -4,6 +4,27 @@ class SnookrRule {
         throw 'Abstract method called';
     }
 
+    /**
+     *
+     * @param {SnookrBall} firstTouched
+     * @param {SnookrBallSet} ballsPotted
+     * @returns {number}
+     */
+    getPoints(firstTouched, ballsPotted) {
+        const pointsArray = this.getPointsArray(firstTouched, ballsPotted);
+        return Math.min(0, ...pointsArray.filter(x => x < 0)) || pointsArray.reduce((carry, item) => carry + item, 0);
+    }
+
+    /**
+     *
+     * @param {SnookrBall} firstTouched
+     * @param {SnookrBallSet} ballsPotted
+     * @returns {Array}
+     */
+    getPointsArray(firstTouched, ballsPotted) {
+        return [];
+    }
+
     toString() {
         return this.constructor.name;
     }
@@ -77,7 +98,7 @@ class SnookrRule {
                 return false;
             }
 
-            const hidingBalls = unpottedBalls.not(cueBall).not(objectBall);
+            const hidingBalls = unpottedBalls.not(cueBall).not(objectBall).not(objectBall.getBallType());
             const fullyTouchable = hidingBalls.reduce(function (fullyTouchable, hidingBall) {
                 return fullyTouchable && !objectBall.isPartiallyHiddenBehind(cueBall, hidingBall);
             }, true);

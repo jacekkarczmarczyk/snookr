@@ -13,6 +13,7 @@ class SnookrRuleExpectingRed extends SnookrRule {
         return ballSet.unpotted().only('red');
     }
 
+
     /**
      *
      * @param {SnookrBall} firstTouched
@@ -21,8 +22,7 @@ class SnookrRuleExpectingRed extends SnookrRule {
      * @returns {SnookrShotResult}
      */
     getShotResult(firstTouched, ballsPotted, ballsLeft) {
-        const pointsArray = this.getPointsArray(firstTouched, ballsPotted);
-        const points = Math.min(0, ...pointsArray.filter(x => x < 0)) || pointsArray.reduce((carry, item) => carry + item, 0);
+        const points = this.getPoints(firstTouched, ballsPotted);
         const ballsToUnpot = points < 0 ? ballsPotted.not('red') : new SnookrBallSet();
         const nextRule = this.getNextRule(points, (new SnookrBallSet).add(ballsLeft).add(ballsToUnpot));
 

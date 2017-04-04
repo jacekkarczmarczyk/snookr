@@ -28,9 +28,8 @@ class SnookrRuleFreeBall extends SnookrRule {
      * @param {SnookrBallSet} ballsLeft
      */
     getShotResult(firstTouched, ballsPotted, ballsLeft) {
+        const points = this.getPoints(firstTouched, ballsPotted);
         const ballsToUnpot = ballsPotted.not(this.expectedColor);
-        const pointsArray = this.getPointsArray(firstTouched, ballsPotted);
-        const points = Math.min(0, ...pointsArray.filter(x => x < 0)) || pointsArray.reduce((carry, item) => carry + item, 0);
         const nextRule = this.getNextRule(points, (new SnookrBallSet).add(ballsLeft).add(ballsToUnpot));
 
         return new SnookrShotResult(
