@@ -401,14 +401,19 @@ class SnookrBall {
         }
 
         const sideSpin = this.getSideSpin();
+        let collisionSpeed = null;
         return {
             getCollisionTime() {
                 return t;
             },
             getCollisionSpeed() {
-                [vx, vy] = [vx - sideSpin * speed.getLength() / 5, -vy];
-                [vx, vy] = [vx * cos + vy * sin, vy * cos - vx * sin];
-                return Vector.create(vx, vy);
+                if (collisionSpeed === null) {
+                    [vx, vy] = [vx - sideSpin * speed.getLength() / 5, -vy];
+                    [vx, vy] = [vx * cos + vy * sin, vy * cos - vx * sin];
+                    collisionSpeed = Vector.create(vx, vy);
+                }
+
+                return collisionSpeed;
             }
         };
     }
