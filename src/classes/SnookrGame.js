@@ -44,6 +44,7 @@ class SnookrGame {
 
     resetGame() {
         this.ballSet = this.createBallSet();
+        this.history = new SnookrHistory();
 
         this.currentScore = [0, 0];
         this.eventListener.trigger(SnookrEvent.SCORE_CHANGED, this.currentScore);
@@ -75,6 +76,26 @@ class SnookrGame {
         throw new TypeError('Abstract class method called');
     }
 
+    rollback() {
+        const historyEntry = this.history.pop();
+        if (!historyEntry) {
+            return;
+        }
+
+        this.inAction = false;
+
+        this.ballSet.restore(historyEntry.getBalls());
+
+        this.currentScore = historyEntry.getScore();
+        this.eventListener.trigger(SnookrEvent.SCORE_CHANGED, this.currentScore);
+
+        this.currentPlayer = historyEntry.getPlayer();
+        this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.currentPlayer);
+
+        this.currentRule = historyEntry.getRule();
+        this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.currentRule);
+    }
+
     shotAttempt({shotPower, forwardSpinValue, sideSpinValue}) {
         if (!this.inAction && shotPower > 0 && this.ghostPosition) {
             shotPower = Math.min(this.physics.getSetting('maxShotPower'), shotPower);
@@ -82,9 +103,7 @@ class SnookrGame {
             const whitePosition = whiteBall.getPosition();
             const speed = whitePosition.vectorTo(this.ghostPosition).normalize().scale(shotPower);
 
-            // TESTY
-            // const speed = Vector.create(-2, -0.6);
-            // this.ballSet.only('white').first().setPosition(this.ballSet.getBalls()[4].getPosition().translate(Vector.create(this.ballSet.getBalls()[4].getBallRadius() * 2 + 20, 0 + 6)));
+            this.history.push(new SnookrHistoryEntry(this.ballSet.save(), this.currentRule, this.currentPlayer, this.currentScore));
 
             whiteBall.setSpeed(speed);
             whiteBall.setForwardSpin(speed.scale(forwardSpinValue * Math.sqrt(speed.getLength() / 5) * this.physics.getSetting('forwardSpinScale')));
@@ -105,6 +124,7 @@ class SnookrGame {
         this.eventListener.on(SnookrEvent.CUE_DRAG_END, () => this.cueDistance = this.getInitialCueDistance());
         this.eventListener.on(SnookrEvent.BALLS_STOPPED, shotResult => this.ballsStopped(shotResult));
         this.eventListener.on(SnookrEvent.NEXT_RULE_CHOSEN, nextRule => this.nextRuleChosen(nextRule));
+        this.eventListener.on(SnookrEvent.ROLLBACK_REQUESTED, () => this.rollback());
 
         this.eventListener.trigger(SnookrEvent.SCORE_CHANGED, this.currentScore);
         this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.currentPlayer);
@@ -119,10 +139,16 @@ class SnookrGame {
      */
     nextRuleChosen(nextRule) {
         if (nextRule instanceof SnookrRuleRepeat) {
+            const historyEntry = this.history.pop();
+
             this.currentPlayer = 1 - this.currentPlayer;
             this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.currentPlayer);
 
-            this.currentRule = nextRule.getRuleToRepeat();
+            if (nextRule.getRestoreBalls()) {
+                this.ballSet.restore(historyEntry.getBalls());
+            }
+
+            this.currentRule = historyEntry.getRule();
         } else {
             this.currentRule = nextRule;
         }

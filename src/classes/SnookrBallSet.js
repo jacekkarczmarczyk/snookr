@@ -1,12 +1,16 @@
 class SnookrBallSet {
     /**
      *
-     * @param {Array} balls
+     * @param {Array<SnookrBall>} balls
      */
     constructor(balls = []) {
         this.balls = balls.filter(ball => ball instanceof SnookrBall);
     }
 
+    /**
+     *
+     * @returns {Number}
+     */
     count() {
         return this.balls.length;
     }
@@ -92,6 +96,33 @@ class SnookrBallSet {
     forEach(callback) {
         this.balls.forEach(callback);
         return this;
+    }
+
+    /**
+     *
+     * @returns {Array}
+     */
+    save() {
+        return this.map(ball => ball.save());
+    }
+
+    /**
+     *
+     * @param {Array} map
+     */
+    restore(map) {
+        this.balls.forEach(function (ball, index) {
+            ball.restore(map[index]);
+        });
+    }
+
+    /**
+     *
+     * @param callback
+     * @returns {Array}
+     */
+    map(callback) {
+        return this.balls.map(callback);
     }
 
     /**

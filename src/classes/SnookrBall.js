@@ -22,13 +22,41 @@ class SnookrBall {
      * @param {string} ballType
      * @param {Point} position
      * @param {BallMovement|null} movement
-     * @param potted
+     * @param {boolean} potted
      * @returns {SnookrBall}
      */
     static create(ballRadius, ballType, position, movement = null, potted = false) {
         return new SnookrBall(ballRadius, ballType, position, movement, potted);
     }
 
+    /**
+     *
+     * @returns {{position: Point, movement: BallMovement, potted: boolean}}
+     */
+    save() {
+        return {
+            position: this.getPosition(),
+            movement: this.getMovement(),
+            potted: this.isPotted()
+        };
+    }
+
+    /**
+     *
+     * @param {Point} position
+     * @param {BallMovement} movement
+     * @param {boolean} potted
+     */
+    restore({position, movement, potted}) {
+        this.position = position;
+        this.movement = movement;
+        this.potted = potted;
+    }
+
+    /**
+     *
+     * @returns {boolean}
+     */
     isPotted() {
         return this.potted;
     }
@@ -44,10 +72,18 @@ class SnookrBall {
         return this;
     }
 
+    /**
+     *
+     * @returns {number}
+     */
     getBallRadius() {
         return this.ballRadius;
     }
 
+    /**
+     *
+     * @returns {string}
+     */
     getBallType() {
         return this.ballType;
     }

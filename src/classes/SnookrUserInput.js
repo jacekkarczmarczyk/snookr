@@ -46,7 +46,9 @@ class SnookrUserInput {
                 }
                 spinIndicator.setAttribute('data-forward-spin', newValue.toFixed(0));
                 spinIndicator.style.top = newValue + 'px';
+                return false;
             }
+
             if (event.which === 37 || event.which === 39) {
                 const spinIndicator = document.querySelector('.snookr-spin-indicator');
                 const oldValue = parseInt(spinIndicator.getAttribute('data-side-spin'), 10);
@@ -57,6 +59,17 @@ class SnookrUserInput {
                 }
                 spinIndicator.setAttribute('data-side-spin', newValue.toFixed(0));
                 spinIndicator.style.left = newValue + 'px';
+                return false;
+            }
+
+            if (event.which === 90 && event.ctrlKey) {
+                const spinIndicator = document.querySelector('.snookr-spin-indicator');
+                spinIndicator.setAttribute('data-forward-spin', '0');
+                spinIndicator.setAttribute('data-side-spin', '0');
+                spinIndicator.style.top = 0;
+                spinIndicator.style.left = 0;
+                eventListener.trigger(SnookrEvent.ROLLBACK_REQUESTED);
+                return false;
             }
         };
 
