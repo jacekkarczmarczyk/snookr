@@ -258,24 +258,25 @@ class SnookrGame {
                 const alpha = Math.random() * Math.PI;
                 newPosition = bulkCenter.translate(Vector.create(Math.random() * bulkR).rotate(alpha));
             } while (!this.isPositionFree(newPosition, ballToUnpot));
-        }
+        } else {
+            while (!newPosition && (nextBallType = ballTypes.shift())) {
+                const nextColorPosition = this.ballSet.only(nextBallType).first().getInitialPosition();
+                if (this.isPositionFree(nextColorPosition, ballToUnpot)) {
+                    newPosition = nextColorPosition;
+                }
+            }
 
-        while (!newPosition && (nextBallType = ballTypes.shift())) {
-            const nextColorPosition = this.ballSet.only(nextBallType).first().getInitialPosition();
-            if (this.isPositionFree(nextColorPosition, ballToUnpot)) {
-                newPosition = nextColorPosition;
+            if (!newPosition) {
+                newPosition = ballToUnpot.getInitialPosition();
+                do {
+                    newPosition = newPosition.translate(Vector.create(0, -0.1));
+                } while (!this.isPositionFree(newPosition, ballToUnpot) && newPosition.getY() > ballToUnpot.getBallRadius());
+                do {
+                    newPosition = newPosition.translate(Vector.create(0, 0.1));
+                } while (!this.isPositionFree(newPosition, ballToUnpot));
             }
         }
 
-        if (!newPosition) {
-            newPosition = ballToUnpot.getInitialPosition();
-            do {
-                newPosition = newPosition.translate(Vector.create(0, -0.1));
-            } while (!this.isPositionFree(newPosition, ballToUnpot) && newPosition.getY() > ballToUnpot.getBallRadius());
-            do {
-                newPosition = newPosition.translate(Vector.create(0, 0.1));
-            } while (!this.isPositionFree(newPosition, ballToUnpot));
-        }
 
         ballToUnpot.setPotted(false).setPosition(newPosition);
     }
