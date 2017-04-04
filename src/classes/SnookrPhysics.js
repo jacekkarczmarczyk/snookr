@@ -8,10 +8,23 @@ class SnookrPhysics {
         this.table = table;
         this.settings = Object.assign({}, {
             ballCollisionRatio: 0,
-            spinLinearSlowdownRatio: 0.1,
+            forwardSpinLinearSlowdownRatio: 0.03,
+            sideSpinLinearSlowdownRatio: 0.001,
             slowdownBreaker: 200,
-            slowdownRatio: 0.99
+            slowdownRatio: 0.99,
+            maxShotPower: 5,
+            forwardSpinScale: 0.5,
+            sideSpinScale: 1/15
         }, settings);
+    }
+
+    /**
+     *
+     * @param {string} name
+     * @returns {*}
+     */
+    getSetting(name) {
+        return this.settings[name];
     }
 
     /**
@@ -129,14 +142,14 @@ class SnookrPhysics {
 
         const forwardSpin = movement.getForwardSpin();
         const forwardSpinLength = forwardSpin.getLength();
-        const forwardSpinToBall = forwardSpinLength > this.settings.spinLinearSlowdownRatio ? forwardSpin.scale(this.settings.spinLinearSlowdownRatio) : forwardSpin;
+        const forwardSpinToBall = forwardSpinLength > this.getSetting('forwardSpinLinearSlowdownRatio') ? forwardSpin.scale(this.getSetting('forwardSpinLinearSlowdownRatio')) : forwardSpin;
         const forwardSpinLeft = forwardSpin.add(forwardSpinToBall.scale(-1));
 
-        const sideSpin = Math.sign(movement.getSideSpin()) * Math.max(0, Math.abs(movement.getSideSpin()) - 0.001);
+        const sideSpin = Math.sign(movement.getSideSpin()) * Math.max(0, Math.abs(movement.getSideSpin()) - this.getSetting('sideSpinLinearSlowdownRatio'));
 
         const speed = ball.getSpeed();
         const speedLength = speed.getLength();
-        const scale = Math.pow(this.settings.slowdownRatio * (1 - Math.exp(-this.settings.slowdownBreaker * speedLength)), timeDiff);
+        const scale = Math.pow(this.getSetting('slowdownRatio') * (1 - Math.exp(-this.getSetting('slowdownBreaker') * speedLength)), timeDiff);
 
         return ball.setSpeed(speed.scale(scale).add(forwardSpinToBall)).setForwardSpin(forwardSpinLeft).setSideSpin(sideSpin);
     }

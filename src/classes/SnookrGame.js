@@ -77,7 +77,7 @@ class SnookrGame {
 
     shotAttempt({shotPower, forwardSpinValue, sideSpinValue}) {
         if (!this.inAction && shotPower > 0 && this.ghostPosition) {
-            shotPower = Math.min(5, shotPower);
+            shotPower = Math.min(this.physics.getSetting('maxShotPower'), shotPower);
             const whiteBall = this.ballSet.only('white').first();
             const whitePosition = whiteBall.getPosition();
             const speed = whitePosition.vectorTo(this.ghostPosition).normalize().scale(shotPower);
@@ -87,8 +87,8 @@ class SnookrGame {
             // this.ballSet.only('white').first().setPosition(this.ballSet.getBalls()[4].getPosition().translate(Vector.create(this.ballSet.getBalls()[4].getBallRadius() * 2 + 20, 0 + 6)));
 
             whiteBall.setSpeed(speed);
-            whiteBall.setForwardSpin(speed.scale(forwardSpinValue * Math.sqrt(speed.getLength() / 60)));
-            whiteBall.setSideSpin(-sideSpinValue * speed.getLength() / 3);
+            whiteBall.setForwardSpin(speed.scale(forwardSpinValue * Math.sqrt(speed.getLength() / 5) * this.physics.getSetting('forwardSpinScale')));
+            whiteBall.setSideSpin(-sideSpinValue * speed.getLength() * this.physics.getSetting('sideSpinScale'));
             this.eventListener.trigger(SnookrEvent.SHOOT_FIRED);
         }
     }

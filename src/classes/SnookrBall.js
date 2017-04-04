@@ -408,7 +408,7 @@ class SnookrBall {
             },
             getCollisionSpeed() {
                 if (collisionSpeed === null) {
-                    [vx, vy] = [vx - sideSpin * speed.getLength() / 5, -vy];
+                    [vx, vy] = [vx - sideSpin * speed.getLength(), -vy];
                     [vx, vy] = [vx * cos + vy * sin, vy * cos - vx * sin];
                     collisionSpeed = Vector.create(vx, vy);
                 }

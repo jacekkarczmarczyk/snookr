@@ -3,6 +3,15 @@ class SnookrGameArcade extends SnookrGame {
         super();
     }
 
+	getPhysicsSettings() {
+        return {
+            slowdownBreaker: 200,
+            forwardSpinLinearSlowdownRatio: 0.04,
+            slowdownRatio: 0.986,
+            sideSpinScale: 1/10
+        };
+	}
+	
     /**
      *
      * @returns {SnookrTable}
