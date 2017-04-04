@@ -63,7 +63,8 @@ class SnookrUserInput {
     }
 
     static playApplause() {
-        window.setTimeout(() => SnookrUserInput.getAudioClips().applause[Math.floor(Math.random() * 7)].play(0.1), 200);
+        const applauseAudioClips = SnookrUserInput.getAudioClips().applause;
+        window.setTimeout(() => applauseAudioClips[Math.floor(Math.random() * applauseAudioClips.length)].play(), 200);
     }
 
     static playDisappointment() {
@@ -94,18 +95,12 @@ class SnookrUserInput {
      *
      */
     static getAudioClips() {
-        const applauseElement = document.querySelector('audio[data-type="applause"]');
+        const applauseElement = document.querySelector('audio[data-type="applause1"]');
         const disappointmentElement = document.querySelector('audio[data-type="disappointment"]');
         const ballElement = document.querySelector('audio[data-type="ball"]');
         return {
             applause: [
-                new AudioClip(applauseElement, 0, 8000),
-                new AudioClip(applauseElement, 8000, 5000),
-                new AudioClip(applauseElement, 13000, 6500),
-                new AudioClip(applauseElement, 20000, 6300),
-                new AudioClip(applauseElement, 26700, 7500),
-                new AudioClip(applauseElement, 34300, 7700),
-                new AudioClip(applauseElement, 42000, 7000)
+                new AudioClip(applauseElement, 1000),
             ],
             disappointment: new AudioClip(disappointmentElement, 600),
             cueHitsBall: new AudioClip(ballElement, 2400, 300),
