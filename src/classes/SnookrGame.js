@@ -88,7 +88,7 @@ class SnookrGame {
 
             whiteBall.setSpeed(speed);
             whiteBall.setForwardSpin(speed.scale(forwardSpinValue * Math.sqrt(speed.getLength() / 5) * this.physics.getSetting('forwardSpinScale')));
-            whiteBall.setSideSpin(-sideSpinValue * speed.getLength() * this.physics.getSetting('sideSpinScale'));
+            whiteBall.setSideSpin(sideSpinValue * speed.getLength() * this.physics.getSetting('sideSpinScale'));
             this.eventListener.trigger(SnookrEvent.SHOOT_FIRED);
         }
     }

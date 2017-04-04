@@ -11,8 +11,8 @@ class SnookrUserInput {
                 const shotPower = view.getTableSize(dragPreviousOffset - event.clientY);
                 eventListener.trigger(SnookrEvent.SHOT_ATTEMPT, {
                     shotPower: shotPower,
-                    forwardSpinValue: -document.querySelector('.snookr-spin-indicator').offsetTop / 27,
-                    sideSpinValue: document.querySelector('.snookr-spin-indicator').offsetLeft / 27,
+                    forwardSpinValue: -document.querySelector('.snookr-spin-indicator').offsetTop / 25,
+                    sideSpinValue: -document.querySelector('.snookr-spin-indicator').offsetLeft / 25,
                 });
                 eventListener.trigger(SnookrEvent.CUE_HITS_BALL, shotPower);
                 drag = false;
@@ -39,9 +39,9 @@ class SnookrUserInput {
             if (event.which === 38 || event.which === 40) {
                 const spinIndicator = document.querySelector('.snookr-spin-indicator');
                 const oldValue = parseInt(spinIndicator.getAttribute('data-forward-spin'), 10);
-                const newValue = Math.min(27, Math.max(-27, oldValue - (39 - event.which)));
+                const newValue = Math.min(25, Math.max(-25, oldValue - (39 - event.which)));
                 const sideSpinValue = parseInt(spinIndicator.getAttribute('data-side-spin'), 10);;
-                if (newValue * newValue + sideSpinValue * sideSpinValue > 27 * 27) {
+                if (newValue * newValue + sideSpinValue * sideSpinValue > 25 * 25) {
                     return;
                 }
                 spinIndicator.setAttribute('data-forward-spin', newValue.toFixed(0));
@@ -50,9 +50,9 @@ class SnookrUserInput {
             if (event.which === 37 || event.which === 39) {
                 const spinIndicator = document.querySelector('.snookr-spin-indicator');
                 const oldValue = parseInt(spinIndicator.getAttribute('data-side-spin'), 10);
-                const newValue = Math.min(27, Math.max(-27, oldValue - (38 - event.which)));
+                const newValue = Math.min(25, Math.max(-25, oldValue - (38 - event.which)));
                 const forwardSpinValue = parseInt(spinIndicator.getAttribute('data-forward-spin'), 10);;
-                if (newValue * newValue + forwardSpinValue * forwardSpinValue > 27 * 27) {
+                if (newValue * newValue + forwardSpinValue * forwardSpinValue > 25 * 25) {
                     return;
                 }
                 spinIndicator.setAttribute('data-side-spin', newValue.toFixed(0));
