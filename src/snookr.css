@@ -1,0 +1,133 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.view {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.table {
+    position: relative;
+    flex: 1;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -o-user-select: none;
+}
+
+.frames-won {
+    padding: 0 0.5em;
+}
+
+.score {
+    font-size: 1em;
+    font-weight: bold;
+    background: #def;
+    padding: 0 0.3em;
+}
+
+.player-name {
+    flex: 1;
+}
+
+.next-rule {
+    font-size: 0.7em;
+    padding: 0.1em 0.3em;
+    font-style: italic;
+}
+
+.break {
+    font-size: 0.5em;
+    padding: 0.3em;
+}
+
+.player {
+    border: 3px solid transparent;
+    width: 50%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.player.current {
+    border-color: #fff;
+}
+
+.board.snooker .player.current {
+    border-color: red;
+}
+
+.score-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center
+}
+
+.player-1 > .score-container {
+    flex-direction: row-reverse;
+}
+
+.snookr {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.board {
+    background: #369;
+    font-family: arial, sans-serif;
+    display: flex;
+    flex-direction: row;
+    padding: 0px;
+    font-size: 1.5em;
+    color: #000;
+}
+
+.cueball-container {
+    width: 68px;
+}
+
+.cueball {
+    box-sizing: border-box;
+    width: 64px;
+    height: 64px;
+    margin: 2px;
+    border-radius: 50%;
+    border: 1px solid #888;
+    background: #ddd;
+    position: relative;
+}
+
+.snookr-spin-indicator {
+    position: absolute;
+    box-sizing: border-box;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(48, 96, 144, 0.4);
+    top: 0;
+    left: 0;
+    transform: translate(27px, 27px);;
+}
+
+.snookr-spin-indicator:after {
+    display: block;
+    content: '';
+    position: absolute;
+    box-sizing: border-box;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: #000;
+    top: 4px;
+    left: 4px;
+}
