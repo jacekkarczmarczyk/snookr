@@ -37,20 +37,24 @@ class SnookrUserInput {
         document.body.onkeydown = function (event) {
             if (event.which === 38 || event.which === 40) {
                 const spinIndicator = document.querySelector('.snookr-spin-indicator');
-                const newValue = Math.min(27, Math.max(-27, spinIndicator.offsetTop - (39 - event.which)));
-                const sideSpinValue = spinIndicator.offsetLeft;
+                const oldValue = parseInt(spinIndicator.getAttribute('data-forward-spin'), 10);
+                const newValue = Math.min(27, Math.max(-27, oldValue - (39 - event.which)));
+                const sideSpinValue = parseInt(spinIndicator.getAttribute('data-side-spin'), 10);;
                 if (newValue * newValue + sideSpinValue * sideSpinValue > 27 * 27) {
                     return;
                 }
+                spinIndicator.setAttribute('data-forward-spin', newValue.toFixed(0));
                 spinIndicator.style.top = newValue + 'px';
             }
             if (event.which === 37 || event.which === 39) {
                 const spinIndicator = document.querySelector('.snookr-spin-indicator');
-                const newValue = Math.min(27, Math.max(-27, spinIndicator.offsetLeft - (38 - event.which)));
-                const forwardSpinValue = spinIndicator.offsetTop;
+                const oldValue = parseInt(spinIndicator.getAttribute('data-side-spin'), 10);
+                const newValue = Math.min(27, Math.max(-27, oldValue - (38 - event.which)));
+                const forwardSpinValue = parseInt(spinIndicator.getAttribute('data-forward-spin'), 10);;
                 if (newValue * newValue + forwardSpinValue * forwardSpinValue > 27 * 27) {
                     return;
                 }
+                spinIndicator.setAttribute('data-side-spin', newValue.toFixed(0));
                 spinIndicator.style.left = newValue + 'px';
             }
         };
@@ -95,12 +99,14 @@ class SnookrUserInput {
      *
      */
     static getAudioClips() {
-        const applauseElement = document.querySelector('audio[data-type="applause1"]');
+        const applause1Element = document.querySelector('audio[data-type="applause1"]');
+        const applause2Element = document.querySelector('audio[data-type="applause2"]');
         const disappointmentElement = document.querySelector('audio[data-type="disappointment"]');
         const ballElement = document.querySelector('audio[data-type="ball"]');
         return {
             applause: [
-                new AudioClip(applauseElement, 1900),
+                new AudioClip(applause1Element, 1900),
+                new AudioClip(applause2Element, 400),
             ],
             disappointment: new AudioClip(disappointmentElement, 600),
             cueHitsBall: new AudioClip(ballElement, 2400, 300),
@@ -143,8 +149,11 @@ class SnookrUserInput {
 
         SnookrUserInput.listen(eventListener, view, snookr);
         eventListener.on(SnookrEvent.BALLS_STOPPED, function () {
-            document.querySelector('.snookr-spin-indicator').style.top = 0;
-            document.querySelector('.snookr-spin-indicator').style.left = 0;
+            const spinIndicator = document.querySelector('.snookr-spin-indicator');
+            spinIndicator.setAttribute('data-forward-spin', '0');
+            spinIndicator.setAttribute('data-side-spin', '0');
+            spinIndicator.style.top = 0;
+            spinIndicator.style.left = 0;
         });
 
         eventListener.on(SnookrEvent.BALL_POTTED, () => SnookrUserInput.playBallHitsPocket());
