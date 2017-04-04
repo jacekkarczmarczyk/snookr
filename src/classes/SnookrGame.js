@@ -196,8 +196,8 @@ class SnookrGame {
                 }
             }
 
-            if (recalculateResult.ballHitsBall) {
-                this.eventListener.trigger(SnookrEvent.BALL_HITS_BALL);
+            if (recalculateResult.ballHitsBallPower) {
+                this.eventListener.trigger(SnookrEvent.BALL_HITS_BALL, recalculateResult.ballHitsBallPower);
             }
 
             if (allStopped) {

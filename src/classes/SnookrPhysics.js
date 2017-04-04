@@ -31,7 +31,7 @@ class SnookrPhysics {
             eventType: 'end'
         };
         let firstTouched = null;
-        let ballHitsBall = false;
+        let ballHitsBallPower = 0.0;
 
         // Check whether any ball was pocketed
         //
@@ -100,7 +100,7 @@ class SnookrPhysics {
                 firstTouched = ball1;
             }
 
-            ballHitsBall = true;
+            ballHitsBallPower = firstEvent.collision.getCollisionPower();
         } else if (!inFrame) { // end
             balls.forEach(ball => this.slowDown(ball, frameLength));
         }
@@ -108,13 +108,13 @@ class SnookrPhysics {
         if (frameLength > firstEvent.eventTime) {
             const subFrameData = this.recalcuatePositions(ballSet, frameLength - firstEvent.eventTime, true);
             ballsPotted.add(subFrameData.ballsPotted);
-            ballHitsBall = ballHitsBall || subFrameData.ballHitsBall;
+            ballHitsBallPower += subFrameData.ballHitsBallPower;
         }
 
         return {
             firstTouched,
             ballsPotted,
-            ballHitsBall
+            ballHitsBallPower
         };
     }
 

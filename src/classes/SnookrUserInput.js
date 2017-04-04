@@ -8,12 +8,13 @@ class SnookrUserInput {
             if (!drag) {
                 eventListener.trigger(SnookrEvent.MOUSE_MOVED, view.getTablePosition(Point.create(event.clientX, event.clientY)));
             } else if (event.clientY - dragStartOffset + view.getScreenSize(snookrGame.getInitialCueDistance()) < 0) {
+                const shotPower = view.getTableSize(dragPreviousOffset - event.clientY);
                 eventListener.trigger(SnookrEvent.SHOT_ATTEMPT, {
-                    shotPower: view.getTableSize(dragPreviousOffset - event.clientY),
+                    shotPower: shotPower,
                     forwardSpinValue: -document.querySelector('.snookr-spin-indicator').offsetTop / 27,
                     sideSpinValue: document.querySelector('.snookr-spin-indicator').offsetLeft / 27,
                 });
-                eventListener.trigger(SnookrEvent.CUE_HITS_BALL);
+                eventListener.trigger(SnookrEvent.CUE_HITS_BALL, shotPower);
                 drag = false;
             } else {
                 eventListener.trigger(SnookrEvent.CUE_DRAG, snookrGame.getInitialCueDistance() + view.getTableSize(event.clientY - dragStartOffset));
@@ -75,20 +76,12 @@ class SnookrUserInput {
         SnookrUserInput.getAudioClips().disappointment.play(0.1);
     }
 
-    static playCueHitsBall() {
-        SnookrUserInput.getAudioClips().cueHitsBall.play();
+    static playCueHitsBall(shotPower) {
+        SnookrUserInput.getAudioClips().cueHitsBall.play(Math.min(1, shotPower / 10));
     }
 
-    static playBallHitsBall() {
-        const now = Date.now();
-        const audioClip = SnookrUserInput.getAudioClips().ballHitsBall;
-
-        if (now - SnookrUserInput.lastPlayed < 50) {
-            return;
-        }
-
-        SnookrUserInput.lastPlayed = now;
-        audioClip.play();
+    static playBallHitsBall(ballHitsBallPower) {
+        SnookrUserInput.getAudioClips().ballHitsBall.play(Math.min(1, ballHitsBallPower / 5));
     }
 
     static playBallHitsPocket() {
@@ -159,8 +152,8 @@ class SnookrUserInput {
         eventListener.on(SnookrEvent.BALL_POTTED, () => SnookrUserInput.playBallHitsPocket());
         eventListener.on(SnookrEvent.RIGHT_BALL_POTTED, () => SnookrUserInput.playApplause());
         eventListener.on(SnookrEvent.WRONG_BALL_POTTED, () => SnookrUserInput.playDisappointment());
-        eventListener.on(SnookrEvent.CUE_HITS_BALL, () => SnookrUserInput.playCueHitsBall());
-        eventListener.on(SnookrEvent.BALL_HITS_BALL, () => SnookrUserInput.playBallHitsBall());
+        eventListener.on(SnookrEvent.CUE_HITS_BALL, shotPower => SnookrUserInput.playCueHitsBall(shotPower));
+        eventListener.on(SnookrEvent.BALL_HITS_BALL, ballHitsBallPower => SnookrUserInput.playBallHitsBall(ballHitsBallPower));
         eventListener.on(SnookrEvent.BALL_HITS_POCKET, () => SnookrUserInput.playBallHitsPocket());
 
         eventListener.on(SnookrEvent.REPAINT, gameState => view.repaint(gameState));

@@ -285,26 +285,50 @@ class SnookrBall {
             return null;
         }
 
+        let data = null;
+
+        const getCollisionSpeed = function (ball) {
+            if (data === null) {
+                data = {};
+                data.dtx = dx + t * dvx;
+                data.dty = dy + t * dvy;
+                data.d2 = data.dtx ** 2 + data.dty ** 2;
+                data.sin2 = data.dty ** 2;
+                data.cos2 = data.dtx ** 2;
+                data.sincos = data.dtx * data.dty;
+                data.mx = (v2x - v1x) * data.sincos;
+                data.my = (v2y - v1y) * data.sincos;
+                data.ball1Speed = Vector.create(
+                    (v2x * data.cos2 + v1x * data.sin2 + data.my) / data.d2,
+                    (v2y * data.sin2 + v1y * data.cos2 + data.mx) / data.d2
+                );
+                data.ball2Speed = Vector.create(
+                    (v1x * data.cos2 + v2x * data.sin2 - data.my) / data.d2,
+                    (v1y * data.sin2 + v2y * data.cos2 - data.mx) / data.d2
+                );
+                data.collisionPower = data.ball1Speed.add(speed1.scale(-1)).getLength() + data.ball2Speed.add(speed2.scale(-1)).getLength();
+            }
+
+            if (ball === ball1) {
+                return data.ball1Speed;
+            } else if (ball === ball2) {
+                return data.ball2Speed;
+            }
+        };
+
+        const getCollisionPower = function () {
+            if (data === null) {
+                getCollisionSpeed(ball1);
+            }
+            return data.collisionPower;
+        };
+
         return {
             getCollisionTime: () => t,
-            getCollisionSpeed(ball) {
-                const dtx = dx + t * dvx;
-                const dty = dy + t * dvy;
-                const d2 = dtx ** 2 + dty ** 2;
-                const sin2 = dty ** 2;
-                const cos2 = dtx ** 2;
-                const sincos = dtx * dty;
-                const mx = (v2x - v1x) * sincos;
-                const my = (v2y - v1y) * sincos;
-
-                if (ball === ball1) {
-                    return Vector.create((v2x * cos2 + v1x * sin2 + my) / d2, (v2y * sin2 + v1y * cos2 + mx) / d2)
-                } else if (ball === ball2) {
-                    return Vector.create((v1x * cos2 + v2x * sin2 - my) / d2, (v1y * sin2 + v2y * cos2 - mx) / d2);
-                }
-            },
+            getCollisionPower,
+            getCollisionSpeed,
             // getCollisionSpeed(ball) {
-            //     Wersja 1 - najwolniejsza, ale opisjaca o co chodzi
+            //     Version 2 - slow, but more descriptive
             //
             //     const alpha = position1.translate(speed1, t).vectorTo(position2.translate(speed2, t)).getAngle();
             //     const v1rotated = speed1.rotate(-alpha);
