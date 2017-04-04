@@ -117,11 +117,21 @@ class SnookrUserInput {
     static createGame(domElement) {
         let snookr;
         switch (document.location.hash) {
-            case '#test': snookr  = new SnookrGameTest(); break;
-            case '#arcade': snookr = new SnookrGameArcade(); break;
-            case '#regular': snookr = new SnookrGameRegular(); break;
-            case '#real': snookr = new SnookrGameReal(); break;
-            default: snookr = new SnookrGameArcade(); break;
+            case '#test':
+                snookr = new SnookrGameTest();
+                break;
+            case '#arcade':
+                snookr = new SnookrGameArcade();
+                break;
+            case '#regular':
+                snookr = new SnookrGameRegular();
+                break;
+            case '#real':
+                snookr = new SnookrGameReal();
+                break;
+            default:
+                snookr = new SnookrGameArcade();
+                break;
         }
 
         const eventListener = snookr.getEventListener();

@@ -1,3 +1,6 @@
+/**
+ * Immutable data object
+ */
 class AudioClip {
     constructor(domElement, start = 0, length = 0) {
         this.domElement = domElement;
@@ -9,7 +12,7 @@ class AudioClip {
         let audio = this.domElement.ownerDocument.createElement('audio');
 
         audio.src = this.domElement.getAttribute('src');
-		audio.volume = volume;
+        audio.volume = volume;
         audio.currentTime = this.start;
         audio.play();
 

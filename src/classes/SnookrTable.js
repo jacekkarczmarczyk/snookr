@@ -207,13 +207,13 @@ class SnookrTable {
         const w2 = p2.vectorTo(p3);
         const alpha = w1.getAngle();
 
-        // Przesuwamy wszystko o (-p2.x, -p2.y)
-        // Obracamy wszytko o -alpha
+        // Translate: (-p2.x, -p2.y)
+        // Rotate: -alpha
         //
         const beta = w2.getAngle() - alpha;
-        const gamma = beta - Math.sign(w2.rotate(-alpha).getY()) * Math.PI/2;
+        const gamma = beta - Math.sign(w2.rotate(-alpha).getY()) * Math.PI / 2;
 
-        // szukamy srodka i promienia okregu
+        // Calculating center and radius of the circle
         //
         let x0 = d;
         let y0 = d * (1 + Math.sin(gamma)) / Math.cos(gamma);
@@ -228,7 +228,9 @@ class SnookrTable {
             angle1 = beta - Math.PI / 2;
         }
 
-        // Przywracamy punkt odniesienia
+        // Restore coordinates
+        // Rotate: alpha
+        // Translate: (p2.x, p2.y)
         //
         angle1 = (angle1 + 2 * Math.PI) % (2 * Math.PI) + alpha;
         angle2 = (angle2 + 2 * Math.PI) % (2 * Math.PI) + alpha;

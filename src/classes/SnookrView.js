@@ -251,7 +251,6 @@ class SnookrCanvasView extends SnookrView {
     /**
      *
      * @param {SnookrBall} ball
-     * @param index
      */
     paintBall(ball) {
         if (ball.isPotted()) {

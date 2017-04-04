@@ -51,14 +51,13 @@ class Point {
 
     /**
      *
-     * @param {Point} lineStart
-     * @param {Point} lineEnd
+     * @param {LineSegment} lineSegment
      */
-    getLineDistance(lineStart, lineEnd) {
-        const x1 = lineStart.getX();
-        const y1 = lineStart.getY();
-        const x2 = lineEnd.getX();
-        const y2 = lineEnd.getY();
+    getLineDistance(lineSegment) {
+        const x1 = lineSegment.getP1().getX();
+        const y1 = lineSegment.getP1().getY();
+        const x2 = lineSegment.getP2().getX();
+        const y2 = lineSegment.getP2().getY();
 
         return Math.abs(((y1 - y2) * this.getX() + (x2 - x1) * this.getY() + (x1 * y2 - x2 * y1)) / Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)));
     }

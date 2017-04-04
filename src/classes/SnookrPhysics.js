@@ -33,7 +33,7 @@ class SnookrPhysics {
         let firstTouched = null;
         let ballHitsBall = false;
 
-        // Sprawdzenie czy bila nie jest w luzie
+        // Check whether any ball was pocketed
         //
         balls.forEach(function (ball) {
             table.getPots().forEach(function (pot) {
@@ -48,7 +48,7 @@ class SnookrPhysics {
             });
         });
 
-        // Znajdz kolizje miedzy bila a brzegiem stolu
+        // Check whether any ball hits the cushion
         //
         balls.forEach(function (ball) {
             const collision = table.calculateBoundaryTouch(ball, frameLength);
@@ -62,7 +62,7 @@ class SnookrPhysics {
             }
         });
 
-        // Znajdz kolizje miecy bilami
+        // Check whether any two balls hit each other
         //
         balls.filter(ball => ball.getSpeed().getX() || ball.getSpeed().getY()).forEach(function (ball1) {
             balls.forEach(function (ball2) {

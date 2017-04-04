@@ -29,14 +29,6 @@ class SnookrBall {
         return new SnookrBall(ballRadius, ballType, position, movement, potted);
     }
 
-    /**
-     *
-     * @returns {SnookrBall}
-     */
-    clone() {
-        return SnookrBall.create(this.ballRadius, this.ballType, this.position, this.movement, this.potted);
-    }
-
     isPotted() {
         return this.potted;
     }

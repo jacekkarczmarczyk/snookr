@@ -1,3 +1,6 @@
+/**
+ * Immutable data object
+ */
 class LineSegment {
     /**
      *

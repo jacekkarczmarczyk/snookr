@@ -225,8 +225,6 @@ class SnookrGame {
         let newPosition;
         let nextBallType;
 
-        // todo ustawianie bialej bili
-        //
         if (ballToUnpot.getBallType() === 'white') {
             const tableBorderX = (this.table.getOuterWidth() - this.table.getInnerWidth()) / 2;
             const tableBorderY = (this.table.getOuterLength() - this.table.getInnerLength()) / 2;
