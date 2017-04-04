@@ -252,13 +252,11 @@ class SnookrGame {
         let nextBallType;
 
         if (ballToUnpot.getBallType() === 'white') {
-            const tableBorderX = (this.table.getOuterWidth() - this.table.getInnerWidth()) / 2;
-            const tableBorderY = (this.table.getOuterLength() - this.table.getInnerLength()) / 2;
+            const bulkCenter = Point.create(33.867, 107.986);
+            const bulkR = 11;
             do {
-                newPosition = Point.create(
-                    tableBorderX + ballToUnpot.getBallRadius() + Math.random() * (this.table.getInnerWidth() - 2 * ballToUnpot.getBallRadius()),
-                    tableBorderY + ballToUnpot.getBallRadius() + Math.random() * (this.table.getInnerLength() - 2 * ballToUnpot.getBallRadius())
-                );
+                const alpha = Math.random() * Math.PI;
+                newPosition = bulkCenter.translate(Vector.create(Math.random() * bulkR).rotate(alpha));
             } while (!this.isPositionFree(newPosition, ballToUnpot));
         }
 
@@ -272,10 +270,10 @@ class SnookrGame {
         if (!newPosition) {
             newPosition = ballToUnpot.getInitialPosition();
             do {
-                // todo wydajniejszy algorytm
-                // todo sprawdzanie czy nowa pozycja jest w obrebie stolu
-                //
                 newPosition = newPosition.translate(Vector.create(0, -0.1));
+            } while (!this.isPositionFree(newPosition, ballToUnpot) && newPosition.getY() > ballToUnpot.getBallRadius());
+            do {
+                newPosition = newPosition.translate(Vector.create(0, 0.1));
             } while (!this.isPositionFree(newPosition, ballToUnpot));
         }
 
