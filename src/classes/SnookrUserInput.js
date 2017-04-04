@@ -100,7 +100,7 @@ class SnookrUserInput {
         const ballElement = document.querySelector('audio[data-type="ball"]');
         return {
             applause: [
-                new AudioClip(applauseElement, 1000),
+                new AudioClip(applauseElement, 1900),
             ],
             disappointment: new AudioClip(disappointmentElement, 600),
             cueHitsBall: new AudioClip(ballElement, 2400, 300),
