@@ -237,7 +237,7 @@ class SnookrUserInput {
         this.domElement.ownerDocument.onmouseup = () => this.endCueDrag();
         this.domElement.ownerDocument.ondragstart = () => false;
         this.domElement.ownerDocument.oncontextmenu = () => false;
-        this.domElement.ownerDocument.onresize = () => this.view.resize();
+        window.onresize = () => this.view.resize();
     }
 
     stop() {
@@ -247,7 +247,7 @@ class SnookrUserInput {
         this.domElement.ownerDocument.onmouseup = '';
         this.domElement.ownerDocument.ondragstart = '';
         this.domElement.ownerDocument.oncontextmenu = '';
-        this.domElement.ownerDocument.onresize = '';
+        window.onresize = '';
 
         this.snookr = null;
         this.domElement = null;
