@@ -92,7 +92,7 @@ class SnookrUITable extends SnookrUI {
         const canvasBallRadius = this.getScreenSize(ball.getBallRadius());
         const absoluteBallPosition = this.getScreenPosition(ball.getPosition());
         const ballType = ball.getBallType();
-        const spritePadding = 1;
+        const spritePadding = 2;
 
         if (!this.scaledResources[ballType]) {
             const tmpCanvas = this.getElement().ownerDocument.createElement('canvas');

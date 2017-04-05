@@ -6,9 +6,9 @@ class SnookrGameArcade extends SnookrGame {
 	getPhysicsSettings() {
         return {
             slowdownBreaker: 200,
-            forwardSpinLinearSlowdownRatio: 0.04,
-            slowdownRatio: 0.986,
-            sideSpinScale: 1/10
+            forwardSpinLinearSlowdownRatio: 0.05,
+            slowdownRatio: 0.989,
+            sideSpinScale: 0.1
         };
 	}
 	
