@@ -14,7 +14,7 @@ class SnookrUITable extends SnookrUI {
         this.spinPower = spinPower;
         this.snookr = snookr;
         this.resources = null;
-        this.tableImg = null;
+        this.backgroundImageData = null;
         this.ghostPosition = null;
         this.cueDistance = 0;
         this.drag = false;
@@ -53,7 +53,7 @@ class SnookrUITable extends SnookrUI {
 
     updateView() {
         if (this.context) {
-            this.context.drawImage(this.tableImg, 0, 0, this.canvas.width, this.canvas.height);
+            this.context.putImageData(this.backgroundImageData, 0, 0);
             this.snookr.getBallSet().forEach(ball => this.paintBall(ball));
             this.paintCue();
             this.paintGhost();
@@ -82,7 +82,7 @@ class SnookrUITable extends SnookrUI {
         this.getElement().appendChild(this.canvas);
 
         this.context = this.canvas.getContext('2d');
-        this.tableImg = this.createTableImg(this.canvas);
+        this.backgroundImageData = this.createBackground(this.canvas);
     }
 
     /**
@@ -212,15 +212,11 @@ class SnookrUITable extends SnookrUI {
 
     /**
      *
-     * @returns {HTMLImageElement}
+     * @returns {ImageData}
      */
-    createTableImg(canvas) {
+    createBackground(canvas) {
         const self = this;
-        const canvas2 = this.getElement().ownerDocument.createElement('canvas');
-        canvas2.width = canvas.width;
-        canvas2.height = canvas.height;
-
-        const context = canvas2.getContext('2d');
+        const context = canvas.getContext('2d');
         const table = this.snookr.getTable();
 
         let p;
@@ -338,11 +334,7 @@ class SnookrUITable extends SnookrUI {
             context.fill();
         });
 
-        const img = new Image();
-        img.src = context.canvas.toDataURL();
-        img.width = canvas.offsetWidth;
-        img.height = canvas.offsetHeight;
-        return img;
+        return context.getImageData(0, 0, canvas.width, canvas.height);
     }
 
     /**
