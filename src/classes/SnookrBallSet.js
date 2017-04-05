@@ -74,8 +74,8 @@ class SnookrBallSet {
      *
      * @returns {SnookrBall|null}
      */
-    first() {
-        return this.balls[0];
+    first(ballType = null) {
+        return ballType ? this.only(ballType).first() : this.balls[0];
     }
 
     /**

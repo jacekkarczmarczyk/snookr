@@ -5,7 +5,6 @@ class SnookrGame {
         }
 
         this.inAction = false;
-        this.ghostPosition = null;
         this.table = this.createTable();
         this.cueDistance = this.getInitialCueDistance();
         this.eventListener = new SnookrEventListener();
@@ -18,8 +17,32 @@ class SnookrGame {
         this.resetGame();
     }
 
+    /**
+     *
+     * @returns {boolean}
+     */
+    isInAction() {
+        return this.inAction;
+    }
+
     getPhysicsSettings() {
         return {};
+    }
+
+    /**
+     *
+     * @returns {SnookrPhysics}
+     */
+    getPhysics() {
+        return this.physics;
+    }
+
+    /**
+     *
+     * @returns {SnookrBallSet}
+     */
+    getBallSet() {
+        return this.ballSet;
     }
 
     /**
@@ -65,7 +88,7 @@ class SnookrGame {
     }
 
     getGameState() {
-        return new SnookrGameState(this.inAction, this.ballSet, this.ghostPosition, this.cueDistance);
+        return new SnookrGameState(this.inAction, this.ballSet, this.cueDistance);
     }
 
     getInitialCueDistance() {
@@ -96,32 +119,19 @@ class SnookrGame {
         this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.currentRule);
     }
 
-    shotAttempt({shotPower, forwardSpinValue, sideSpinValue}) {
-        if (!this.inAction && shotPower > 0 && this.ghostPosition) {
-            shotPower = Math.min(this.physics.getSetting('maxShotPower'), shotPower);
-            const whiteBall = this.ballSet.only('white').first();
-            const whitePosition = whiteBall.getPosition();
-            const speed = whitePosition.vectorTo(this.ghostPosition).normalize().scale(shotPower);
-
+    shotAttempt(initialMovement) {
+        //{shotPower, forwardSpinValue, sideSpinValue}
+        if (!this.inAction) {
             this.history.push(new SnookrHistoryEntry(this.ballSet.save(), this.currentRule, this.currentPlayer, this.currentScore));
 
-            whiteBall.setSpeed(speed);
-            whiteBall.setForwardSpin(speed.scale(forwardSpinValue * Math.sqrt(speed.getLength() / 5) * this.physics.getSetting('forwardSpinScale')));
-            whiteBall.setSideSpin(sideSpinValue * speed.getLength() * this.physics.getSetting('sideSpinScale'));
+            this.getBallSet().first('white').setMovement(initialMovement);
             this.eventListener.trigger(SnookrEvent.SHOOT_FIRED);
         }
     }
 
     loop() {
-        this.eventListener.on(SnookrEvent.SHOT_ATTEMPT, ({shotPower, forwardSpinValue, sideSpinValue}) => this.shotAttempt({
-            shotPower,
-            forwardSpinValue,
-            sideSpinValue
-        }));
-        this.eventListener.on(SnookrEvent.MOUSE_MOVED, ghostPosition => this.ghostPosition = ghostPosition);
+        this.eventListener.on(SnookrEvent.SHOT_ATTEMPT, (movement) => this.shotAttempt(movement));
         this.eventListener.on(SnookrEvent.SHOOT_FIRED, () => this.inAction = true);
-        this.eventListener.on(SnookrEvent.CUE_DRAG, cueDistance => this.cueDistance = cueDistance);
-        this.eventListener.on(SnookrEvent.CUE_DRAG_END, () => this.cueDistance = this.getInitialCueDistance());
         this.eventListener.on(SnookrEvent.BALLS_STOPPED, shotResult => this.ballsStopped(shotResult));
         this.eventListener.on(SnookrEvent.NEXT_RULE_CHOSEN, nextRule => this.nextRuleChosen(nextRule));
         this.eventListener.on(SnookrEvent.ROLLBACK_REQUESTED, () => this.rollback());

@@ -1,6 +1,42 @@
-class SnookrView {
-    constructor() {
+class SnookrCanvasView {
+    /**
+     *
+     * @param {HTMLElement} domElement
+     * @param {SnookrTable} table
+     */
+    constructor(domElement, table) {
         this.resources = null;
+        this.domElement = domElement;
+        this.table = table;
+        this.viewSize = Point.create();
+        this.tableImg = null;
+        this.ghostPosition = null;
+        this.ballSet = new SnookrBallSet([]);
+        this.cueDistance = 0;
+    }
+
+    /**
+     *
+     * @param {Point} ghostPosition
+     */
+    setGhostPosition(ghostPosition) {
+        this.ghostPosition = ghostPosition;
+    }
+
+    /**
+     *
+     * @param {SnookrBallSet} ballSet
+     */
+    setBallSet(ballSet) {
+        this.ballSet = ballSet;
+    }
+
+    /**
+     *
+     * @param {number} cueDistance
+     */
+    setCueDistance(cueDistance) {
+        this.cueDistance = cueDistance;
     }
 
     /**
@@ -14,33 +50,6 @@ class SnookrView {
 
     /**
      *
-     * @param {SnookrGameState} gameState
-     */
-    repaint(gameState) {
-        this.paintTable(this.table);
-        this.paintBalls(gameState.getBallSet());
-        this.paintCue(gameState.getGhostPosition(), gameState.getCueDistance(), gameState.getCueBall());
-        this.paintGhost(gameState.getGhostPosition(), gameState.getCueBall());
-    }
-}
-
-
-class SnookrCanvasView extends SnookrView {
-    /**
-     *
-     * @param {HTMLElement} domElement
-     * @param {SnookrTable} table
-     */
-    constructor(domElement, table) {
-        super();
-        this.domElement = domElement;
-        this.table = table;
-        this.viewSize = Point.create();
-        this.tableImg = null;
-    }
-
-    /**
-     *
      * @returns {Point}
      */
     getViewSize() {
@@ -48,6 +57,7 @@ class SnookrCanvasView extends SnookrView {
     }
 
     resize() {
+        this.tableImg = null;
         this.domElement.innerHTML = '';
     }
 
@@ -75,11 +85,7 @@ class SnookrCanvasView extends SnookrView {
         return screenSize * this.table.getOuterLength() / this.getViewSize().getX();
     }
 
-    /**
-     *
-     * @param {SnookrGameState} gameState
-     */
-    repaint(gameState) {
+    repaint() {
         let height = this.domElement.offsetHeight;
         let width = height * 1440 / 758;
 
@@ -104,9 +110,9 @@ class SnookrCanvasView extends SnookrView {
         }
 
         this.context.drawImage(this.tableImg, 0, 0, width, height);
-        this.paintBalls(gameState.getBallSet());
-        this.paintCue(gameState.getGhostPosition(), gameState.getCueDistance(), gameState.getCueBall());
-        this.paintGhost(gameState.getGhostPosition(), gameState.getCueBall());
+        this.ballSet.forEach(ball => this.paintBall(ball));
+        this.paintCue();
+        this.paintGhost();
     }
 
     /**
@@ -242,14 +248,6 @@ class SnookrCanvasView extends SnookrView {
 
     /**
      *
-     * @param {SnookrBallSet} ballSet
-     */
-    paintBalls(ballSet) {
-        ballSet.forEach(ball => this.paintBall(ball));
-    }
-
-    /**
-     *
      * @param {SnookrBall} ball
      */
     paintBall(ball) {
@@ -274,21 +272,15 @@ class SnookrCanvasView extends SnookrView {
         this.context.stroke();
     }
 
-    /**
-     *
-     * @param {Point} ghostPosition
-     * @param {SnookrBall} whiteBall
-     */
-    paintGhost(ghostPosition, whiteBall) {
-        if (!ghostPosition) {
+    paintGhost() {
+        if (!this.ghostPosition) {
             return;
         }
 
-        const absoluteBallPosition = this.getScreenPosition(ghostPosition);
-        const canvasBallRadius = this.getScreenSize(whiteBall.getBallRadius());
+        const canvasBallRadius = this.getScreenSize(this.ballSet.first('white').getBallRadius());
 
         this.context.beginPath();
-        this.context.arc(absoluteBallPosition.getX(), absoluteBallPosition.getY(), canvasBallRadius - 0.25, 0, 2 * Math.PI, false);
+        this.context.arc(this.ghostPosition.getX(), this.ghostPosition.getY(), canvasBallRadius - 0.25, 0, 2 * Math.PI, false);
         this.context.fillStyle = 'rgba(255, 255, 255, 0.7)';
         this.context.fill();
         this.context.strokeStyle = 'black';
@@ -296,16 +288,11 @@ class SnookrCanvasView extends SnookrView {
         this.context.stroke();
     }
 
-    /**
-     *
-     * @param {Point} ghostPosition
-     * @param cueDistance
-     * @param {SnookrBall} whiteBall
-     */
-    paintCue(ghostPosition, cueDistance, whiteBall) {
+    paintCue() {
         let cueElement = this.domElement.querySelector('.snookr-cue');
+        const whiteBall = this.ballSet.first('white');
 
-        if (!ghostPosition) {
+        if (!this.ghostPosition) {
             cueElement && cueElement.parentNode.removeChild(cueElement);
             return;
         }
@@ -323,11 +310,11 @@ class SnookrCanvasView extends SnookrView {
         }
 
         const cueTipScreenPosition = this.getScreenPosition(whiteBall.getPosition());
-        const cueScreenDistance = this.getScreenSize(cueDistance);
+        const cueScreenDistance = this.getScreenSize(this.cueDistance);
         cueElement.style.top = (cueTipScreenPosition.getY() - cueElement.offsetHeight / 2) + 'px';
         cueElement.style.left = (cueTipScreenPosition.getX() + cueScreenDistance + ballScreenRadius) + 'px';
         cueElement.style.transformOrigin = `-${ballScreenRadius + cueScreenDistance}px 50%`;
-        cueElement.style.transform = 'rotate(' + (90 + whiteBall.getPosition().vectorTo(ghostPosition).getAngle() * 180 / Math.PI) + 'deg)';
+        cueElement.style.transform = 'rotate(' + (90 + whiteBall.getPosition().vectorTo(this.getTablePosition(this.ghostPosition)).getAngle() * 180 / Math.PI) + 'deg)';
     }
 
 }

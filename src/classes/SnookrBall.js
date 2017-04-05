@@ -128,6 +128,15 @@ class SnookrBall {
 
     /**
      *
+     * @param {BallMovement} movement
+     */
+    setMovement(movement) {
+        this.movement = movement;
+        return this;
+    }
+
+    /**
+     *
      * @returns {BallMovement}
      */
     getMovement() {

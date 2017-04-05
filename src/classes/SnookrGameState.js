@@ -3,13 +3,11 @@ class SnookrGameState {
      *
      * @param inAction
      * @param {SnookrBallSet} ballSet
-     * @param {Point|null} ghostPosition
      * @param cueDistance
      */
-    constructor(inAction, ballSet, ghostPosition, cueDistance) {
+    constructor(inAction, ballSet, cueDistance) {
         this.inAction = inAction;
         this.ballSet = ballSet;
-        this.ghostPosition = ghostPosition;
         this.cueDistance = cueDistance;
     }
 
@@ -27,14 +25,6 @@ class SnookrGameState {
      */
     getBallSet() {
         return this.ballSet;
-    }
-
-    /**
-     *
-     * @returns {Point|null}
-     */
-    getGhostPosition() {
-        return this.inAction ? null : this.ghostPosition;
     }
 
     getCueDistance() {
