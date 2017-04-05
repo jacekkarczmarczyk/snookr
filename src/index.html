@@ -21,36 +21,7 @@
     <audio data-type="ball" src="audio/ball.mp3"></audio>
 </div>
 
-<div class="view">
-    <div class="table" unselectable="on" onselectstart="return false">
-        <div class="snookr"></div>
-    </div>
-    <div class="board">
-        <div class="player player-0">
-            <div class="score-container">
-                <div class="player-name">Player 1</div>
-                <div class="score">0</div>
-                <div class="frames-won">0</div>
-            </div>
-            <div class="break">&nbsp;</div>
-            <div class="next-rule">&nbsp;</div>
-        </div>
-        <div class="cueball-container">
-            <div class="cueball">
-                <div class="snookr-spin-indicator" data-forward-spin="0" data-side-spin="0"></div>
-            </div>
-        </div>
-        <div class="player player-1">
-            <div class="score-container">
-                <div class="player-name">Player 2</div>
-                <div class="score">0</div>
-                <div class="frames-won">0</div>
-            </div>
-            <div class="break">&nbsp;</div>
-            <div class="next-rule">&nbsp;</div>
-        </div>
-    </div>
-</div>
+<snookr-ui-app></snookr-ui-app>
 
 <script src="classes/Point.js"></script>
 <script src="classes/LineSegment.js"></script>
@@ -76,7 +47,12 @@
 <script src="classes/SnookrGameState.js"></script>
 <script src="classes/SnookrEvent.js"></script>
 <script src="classes/SnookrEventListener.js"></script>
-<script src="classes/SnookrUserInput.js"></script>
+<script src="classes/SpinPower.js"></script>
+<script src="classes/SnookrUI.js"></script>
+<script src="classes/SnookrUIBoard.js"></script>
+<script src="classes/SnookrUITable.js"></script>
+<script src="classes/SnookrUISpinnerBall.js"></script>
+<script src="classes/SnookrUIApp.js"></script>
 <script src="classes/SnookrShotResult.js"></script>
 <script src="classes/SnookrRule.js"></script>
 <script src="classes/SnookrRuleExpectingAnyColor.js"></script>
@@ -87,35 +63,41 @@
 <script src="classes/SnookrHistory.js"></script>
 <script src="classes/SnookrHistoryEntry.js"></script>
 <script type="text/javascript">
-    let ui = null;
-    window.onhashchange = function () {
-        let snookr;
-        switch (document.location.hash) {
-            case '#test':
-                snookr = new SnookrGameTest();
+    function createView() {
+        return new SnookrUIApp(document.querySelector('snookr-ui-app'), {
+            hash: document.location.hash,
+            spinPower: new SpinPower()
+        });
+    }
+
+    let view;
+
+    window.addEventListener('hashchange', () => view = createView());
+    window.addEventListener('load', () => view = createView());
+    window.addEventListener('resize', () => view && view.getElement().dispatchEvent(new Event('snookrEvent.resize')));
+    window.addEventListener('keydown', function({which, ctrlKey}) {
+        let eventType;
+        switch (which) {
+            case 37:
+                eventType = 'snookrEvent.arrowLeft';
                 break;
-            case '#arcade':
-                snookr = new SnookrGameArcade();
+            case 39:
+                eventType = 'snookrEvent.arrowRight';
                 break;
-            case '#regular':
-                snookr = new SnookrGameRegular();
+            case 38:
+                eventType = 'snookrEvent.arrowDown';
                 break;
-            case '#real':
-                snookr = new SnookrGameReal();
+            case 40:
+                eventType = 'snookrEvent.arrowUp';
                 break;
-            default:
-                snookr = new SnookrGameArcade();
+            case 90:
+                eventType = ctrlKey ? 'snookrEvent.rollback' : null;
                 break;
         }
 
-        if (ui) {
-            ui.stop();
+        if (eventType) {
+            view.getElement().dispatchEvent(new Event(eventType));
+            return false;
         }
-
-        ui = new SnookrUserInput(snookr, document.querySelector('.view'));
-        ui.run();
-    };
-
-    window.onload = () => window.onhashchange();
-
+    });
 </script>

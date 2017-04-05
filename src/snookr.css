@@ -6,14 +6,14 @@ html, body {
     overflow: hidden;
 }
 
-.view {
+snookr-ui-app {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
 }
 
-.table {
+snookr-ui-table {
     position: relative;
     flex: 1;
     -moz-user-select: none;
@@ -23,58 +23,7 @@ html, body {
     -o-user-select: none;
 }
 
-.frames-won {
-    padding: 0 0.5em;
-}
-
-.score {
-    font-size: 1em;
-    font-weight: bold;
-    background: #def;
-    padding: 0 0.3em;
-}
-
-.player-name {
-    flex: 1;
-}
-
-.next-rule {
-    font-size: 0.7em;
-    padding: 0.1em 0.3em;
-    font-style: italic;
-}
-
-.break {
-    font-size: 0.5em;
-    padding: 0.3em;
-}
-
-.player {
-    border: 3px solid transparent;
-    width: 50%;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-.player.current {
-    border-color: #fff;
-}
-
-.board.snooker .player.current {
-    border-color: red;
-}
-
-.score-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center
-}
-
-.player-1 > .score-container {
-    flex-direction: row-reverse;
-}
-
-.snookr {
+snookr-ui-table .table {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -82,7 +31,7 @@ html, body {
     right: 0;
 }
 
-.board {
+snookr-ui-board {
     background: #369;
     font-family: arial, sans-serif;
     display: flex;
@@ -92,11 +41,72 @@ html, body {
     color: #000;
 }
 
-.cueball-container {
+snookr-ui-board .frames-won {
+    padding: 0 0.5em;
+}
+
+snookr-ui-board .score {
+    font-size: 1em;
+    font-weight: bold;
+    background: #def;
+    padding: 0 0.3em;
+}
+
+snookr-ui-board .player-name {
+    flex: 1;
+}
+
+snookr-ui-board .next-rule {
+    font-size: 0.7em;
+    padding: 0.1em 0.3em;
+    font-style: italic;
+    display: none;
+}
+
+snookr-ui-board .player.current .next-rule {
+    display: block;
+}
+
+snookr-ui-board .break {
+    font-size: 0.5em;
+    padding: 0.3em;
+    display: none;
+}
+
+snookr-ui-board .player.current .break {
+    display: block;
+}
+
+snookr-ui-board .player {
+    border: 3px solid transparent;
+    width: 50%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+snookr-ui-board .player.current {
+    border-color: #fff;
+}
+
+snookr-ui-board .player.current.snookered {
+    border-color: red;
+}
+
+snookr-ui-board .score-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center
+}
+
+snookr-ui-board .player-1 > .score-container {
+    flex-direction: row-reverse;
+}
+
+snookr-ui-cueball {
     width: 68px;
 }
 
-.cueball {
+snookr-ui-cueball > div {
     box-sizing: border-box;
     width: 64px;
     height: 64px;
@@ -107,7 +117,7 @@ html, body {
     position: relative;
 }
 
-.snookr-spin-indicator {
+snookr-ui-cueball > div > div {
     position: absolute;
     box-sizing: border-box;
     width: 10px;
@@ -119,7 +129,7 @@ html, body {
     transform: translate(27px, 27px);;
 }
 
-.snookr-spin-indicator:after {
+snookr-ui-cueball > div > div:after {
     display: block;
     content: '';
     position: absolute;

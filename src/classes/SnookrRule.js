@@ -22,7 +22,7 @@ class SnookrRule {
      * @returns {Array}
      */
     getPointsArray(firstTouched, ballsPotted) {
-        return [];
+        throw 'Abstract method called';
     }
 
     toString() {
