@@ -33,7 +33,7 @@ class SnookrUITable extends SnookrUI {
 
         let timeout;
         const self = this;
-        this.getElement().addEventListener('snookrEvent.resize', function() {
+        this.getElement().addEventListener('snookrEvent.resize', function () {
             if (timeout) {
                 window.clearTimeout(timeout);
             }
@@ -82,7 +82,7 @@ class SnookrUITable extends SnookrUI {
         this.getElement().appendChild(this.canvas);
 
         this.context = this.canvas.getContext('2d');
-        this.backgroundImageData = this.createBackground(this.canvas);
+        this.backgroundImageData = this.createBackground();
     }
 
     /**
@@ -148,7 +148,7 @@ class SnookrUITable extends SnookrUI {
         const ballScreenRadius = this.getScreenSize(whiteBall.getBallRadius());
         if (!cueElement) {
             const cueScreenLength = this.getScreenSize(table.getOuterLength() * 0.4);
-            cueElement = this.resources.cue.cloneNode();
+            cueElement = this.resources.cue.cloneNode(false);
             cueElement.className = 'snookr-cue';
             cueElement.style.position = 'absolute';
             cueElement.style.zIndex = 1001;
@@ -214,9 +214,10 @@ class SnookrUITable extends SnookrUI {
      *
      * @returns {ImageData}
      */
-    createBackground(canvas) {
+    createBackground() {
         const self = this;
-        const context = canvas.getContext('2d');
+        const canvas = this.canvas;
+        const context = this.context;
         const table = this.snookr.getTable();
 
         let p;

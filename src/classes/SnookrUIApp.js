@@ -44,14 +44,14 @@ class SnookrUIApp extends SnookrUI {
         this.getElement().innerHTML = `<snookr-ui-table></snookr-ui-table><snookr-ui-board></snookr-ui-board>`;
 
         this._children = [
+            new SnookrUIBoard(this.getElement().querySelector('snookr-ui-board'), {
+                snookr: this.getData().snookr,
+                spinPower: this.getData().spinPower
+            }),
             new SnookrUITable(this.getElement().querySelector('snookr-ui-table'), {
                 snookr: this.getData().snookr,
                 spinPower: this.getData().spinPower
             }),
-            new SnookrUIBoard(this.getElement().querySelector('snookr-ui-board'), {
-                snookr: this.getData().snookr,
-                spinPower: this.getData().spinPower
-            })
         ];
     }
 
