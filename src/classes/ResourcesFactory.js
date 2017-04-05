@@ -17,16 +17,15 @@ class StaticResourcesFactory {
         ]).then(function (resources) {
             return {
                 cue: resources[0],
-                table: resources[1],
                 balls: {
-                    white: resources[2],
-                    red: resources[3],
-                    yellow: resources[4],
-                    green: resources[5],
-                    brown: resources[6],
-                    blue: resources[7],
-                    pink: resources[8],
-                    black: resources[9],
+                    white: resources[1],
+                    red: resources[2],
+                    yellow: resources[3],
+                    green: resources[4],
+                    brown: resources[5],
+                    blue: resources[6],
+                    pink: resources[7],
+                    black: resources[8],
                 }
             }
         });

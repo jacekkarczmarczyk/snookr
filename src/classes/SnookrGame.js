@@ -15,6 +15,18 @@ class SnookrGame {
         this.break = 0;
 
         this.resetGame();
+
+        this.eventListener.on(SnookrEvent.SHOT_ATTEMPT, (movement) => this.shotAttempt(movement));
+        this.eventListener.on(SnookrEvent.SHOOT_FIRED, () => this.inAction = true);
+        this.eventListener.on(SnookrEvent.BALLS_STOPPED, shotResult => this.ballsStopped(shotResult));
+        this.eventListener.on(SnookrEvent.NEXT_RULE_CHOSEN, nextRule => this.nextRuleChosen(nextRule));
+        this.eventListener.on(SnookrEvent.ROLLBACK_REQUESTED, () => this.rollback());
+        this.eventListener.on(SnookrEvent.TICK, () => this.tick());
+
+        this.eventListener.trigger(SnookrEvent.SCORE_CHANGED, this.currentScore);
+        this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.currentPlayer);
+        this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.currentRule);
+        this.eventListener.trigger(SnookrEvent.TICK);
     }
 
     /**
@@ -129,18 +141,40 @@ class SnookrGame {
         }
     }
 
-    loop() {
-        this.eventListener.on(SnookrEvent.SHOT_ATTEMPT, (movement) => this.shotAttempt(movement));
-        this.eventListener.on(SnookrEvent.SHOOT_FIRED, () => this.inAction = true);
-        this.eventListener.on(SnookrEvent.BALLS_STOPPED, shotResult => this.ballsStopped(shotResult));
-        this.eventListener.on(SnookrEvent.NEXT_RULE_CHOSEN, nextRule => this.nextRuleChosen(nextRule));
-        this.eventListener.on(SnookrEvent.ROLLBACK_REQUESTED, () => this.rollback());
+    getFrameLength() {
+        return 1;
+    }
 
-        this.eventListener.trigger(SnookrEvent.SCORE_CHANGED, this.currentScore);
-        this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.currentPlayer);
-        this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.currentRule);
+    tick() {
+        this.eventListener.trigger(SnookrEvent.REPAINT, this.getGameState());
 
-        this.loopFrame();
+        if (this.inAction) {
+            const recalculateResult = this.physics.recalcuatePositions(this.ballSet, this.getFrameLength());
+            const allStopped = this.ballSet.allStopped();
+
+            this.firstTouched = this.firstTouched || recalculateResult.firstTouched;
+            this.ballsPotted.add(recalculateResult.ballsPotted);
+
+            if (recalculateResult.ballsPotted.count()) {
+                this.eventListener.trigger(SnookrEvent.BALL_POTTED);
+                if (this.currentRule.getPoints(this.firstTouched, this.ballsPotted) >= 0) {
+                    this.eventListener.trigger(SnookrEvent.RIGHT_BALL_POTTED);
+                } else {
+                    this.eventListener.trigger(SnookrEvent.WRONG_BALL_POTTED);
+                }
+            }
+
+            if (recalculateResult.ballHitsBallPower) {
+                this.eventListener.trigger(SnookrEvent.BALL_HITS_BALL, recalculateResult.ballHitsBallPower);
+            }
+
+            if (allStopped) {
+                const shotResult = this.currentRule.getShotResult(this.firstTouched, this.ballsPotted, this.ballSet.unpotted());
+                this.eventListener.trigger(SnookrEvent.BALLS_STOPPED, shotResult);
+            }
+        }
+
+        window.requestAnimationFrame(() => this.eventListener.trigger(SnookrEvent.TICK));
     }
 
     /**
@@ -205,42 +239,6 @@ class SnookrGame {
 
             this.eventListener.trigger(SnookrEvent.NEXT_RULE_CHOICE, shotResult.getNextRules());
         }
-    }
-
-    getFrameLength() {
-        return 1;
-    }
-
-    loopFrame() {
-        this.eventListener.trigger(SnookrEvent.REPAINT, this.getGameState());
-
-        if (this.inAction) {
-            const recalculateResult = this.physics.recalcuatePositions(this.ballSet, this.getFrameLength());
-            const allStopped = this.ballSet.allStopped();
-
-            this.firstTouched = this.firstTouched || recalculateResult.firstTouched;
-            this.ballsPotted.add(recalculateResult.ballsPotted);
-
-            if (recalculateResult.ballsPotted.count()) {
-                this.eventListener.trigger(SnookrEvent.BALL_POTTED);
-                if (this.currentRule.getPoints(this.firstTouched, this.ballsPotted) >= 0) {
-                    this.eventListener.trigger(SnookrEvent.RIGHT_BALL_POTTED);
-                } else {
-                    this.eventListener.trigger(SnookrEvent.WRONG_BALL_POTTED);
-                }
-            }
-
-            if (recalculateResult.ballHitsBallPower) {
-                this.eventListener.trigger(SnookrEvent.BALL_HITS_BALL, recalculateResult.ballHitsBallPower);
-            }
-
-            if (allStopped) {
-                const shotResult = this.currentRule.getShotResult(this.firstTouched, this.ballsPotted, this.ballSet.unpotted());
-                this.eventListener.trigger(SnookrEvent.BALLS_STOPPED, shotResult);
-            }
-        }
-
-        window.requestAnimationFrame(() => this.loopFrame());
     }
 
     /**
