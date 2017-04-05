@@ -69,6 +69,9 @@ class SnookrUITable extends SnookrUI {
             this.initBackgroundElement();
 
             this.scaledResources = {};
+
+            const cueScreenLength = this.getScreenSize(this.snookr.getTable().getOuterLength() * 0.4);
+            this.cueElement.style.width = cueScreenLength;
         }
 
         this.context.clearRect(0, 0, width, height);
@@ -138,11 +141,11 @@ class SnookrUITable extends SnookrUI {
 
         const whiteBall = this.snookr.getBallSet().first('white');
         const ballScreenRadius = this.getScreenSize(whiteBall.getBallRadius());
-        const cueScreenLength = this.getScreenSize(this.snookr.getTable().getOuterLength() * 0.4);
         const cueTipScreenPosition = this.getScreenPosition(whiteBall.getPosition());
         const cueScreenDistance = this.getScreenSize(this.cueDistance);
-        this.cueElement.src = this.resources.cue.src;
-        this.cueElement.style.width = cueScreenLength;
+        if (!this.cueElement.src) {
+            this.cueElement.src = this.resources.cue.src;
+        }
         this.cueElement.style.top = (cueTipScreenPosition.getY() - this.cueElement.offsetHeight / 2) + 'px';
         this.cueElement.style.left = (cueTipScreenPosition.getX() + cueScreenDistance + ballScreenRadius) + 'px';
         this.cueElement.style.transformOrigin = `-${ballScreenRadius + cueScreenDistance}px 50%`;

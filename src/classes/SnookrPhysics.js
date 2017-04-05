@@ -30,32 +30,26 @@ class SnookrPhysics {
     /**
      *
      * @param {SnookrBallSet} ballSet
-     * @param frameLength
-     * @param inFrame
-     * @returns {{firstTouched: SnookrBall|null, ballsPotted: SnookrBallSet}}
+     * @param {number} frameLength
+     * @returns {{eventTime: *, eventType: string}}
      */
-    recalculatePositions(ballSet, frameLength, inFrame = false) {
+    getFirstEvent(ballSet, frameLength) {
         const table = this.table;
-        const balls = ballSet.unpotted();
-
-        let ballsPotted = new SnookrBallSet();
         let firstEvent = {
             eventTime: frameLength,
             eventType: 'end'
         };
-        let firstTouched = null;
-        let ballHitsBallPower = 0.0;
 
         // Check whether any ball was pocketed
         //
-        balls.forEach(function (ball) {
+        ballSet.forEach(function (ball) {
             table.getPots().forEach(function (pot) {
                 const potTime = table.calculatePot(pot, ball, frameLength);
                 if (potTime !== null && (firstEvent === null || potTime < firstEvent.eventTime)) {
                     firstEvent = {
                         eventTime: potTime,
                         eventType: 'pot',
-                        ball: ball
+                        ball
                     };
                 }
             });
@@ -63,70 +57,89 @@ class SnookrPhysics {
 
         // Check whether any ball hits the cushion
         //
-        balls.forEach(function (ball) {
+        ballSet.forEach(function (ball) {
             const collision = table.calculateBoundaryTouch(ball, frameLength);
             if (collision !== null && (firstEvent === null || collision.getCollisionTime() < firstEvent.eventTime)) {
                 firstEvent = {
                     eventTime: collision.getCollisionTime(),
                     eventType: 'cushion',
-                    ball: ball,
-                    collision: collision
+                    ball,
+                    collision
                 };
             }
         });
 
         // Check whether any two balls hit each other
         //
-        balls.filter(ball => ball.getSpeed().getX() || ball.getSpeed().getY()).forEach(function (ball1) {
-            balls.forEach(function (ball2) {
+        ballSet.filter(ball => ball.getSpeed().getX() || ball.getSpeed().getY()).forEach(function (ball1) {
+            ballSet.forEach(function (ball2) {
                 const collision = ball1.calculateBallCollision(ball2, frameLength);
                 if (collision !== null && (firstEvent === null || collision.getCollisionTime() < firstEvent.eventTime)) {
                     firstEvent = {
                         eventTime: collision.getCollisionTime(),
                         eventType: 'balls',
-                        collision: collision,
-                        balls: [ball1, ball2]
+                        collision,
+                        ball1,
+                        ball2
                     };
                 }
             });
         });
 
-        balls.forEach(ball => ball.setPosition(ball.getPosition().translate(ball.getSpeed(), firstEvent.eventTime)));
+        return firstEvent;
+    }
 
-        if (firstEvent.eventType === 'pot') {
-            firstEvent.ball.setPotted();
-            ballsPotted.add(firstEvent.ball);
-        } else if (firstEvent.eventType === 'cushion') {
-            firstEvent.ball.setPosition(firstEvent.ball.getPosition().translate(firstEvent.ball.getSpeed(), -0.001 * firstEvent.collision.getCollisionTime()));
-            firstEvent.ball.setSpeed(firstEvent.collision.getCollisionSpeed());
-            firstEvent.ball.setForwardSpin(Vector.create());
-            firstEvent.ball.setSideSpin(0);
-        } else if (firstEvent.eventType === 'balls') {
-            const ball1 = firstEvent.balls[0];
-            const ball2 = firstEvent.balls[1];
-            ball1.setSpeed(firstEvent.collision.getCollisionSpeed(ball1));
-            ball2.setSpeed(firstEvent.collision.getCollisionSpeed(ball2));
+    /**
+     *
+     * @param {SnookrBallSet} ballSet
+     * @param frameLength
+     * @param inFrame
+     * @returns {{firstTouched: SnookrBall|null, ballsPotted: SnookrBallSet, ballHitsBallPower: number}}
+     */
+    recalculatePositions(ballSet, frameLength) {
+        let ballHitsBallPower = 0.0;
+        let firstTouched = null;
+        let ballsPotted = [];
+        let ballsUnpotted = ballSet.unpotted();
+        let timeLeft = frameLength;
 
-            if (ball1.getBallType() === 'white') {
-                firstTouched = ball2;
-            } else if (ball2.getBallType() === 'white') {
-                firstTouched = ball1;
+        do {
+            const firstEvent = this.getFirstEvent(ballsUnpotted, timeLeft);
+
+            ballsUnpotted.forEach(ball => ball.setPosition(ball.getPosition().translate(ball.getSpeed(), firstEvent.eventTime)));
+
+            if (firstEvent.eventType === 'pot') {
+                firstEvent.ball.setPotted();
+                ballsPotted.push(firstEvent.ball);
+                ballsUnpotted = ballSet.unpotted();
+            } else if (firstEvent.eventType === 'cushion') {
+                firstEvent.ball.setPosition(firstEvent.ball.getPosition().translate(firstEvent.ball.getSpeed(), -0.001 * firstEvent.collision.getCollisionTime()));
+                firstEvent.ball.setSpeed(firstEvent.collision.getCollisionSpeed());
+                firstEvent.ball.setForwardSpin(Vector.create());
+                firstEvent.ball.setSideSpin(0);
+            } else if (firstEvent.eventType === 'balls') {
+                firstEvent.ball1.setSpeed(firstEvent.collision.getCollisionSpeed(firstEvent.ball1));
+                firstEvent.ball2.setSpeed(firstEvent.collision.getCollisionSpeed(firstEvent.ball2));
+
+                if (!firstTouched) {
+                    if (firstEvent.ball1.getBallType() === 'white') {
+                        firstTouched = firstEvent.ball2;
+                    } else if (firstEvent.ball2.getBallType() === 'white') {
+                        firstTouched = firstEvent.ball1;
+                    }
+                }
+
+                ballHitsBallPower += firstEvent.collision.getCollisionPower();
             }
 
-            ballHitsBallPower = firstEvent.collision.getCollisionPower();
-        } else if (!inFrame) { // end
-            balls.forEach(ball => this.slowDown(ball, frameLength));
-        }
+            timeLeft -= firstEvent.eventTime;
+        } while (timeLeft > 0);
 
-        if (frameLength > firstEvent.eventTime) {
-            const subFrameData = this.recalculatePositions(ballSet, frameLength - firstEvent.eventTime, true);
-            ballsPotted.add(subFrameData.ballsPotted);
-            ballHitsBallPower += subFrameData.ballHitsBallPower;
-        }
+        ballsUnpotted.forEach(ball => this.slowDown(ball, frameLength));
 
         return {
             firstTouched,
-            ballsPotted,
+            ballsPotted: new SnookrBallSet(ballsPotted),
             ballHitsBallPower
         };
     }
@@ -151,7 +164,7 @@ class SnookrPhysics {
         const speedLength = speed.getLength();
         const scale = Math.pow(this.getSetting('slowdownRatio') * (1 - Math.exp(-this.getSetting('slowdownBreaker') * speedLength)), timeDiff);
 
-        return ball.setSpeed(speed.scale(scale).add(forwardSpinToBall)).setForwardSpin(forwardSpinLeft).setSideSpin(sideSpin);
+        return ball.setMovement(new BallMovement(speed.scale(scale).add(forwardSpinToBall), new Spin(forwardSpinLeft, sideSpin)));
     }
 
 

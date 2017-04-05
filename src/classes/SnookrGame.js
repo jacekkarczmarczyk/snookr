@@ -9,6 +9,7 @@ class SnookrGame {
         this.cueDistance = this.getInitialCueDistance();
         this.eventListener = new SnookrEventListener();
         this.physics = new SnookrPhysics(this.table, this.getPhysicsSettings());
+        this.history = new SnookrHistory();
 
         this.firstTouched = null;
         this.ballsPotted = new SnookrBallSet();

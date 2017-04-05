@@ -337,9 +337,9 @@ class SnookrBall {
                 data = {};
                 data.dtx = dx + t * dvx;
                 data.dty = dy + t * dvy;
-                data.d2 = data.dtx ** 2 + data.dty ** 2;
                 data.sin2 = data.dty ** 2;
                 data.cos2 = data.dtx ** 2;
+                data.d2 = data.sin2 + data.cos2;
                 data.sincos = data.dtx * data.dty;
                 data.mx = (v2x - v1x) * data.sincos;
                 data.my = (v2y - v1y) * data.sincos;
@@ -389,12 +389,93 @@ class SnookrBall {
 
     /**
      *
+     * @param {SnookrBall} ball2
+     * @param tMax
+     * @return {{getCollisionTime, getCollisionSpeed}|null}
+     */
+    calculateStaticBallCollision(ball2, tMax) {
+        const ball1 = this;
+        const speed1 = ball1.getSpeed();
+        const position1 = ball1.getPosition();
+        const position2 = ball2.getPosition();
+
+        const dx = position2.getX() - position1.getX();
+        const dy = position2.getY() - position1.getY();
+        const v1x = speed1.getX();
+        const v1y = speed1.getY();
+
+        // Wersja 1
+        //
+        // ((x1 + vX1 * t) - (x2 + vX2 * t)) ^ 2 + ((y1 + vY1 * t) - (y2 + vY2 * t)) ^ 2 = (r1 + r2) ^ 2
+        // (dX + dvX * t) ^ 2 + (dY + dvY * t) ^ 2 = (r1 + r2) ^ 2;
+        // dX^2 + 2 * dX*dvX * t + dvX^2 * t^2 + dY^2 + 2 * dY*dvY * t + dvY^2 * t^2 = rSumSquared;
+        // dX^2 + 2 * dX*dvX * t + dY^2 + 2 * dY*dvY * t + = rSumSquared;
+        // (dvX^2 + dvY^2) * t^2 + 2*(dX*dvX+dY*dvY) * t + (dX^2+dY^2)-rSumSquared = 0;
+        // a * t^2 + b * t + c  = 0
+        // delta = b^2 - 4*a*c
+        // t1 = (-b - sqrt(delta)) / 2 a
+        // t2 = (-b + sqrt(delta)) / 2 a
+        //
+        const rSum = ball1.getBallRadius() + ball2.getBallRadius();
+        const aDoubled = 2 * (v1x * v1x + v1y * v1y);
+        const b = 2 * (-dx * v1x - dy * v1y);
+        const c = dx * dx + dy * dy - rSum * rSum;
+        const delta = b * b - 2 * aDoubled * c;
+        const sqrtDelta = delta <= 0 ? -1 : Math.sqrt(delta);
+
+        let t = aDoubled ? ((-b - sqrtDelta) / aDoubled) : -1;
+        t = (sqrtDelta > 0 && aDoubled && t > 0 && t < tMax) ? t : null;
+
+        if (!t) {
+            return null;
+        }
+
+        let data = null;
+
+        const getCollisionSpeed = function () {
+            if (data === null) {
+                data = {};
+                data.dtx = dx - t * v1x;
+                data.dty = dy - t * v1y;
+                data.sin2 = data.dty ** 2;
+                data.cos2 = data.dtx ** 2;
+                data.d2 = data.sin2 + data.cos2;
+                data.sincos = data.dtx * data.dty;
+                data.mx = -v1x * data.sincos;
+                data.my = -v1y * data.sincos;
+                data.ballSpeed = Vector.create(
+                    (v1x * data.sin2 + data.my) / data.d2,
+                    (v1y * data.cos2 + data.mx) / data.d2
+                );
+                data.collisionPower = data.ball1Speed.add(speed1.scale(-1)).getLength();
+            }
+
+            return data.ballSpeed;
+        };
+
+        const getCollisionPower = function () {
+            if (data === null) {
+                getCollisionSpeed(ball1);
+            }
+            return data.collisionPower;
+        };
+
+        return {
+            getCollisionTime: () => t,
+            getCollisionPower,
+            getCollisionSpeed,
+        };
+    }
+
+    /**
+     *
      * @param {LineSegment} l
      * @param {number} tMax
      * @returns {{getCollisionTime, getSpeed}|null}
      */
     calculateLineSegmentCollision(l, tMax) {
-        const p = l.getP1();
+        const p1 = l.getP1();
+        const p2 = l.getP2();
         const W = l.getVector();
         // Obracamy wektor W ta aby byl ronolegly do osi X
         // Obracamy predkosc bili o ten sam kat
@@ -419,9 +500,9 @@ class SnookrBall {
 
         // Pozycje koncow odcinka w obroconym ukladzie odniesienia
         //
-        const p1x = p.getX() * cos - p.getY() * sin;
-        const p2x = (p.getX() + W.getX()) * cos - (p.getY() + W.getY()) * sin;
-        const p1y = p.getX() * sin + p.getY() * cos;
+        const p1x = p1.getX() * cos - p1.getY() * sin;
+        const p2x = p2.getX() * cos - p2.getY() * sin;
+        const p1y = p1.getX() * sin + p1.getY() * cos;
 
         // Pozycja bili w obroconym ukladzie odniesienia
         //
@@ -440,6 +521,7 @@ class SnookrBall {
         let vx = speed.getX() * cos - speed.getY() * sin;
 
         // Pozycja x styku bili z odcinkiem lub jego przeduzeniem
+        //
         const xt = x0 + vx * t;
         if (xt <= Math.min(p1x, p2x) || xt >= Math.max(p1x, p2x)) {
             return null;
@@ -453,9 +535,11 @@ class SnookrBall {
             },
             getCollisionSpeed() {
                 if (collisionSpeed === null) {
-                    [vx, vy] = [vx - sideSpin * speed.getLength(), -vy];
-                    [vx, vy] = [vx * cos + vy * sin, vy * cos - vx * sin];
-                    collisionSpeed = Vector.create(vx, vy);
+                    vx -= sideSpin * speed.getLength();
+                    collisionSpeed = Vector.create(vx * cos - vy * sin, -vy * cos - vx * sin);
+                    // [vx, vy] = [vx - sideSpin * speed.getLength(), -vy];
+                    // [vx, vy] = [vx * cos + vy * sin, vy * cos - vx * sin];
+                    // collisionSpeed = Vector.create(vx, vy);
                 }
 
                 return collisionSpeed;
@@ -465,19 +549,18 @@ class SnookrBall {
 
     /**
      *
-     * @param {LineArc} arc
+     * @param {SnookrBall} arcBall
      * @param {number} tMax
      */
-    calculateLineArcCollision(arc, tMax) {
-        const ball = new SnookrBall(arc.getRadius(), 'cushion', arc.getCenter());
-        const ballCollision = this.calculateBallCollision(ball, tMax);
+    calculateLineArcCollision(arcBall, tMax) {
+        const ballCollision = this.calculateStaticBallCollision(arcBall, tMax);
 
         if (!ballCollision) {
             return null;
         }
 
         const ballPositionOnCollision = this.getPosition().translate(this.getSpeed().scale(0.999 * ballCollision.getCollisionTime()));
-        const centerVector = ballPositionOnCollision.vectorTo(arc.getCenter());
+        const centerVector = ballPositionOnCollision.vectorTo(arcBall.getPosition());
         const touchPoint = ballPositionOnCollision.translate(centerVector.normalize().scale(1.001 * this.getBallRadius()));
         const p1 = touchPoint.translate(centerVector.rotate(Math.PI / 2));
         const p2 = touchPoint.translate(centerVector.rotate(-Math.PI / 2));

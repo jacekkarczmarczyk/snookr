@@ -5,9 +5,21 @@ class SnookrTable {
         this.innerLength = 135.962;
         this.outerLength = 143.962;
         this.boundaryElements = this.createBoundaryElements();
+        this.boundaryArcBalls = this.boundaryElements.map(function (arc) {
+            if (arc instanceof LineArc) {
+                return new SnookrBall(arc.getRadius(), 'cushion', arc.getCenter());
+            } else {
+                return null;
+            }
+        });
+
         this.pots = this.createPots();
     }
 
+    /**
+     *
+     * @returns {Array}
+     */
     createPots() {
         const potRadius = 2;
         return [
@@ -20,6 +32,10 @@ class SnookrTable {
         ];
     }
 
+    /**
+     *
+     * @returns {Array}
+     */
     createBoundaryPoints() {
         const cornerD = 2.5;
         const middleD = 1;
@@ -55,6 +71,10 @@ class SnookrTable {
         ];
     }
 
+    /**
+     *
+     * @returns {Array}
+     */
     createBoundaryElements() {
         const boundaryElements = [];
         const points = this.createBoundaryPoints();
@@ -163,13 +183,14 @@ class SnookrTable {
         }
 
         let firstCollision = null;
+        const boundaryArcBalls = this.boundaryArcBalls;
 
-        this.getBoundaryElements().forEach(function (boundaryElement) {
+        this.getBoundaryElements().forEach(function (boundaryElement, index) {
             let collision;
             if (boundaryElement instanceof LineSegment) {
                 collision = ball.calculateLineSegmentCollision(boundaryElement, tMax);
             } else if (boundaryElement instanceof LineArc) {
-                collision = ball.calculateLineArcCollision(boundaryElement, tMax);
+                collision = ball.calculateLineArcCollision(boundaryArcBalls[index], tMax);
             }
 
             if (collision && (firstCollision === null || collision.getCollisionTime() < firstCollision.getCollisionTime())) {
