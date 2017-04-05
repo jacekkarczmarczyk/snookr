@@ -145,7 +145,7 @@ class SnookrGame {
         this.eventListener.trigger(SnookrEvent.REPAINT);
 
         if (this.inAction) {
-            const recalculateResult = this.physics.recalcuatePositions(this.ballSet, this.getFrameLength());
+            const recalculateResult = this.physics.recalculatePositions(this.ballSet, this.getFrameLength());
             const allStopped = this.ballSet.allStopped();
 
             this.firstTouched = this.firstTouched || recalculateResult.firstTouched;

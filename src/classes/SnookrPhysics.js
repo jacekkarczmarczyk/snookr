@@ -34,7 +34,7 @@ class SnookrPhysics {
      * @param inFrame
      * @returns {{firstTouched: SnookrBall|null, ballsPotted: SnookrBallSet}}
      */
-    recalcuatePositions(ballSet, frameLength, inFrame = false) {
+    recalculatePositions(ballSet, frameLength, inFrame = false) {
         const table = this.table;
         const balls = ballSet.unpotted();
 
@@ -119,7 +119,7 @@ class SnookrPhysics {
         }
 
         if (frameLength > firstEvent.eventTime) {
-            const subFrameData = this.recalcuatePositions(ballSet, frameLength - firstEvent.eventTime, true);
+            const subFrameData = this.recalculatePositions(ballSet, frameLength - firstEvent.eventTime, true);
             ballsPotted.add(subFrameData.ballsPotted);
             ballHitsBallPower += subFrameData.ballHitsBallPower;
         }
