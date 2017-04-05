@@ -1,5 +1,5 @@
 class SnookrUI {
-    constructor(domElement, data) {
+    constructor(domElement, data = {}) {
         this._domElement = domElement;
         this._children = [];
         this._data = data;

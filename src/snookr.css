@@ -23,6 +23,21 @@ snookr-ui-table {
     -o-user-select: none;
 }
 
+snookr-ui-table .snookr-table-background {
+    position: absolute;
+    z-index: 1000;
+}
+
+snookr-ui-table .snookr-table-canvas {
+    position: absolute;
+    z-index: 1001;
+}
+
+snookr-ui-table .snookr-table-cue {
+    position: absolute;
+    z-index: 1002;
+}
+
 snookr-ui-board {
     background: #369;
     font-family: arial, sans-serif;

@@ -3,6 +3,7 @@ class SnookrUIBoard extends SnookrUI {
      *
      * @param {HTMLElement} domElement
      * @param {SnookrGame} snookr
+     * @param {SpinPower} spinPower
      */
     constructor(domElement, {snookr, spinPower}) {
         super(domElement, {

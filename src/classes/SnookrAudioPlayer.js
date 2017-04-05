@@ -25,7 +25,7 @@ class SnookrAudioPlayer {
 
     playApplause() {
         const applauseAudioClips = this.clips.applause;
-        applauseAudioClips[Math.floor(Math.random() * applauseAudioClips.length)].play();
+        applauseAudioClips[Math.floor(Math.random() * applauseAudioClips.length)].play(0.1);
     }
 
     playDisappointment() {

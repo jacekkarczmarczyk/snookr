@@ -11,15 +11,6 @@ class SnookrEventListener {
         return this;
     }
 
-    off(eventName, eventHandler) {
-        if (!this.handlers[eventName]) {
-            return;
-        }
-
-        this.handlers[eventName] = this.handlers[eventName].filter(handler => handler !== eventHandler);
-        return this;
-    }
-
     trigger(eventName, eventData) {
         if (!this.handlers[eventName]) {
             return;

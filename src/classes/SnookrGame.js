@@ -99,10 +99,6 @@ class SnookrGame {
         return this.eventListener;
     }
 
-    getGameState() {
-        return new SnookrGameState(this.inAction, this.ballSet, this.cueDistance);
-    }
-
     getInitialCueDistance() {
         return this.getBallRadius();
     }
@@ -146,7 +142,7 @@ class SnookrGame {
     }
 
     tick() {
-        this.eventListener.trigger(SnookrEvent.REPAINT, this.getGameState());
+        this.eventListener.trigger(SnookrEvent.REPAINT);
 
         if (this.inAction) {
             const recalculateResult = this.physics.recalcuatePositions(this.ballSet, this.getFrameLength());

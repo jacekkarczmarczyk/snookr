@@ -470,7 +470,6 @@ class SnookrBall {
      */
     calculateLineArcCollision(arc, tMax) {
         const ball = new SnookrBall(arc.getRadius(), 'cushion', arc.getCenter());
-        const p = ball.getPosition();
         const ballCollision = this.calculateBallCollision(ball, tMax);
 
         if (!ballCollision) {
@@ -482,9 +481,7 @@ class SnookrBall {
         const touchPoint = ballPositionOnCollision.translate(centerVector.normalize().scale(1.001 * this.getBallRadius()));
         const p1 = touchPoint.translate(centerVector.rotate(Math.PI / 2));
         const p2 = touchPoint.translate(centerVector.rotate(-Math.PI / 2));
-        const lineCollision = this.calculateLineSegmentCollision(new LineSegment(p1, p2), tMax);
-
-        return lineCollision;
+        return this.calculateLineSegmentCollision(new LineSegment(p1, p2), tMax);
     }
 
 }

@@ -14,7 +14,7 @@ class SnookrRuleRepeat extends SnookrRule {
      *
      * @param {SnookrBall} firstTouched
      * @param {SnookrBallSet} ballsPotted
-     * @returns {SnookrShotResult}
+     * @returns {number}
      */
     getPoints(firstTouched, ballsPotted) {
         throw new TypeError('Cannot call getPoints method on SnookrRulRepeat class');
