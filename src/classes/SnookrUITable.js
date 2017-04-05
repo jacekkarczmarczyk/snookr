@@ -89,16 +89,17 @@ class SnookrUITable extends SnookrUI {
         const canvasBallRadius = this.getScreenSize(ball.getBallRadius());
         const absoluteBallPosition = this.getScreenPosition(ball.getPosition());
         const ballType = ball.getBallType();
+        const spritePadding = 1;
 
         if (!this.scaledResources[ballType]) {
             const tmpCanvas = this.getElement().ownerDocument.createElement('canvas');
-            tmpCanvas.width = canvasBallRadius * 2;
-            tmpCanvas.height = canvasBallRadius * 2;
+            tmpCanvas.width = canvasBallRadius * 2 + 2 * spritePadding;
+            tmpCanvas.height = canvasBallRadius * 2 + 2 * spritePadding;
 
             const tmpContext = tmpCanvas.getContext('2d');
-            tmpContext.drawImage(this.resources.balls[ballType], 0, 0, canvasBallRadius * 2, canvasBallRadius * 2);
+            tmpContext.drawImage(this.resources.balls[ballType], spritePadding, spritePadding, canvasBallRadius * 2, canvasBallRadius * 2);
             tmpContext.beginPath();
-            tmpContext.arc(canvasBallRadius, canvasBallRadius, canvasBallRadius - 0.2, 0, 2 * Math.PI, false);
+            tmpContext.arc(canvasBallRadius + spritePadding, canvasBallRadius + spritePadding, canvasBallRadius - 0.2, 0, 2 * Math.PI, false);
             tmpContext.strokeStyle = '#000';
             tmpContext.lineWidth = 0.4;
             tmpContext.stroke();
@@ -110,7 +111,7 @@ class SnookrUITable extends SnookrUI {
             this.scaledResources[ballType] = img;
         }
 
-        this.context.drawImage(this.scaledResources[ballType], absoluteBallPosition.getX() - canvasBallRadius, absoluteBallPosition.getY() - canvasBallRadius, canvasBallRadius * 2, canvasBallRadius * 2);
+        this.context.drawImage(this.scaledResources[ballType], absoluteBallPosition.getX() - canvasBallRadius - spritePadding, absoluteBallPosition.getY() - canvasBallRadius - spritePadding);
     }
 
     paintGhost() {
