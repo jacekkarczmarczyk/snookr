@@ -13,8 +13,8 @@ class SnookrUIBoard extends SnookrUI {
             frameNumber: 1,
             frameWins: [0, 0],
             frameScore: [0, 0],
-            currentPlayer: 0,
-            currentRule: '&nbsp;',
+            player: 0,
+            rule: '&nbsp;',
             snookered: false,
             breakValue: '&nbsp;',
         });
@@ -38,24 +38,24 @@ class SnookrUIBoard extends SnookrUI {
 
     updateView() {
         const data = this.getData();
-        this.getElement().innerHTML = `<div class="player player-0 ${data.snookered ? 'snookered' : ''} ${data.currentPlayer ? '' : 'current'}">
+        this.getElement().innerHTML = `<div class="player player-0 ${data.snookered ? 'snookered' : ''} ${data.player ? '' : 'current'}">
             <div class="score-container">
                 <div class="player-name">Player 1</div>
                 <div class="score">${data.frameScore[0]}</div>
                 <div class="frames-won">${data.frameWins[0]}</div>
             </div>
             <div class="break">${data.breakValue}</div>
-            <div class="next-rule">${data.currentRule}</div>
+            <div class="next-rule">${data.rule}</div>
         </div>
         <snookr-ui-spinner-ball></snookr-ui-spinner-ball>
-        <div class="player player-1 ${data.snookered ? 'snookered' : ''} ${data.currentPlayer ? 'current' : ''}">
+        <div class="player player-1 ${data.snookered ? 'snookered' : ''} ${data.player ? 'current' : ''}">
             <div class="score-container">
                 <div class="player-name">Player 2</div>
                 <div class="score">${data.frameScore[1]}</div>
                 <div class="frames-won">${data.frameWins[1]}</div>
             </div>
             <div class="break">${data.breakValue}</div>
-            <div class="next-rule">${data.currentRule}</div>
+            <div class="next-rule">${data.rule}</div>
         </div>
 `;
 
@@ -82,12 +82,12 @@ class SnookrUIBoard extends SnookrUI {
     }
 
     updateCurrentPlayer(player) {
-        this.getData().currentPlayer = player;
+        this.getData().player = player;
         this.updateView();
     }
 
     updateRule(rule) {
-        this.getData().currentRule = rule ? rule.toString() : '&nbsp;';
+        this.getData().rule = rule ? rule.toString() : '&nbsp;';
         this.updateView();
     }
 

@@ -5,7 +5,7 @@ class Spin {
     /**
      *
      * @param {Vector} forwardSpin
-     * @param sideSpin
+     * @param {number} sideSpin
      */
     constructor(forwardSpin = null, sideSpin = 0) {
         this.forwardSpin = forwardSpin || Vector.create();
@@ -46,6 +46,10 @@ class Spin {
         return Spin.create(this.forwardSpin, sideSpin);
     }
 
+    /**
+     *
+     * @returns {number}
+     */
     getSideSpin() {
         return this.sideSpin;
     }

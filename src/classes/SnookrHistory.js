@@ -19,4 +19,12 @@ class SnookrHistory {
     pop() {
         return this.history.pop();
     }
+
+    /**
+     *
+     * @returns {Number}
+     */
+    count() {
+        return this.history.length;
+    }
 }

@@ -25,8 +25,8 @@ class SnookrGame {
         this.eventListener.on(SnookrEvent.TICK, () => this.tick());
 
         this.eventListener.trigger(SnookrEvent.SCORE_CHANGED, this.currentScore);
-        this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.currentPlayer);
-        this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.currentRule);
+        this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.player);
+        this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.rule);
         this.eventListener.trigger(SnookrEvent.TICK);
     }
 
@@ -85,11 +85,11 @@ class SnookrGame {
         this.currentScore = [0, 0];
         this.eventListener.trigger(SnookrEvent.SCORE_CHANGED, this.currentScore);
 
-        this.currentPlayer = 0;
-        this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.currentPlayer);
+        this.player = 0;
+        this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.player);
 
-        this.currentRule = new SnookrRuleExpectingRed();
-        this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.currentRule);
+        this.rule = new SnookrRuleExpectingRed();
+        this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.rule);
     }
 
     /**
@@ -121,17 +121,17 @@ class SnookrGame {
         this.currentScore = historyEntry.getScore();
         this.eventListener.trigger(SnookrEvent.SCORE_CHANGED, this.currentScore);
 
-        this.currentPlayer = historyEntry.getPlayer();
-        this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.currentPlayer);
+        this.player = historyEntry.getPlayer();
+        this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.player);
 
-        this.currentRule = historyEntry.getRule();
-        this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.currentRule);
+        this.rule = historyEntry.getRule();
+        this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.rule);
     }
 
     shotAttempt(initialMovement) {
         //{shotPower, forwardSpinValue, sideSpinValue}
         if (!this.inAction) {
-            this.history.push(new SnookrHistoryEntry(this.ballSet.save(), this.currentRule, this.currentPlayer, this.currentScore));
+            this.history.push(new SnookrHistoryEntry(this.ballSet.save(), this.rule, this.player, this.currentScore));
 
             this.getBallSet().first('white').setMovement(initialMovement);
             this.eventListener.trigger(SnookrEvent.SHOOT_FIRED);
@@ -154,7 +154,7 @@ class SnookrGame {
 
             if (recalculateResult.ballsPotted.count()) {
                 this.eventListener.trigger(SnookrEvent.BALL_POTTED);
-                if (this.currentRule.getPoints(this.firstTouched, this.ballsPotted) >= 0) {
+                if (this.rule.getPoints(this.firstTouched, this.ballsPotted) >= 0) {
                     this.eventListener.trigger(SnookrEvent.RIGHT_BALL_POTTED);
                 } else {
                     this.eventListener.trigger(SnookrEvent.WRONG_BALL_POTTED);
@@ -166,7 +166,7 @@ class SnookrGame {
             }
 
             if (allStopped) {
-                const shotResult = this.currentRule.getShotResult(this.firstTouched, this.ballsPotted, this.ballSet.unpotted());
+                const shotResult = this.rule.getShotResult(this.firstTouched, this.ballsPotted, this.ballSet.unpotted());
                 this.eventListener.trigger(SnookrEvent.BALLS_STOPPED, shotResult);
             }
         }
@@ -182,19 +182,19 @@ class SnookrGame {
         if (nextRule instanceof SnookrRuleRepeat) {
             const historyEntry = this.history.pop();
 
-            this.currentPlayer = 1 - this.currentPlayer;
-            this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.currentPlayer);
+            this.player = 1 - this.player;
+            this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.player);
 
             if (nextRule.getRestoreBalls()) {
                 this.ballSet.restore(historyEntry.getBalls());
             }
 
-            this.currentRule = historyEntry.getRule();
+            this.rule = historyEntry.getRule();
         } else {
-            this.currentRule = nextRule;
+            this.rule = nextRule;
         }
 
-        this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.currentRule);
+        this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.rule);
     }
 
     /**
@@ -207,14 +207,14 @@ class SnookrGame {
         this.firstTouched = null;
         this.ballsPotted = new SnookrBallSet();
 
-        this.currentScore = this.currentScore.map((score, playerId) => score + ((this.currentPlayer === playerId) ? shotResult.getPointsForCurrentPlayer() : shotResult.getPointsForOpponent()));
+        this.currentScore = this.currentScore.map((score, playerId) => score + ((this.player === playerId) ? shotResult.getPointsForCurrentPlayer() : shotResult.getPointsForOpponent()));
         this.eventListener.trigger(SnookrEvent.SCORE_CHANGED, this.currentScore);
 
-        this.currentPlayer = shotResult.playerChanges() ? (1 - this.currentPlayer) : this.currentPlayer;
-        this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.currentPlayer);
+        this.player = shotResult.playerChanges() ? (1 - this.player) : this.player;
+        this.eventListener.trigger(SnookrEvent.PLAYER_CHANGED, this.player);
 
-        this.currentRule = null;
-        this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.currentRule);
+        this.rule = null;
+        this.eventListener.trigger(SnookrEvent.RULE_CHANGED, this.rule);
 
         if (shotResult.getPointsForCurrentPlayer()) {
             this.break = this.break + shotResult.getPointsForCurrentPlayer();

@@ -65,6 +65,10 @@ class BallMovement {
         return new BallMovement(this.speed, this.spin.setSideSpin(sideSpin));
     }
 
+    /**
+     *
+     * @returns {number}
+     */
     getSideSpin() {
         return this.spin.getSideSpin();
     }

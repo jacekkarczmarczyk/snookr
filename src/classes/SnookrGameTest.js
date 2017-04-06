@@ -8,8 +8,8 @@ class SnookrGameTest extends SnookrGameRegular {
 
     resetGame() {
         this.currentScore = [0, 0];
-        this.currentPlayer = 0;
-        this.currentRule = new SnookrRuleExpectingColor('yellow');
+        this.player = 0;
+        this.rule = new SnookrRuleExpectingColor('yellow');
         this.ballSet = this.createBallSet();
 
         this.ballSet.only('white').first().setSpeed(Vector.create(-120, -160));
