@@ -109,11 +109,11 @@ snookr-ui-board .player-1 > .score-container {
     flex-direction: row-reverse;
 }
 
-snookr-ui-cueball {
+snookr-ui-spinner-ball {
     width: 68px;
 }
 
-snookr-ui-cueball > div {
+snookr-ui-spinner-ball > div {
     box-sizing: border-box;
     width: 64px;
     height: 64px;
@@ -124,7 +124,7 @@ snookr-ui-cueball > div {
     position: relative;
 }
 
-snookr-ui-cueball > div > div {
+snookr-ui-spinner-ball > div > div {
     position: absolute;
     box-sizing: border-box;
     width: 10px;
@@ -136,7 +136,7 @@ snookr-ui-cueball > div > div {
     transform: translate(27px, 27px);;
 }
 
-snookr-ui-cueball > div > div:after {
+snookr-ui-spinner-ball > div > div:after {
     display: block;
     content: '';
     position: absolute;

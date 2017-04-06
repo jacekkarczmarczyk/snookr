@@ -2,57 +2,44 @@ class SnookrUIApp extends SnookrUI {
     /**
      *
      * @param {HTMLElement} domElement
-     * @param {string} hash
+     * @param {SnookrGame} snookr
      * @param {SpinPower} spinPower
      */
-    constructor(domElement, {hash, spinPower}) {
-        let snookr;
-        switch (hash) {
-            case '#test':
-                snookr = new SnookrGameTest();
-                break;
-            case '#arcade':
-                snookr = new SnookrGameArcade();
-                break;
-            case '#regular':
-                snookr = new SnookrGameRegular();
-                break;
-            case '#real':
-                snookr = new SnookrGameReal();
-                break;
-            default:
-                snookr = new SnookrGameArcade();
-                break;
-        }
-
+    constructor(domElement, {snookr, spinPower}) {
         super(domElement, {snookr, spinPower});
 
         this.audioPlayer = new SnookrAudioPlayer(snookr.getEventListener());
-
-        this.dispatchEventToChildren('snookrEvent.arrowDown');
-        this.dispatchEventToChildren('snookrEvent.arrowUp');
-        this.dispatchEventToChildren('snookrEvent.arrowLeft');
-        this.dispatchEventToChildren('snookrEvent.arrowRight');
-        this.dispatchEventToChildren('snookrEvent.rollback');
-        this.dispatchEventToChildren('snookrEvent.resize');
 
         this.getData().snookr.getEventListener().on(SnookrEvent.NEXT_RULE_CHOICE, nextRules => this.showNextRuleChoiceDialog(nextRules));
         this.getData().snookr.getEventListener().on(SnookrEvent.GAME_OVER, score => this.getData().snookr.resetGame());
     }
 
+    onMount() {
+        this.dispatchEventToChildren('snookrEvent.arrowDown');
+        this.dispatchEventToChildren('snookrEvent.arrowUp');
+        this.dispatchEventToChildren('snookrEvent.arrowLeft');
+        this.dispatchEventToChildren('snookrEvent.arrowRight');
+        this.dispatchEventToChildren('snookrEvent.rollback');
+    }
+
     updateView() {
         this.getElement().innerHTML = `<snookr-ui-table></snookr-ui-table><snookr-ui-board></snookr-ui-board>`;
 
-        this._children = [
-            new SnookrUIBoard(this.getElement().querySelector('snookr-ui-board'), {
+        this.mountOrCreateChildren([{
+            element: this.getElement().querySelector('snookr-ui-board'),
+            component: SnookrUIBoard,
+            data: {
                 snookr: this.getData().snookr,
                 spinPower: this.getData().spinPower
-            }),
-            new SnookrUITable(this.getElement().querySelector('snookr-ui-table'), {
+            }
+        }, {
+            element: this.getElement().querySelector('snookr-ui-table'),
+            component: SnookrUITable,
+            data: {
                 snookr: this.getData().snookr,
                 spinPower: this.getData().spinPower
-            }),
-        ];
+            }
+        }]);
     }
 
     showNextRuleChoiceDialog(nextRules) {

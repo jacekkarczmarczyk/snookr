@@ -4,7 +4,32 @@ class SnookrUI {
         this._children = [];
         this._data = data;
 
+        this.onMount();
         this.updateView();
+    }
+
+    mountOrCreateChildren(children) {
+        const self = this;
+        children.forEach(function (child, index) {
+            if (self._children[index]) {
+                self._children[index].mount(child.element);
+            } else {
+                self._children[index] = new child.component(child.element, child.data);
+            }
+        });
+    }
+
+    /**
+     *
+     * @param {HTMLElement} domElement
+     */
+    mount(domElement) {
+        this._domElement = domElement;
+        this.onMount();
+        this.updateView();
+    }
+
+    onMount() {
     }
 
     /**
@@ -23,14 +48,10 @@ class SnookrUI {
         return this._data;
     }
 
-    dispatchEventToChildren(eventName) {
+    dispatchEventToChildren(eventType) {
         const self = this;
-        self.getElement().addEventListener(eventName, function (event) {
-            self.getChildren().forEach(function (childView) {
-                const eventCopy = new Event(event.type);
-                eventCopy.which = event.which;
-                childView.getElement().dispatchEvent(eventCopy);
-            });
+        self.getElement().addEventListener(eventType, function () {
+            self.getChildren().forEach(childView => childView.getElement().dispatchEvent(new Event(eventType)));
         });
     }
 

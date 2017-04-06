@@ -19,12 +19,6 @@ class SnookrUIBoard extends SnookrUI {
             breakValue: '&nbsp;',
         });
 
-        this.dispatchEventToChildren('snookrEvent.arrowDown');
-        this.dispatchEventToChildren('snookrEvent.arrowUp');
-        this.dispatchEventToChildren('snookrEvent.arrowLeft');
-        this.dispatchEventToChildren('snookrEvent.arrowRight');
-
-        this.getElement().addEventListener('snookrEvent.rollback', () => this.rollback());
         this.getData().snookr.getEventListener().on(SnookrEvent.BALLS_STOPPED, () => this.ballsStopped(false));
         this.getData().snookr.getEventListener().on(SnookrEvent.GAME_OVER, score => this.endGame(score));
         this.getData().snookr.getEventListener().on(SnookrEvent.SNOOKER_CREATED, () => this.ballsStopped(true));
@@ -32,6 +26,14 @@ class SnookrUIBoard extends SnookrUI {
         this.getData().snookr.getEventListener().on(SnookrEvent.PLAYER_CHANGED, player => this.updateCurrentPlayer(player));
         this.getData().snookr.getEventListener().on(SnookrEvent.RULE_CHANGED, rule => this.updateRule(rule));
         this.getData().snookr.getEventListener().on(SnookrEvent.BREAK_CHANGED, breakValue => this.updateBreak(breakValue));
+    }
+
+    onMount() {
+        this.getElement().addEventListener('snookrEvent.rollback', () => this.rollback());
+        this.dispatchEventToChildren('snookrEvent.arrowDown');
+        this.dispatchEventToChildren('snookrEvent.arrowUp');
+        this.dispatchEventToChildren('snookrEvent.arrowLeft');
+        this.dispatchEventToChildren('snookrEvent.arrowRight');
     }
 
     updateView() {
@@ -45,7 +47,7 @@ class SnookrUIBoard extends SnookrUI {
             <div class="break">${data.breakValue}</div>
             <div class="next-rule">${data.currentRule}</div>
         </div>
-        <snookr-ui-cueball></snookr-ui-cueball>
+        <snookr-ui-spinner-ball></snookr-ui-spinner-ball>
         <div class="player player-1 ${data.snookered ? 'snookered' : ''} ${data.currentPlayer ? 'current' : ''}">
             <div class="score-container">
                 <div class="player-name">Player 2</div>
@@ -57,9 +59,13 @@ class SnookrUIBoard extends SnookrUI {
         </div>
 `;
 
-        this._children = [
-            new SnookrUISpinnerBall(this.getElement().querySelector('snookr-ui-cueball'), {spinPower: this.getData().spinPower})
-        ];
+        this.mountOrCreateChildren([{
+            element: this.getElement().querySelector('snookr-ui-spinner-ball'),
+            component: SnookrUISpinnerBall,
+            data: {
+                spinPower: data.spinPower
+            }
+        }]);
     }
 
     rollback() {

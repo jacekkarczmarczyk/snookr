@@ -62,18 +62,29 @@
 <script src="classes/SnookrHistory.js"></script>
 <script src="classes/SnookrHistoryEntry.js"></script>
 <script type="text/javascript">
-    function createView() {
-        return new SnookrUIApp(document.querySelector('snookr-ui-app'), {
-            hash: document.location.hash,
-            spinPower: new SpinPower()
-        });
+    function createGame() {
+        switch (window.location.hash) {
+            case '#test':
+                return new SnookrGameTest();
+            case '#arcade':
+                return new SnookrGameArcade();
+            case '#regular':
+                return new SnookrGameRegular();
+            case '#real':
+                return new SnookrGameReal();
+            default:
+                return new SnookrGameArcade();
+        }
     }
 
-    let view;
+    const data = {
+        snookr: createGame(),
+        spinPower: new SpinPower()
+    };
+    const view = new SnookrUIApp(document.querySelector('snookr-ui-app'), data);
 
-    window.addEventListener('hashchange', () => view = createView());
-    window.addEventListener('load', () => view = createView());
-    window.addEventListener('resize', () => view && view.getElement().dispatchEvent(new Event('snookrEvent.resize')));
+    window.addEventListener('hashchange', () => (data.snookr = createGame()) && view.updateView());
+    window.addEventListener('load', () => (data.snookr = createGame()) && view.updateView());
     window.addEventListener('keydown', function({which, ctrlKey}) {
         let eventType;
         switch (which) {
@@ -83,10 +94,10 @@
             case 39:
                 eventType = 'snookrEvent.arrowRight';
                 break;
-            case 38:
+            case 40:
                 eventType = 'snookrEvent.arrowDown';
                 break;
-            case 40:
+            case 38:
                 eventType = 'snookrEvent.arrowUp';
                 break;
             case 90:

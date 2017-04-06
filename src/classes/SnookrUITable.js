@@ -8,9 +8,6 @@ class SnookrUITable extends SnookrUI {
     constructor(domElement, {snookr, spinPower}) {
         super(domElement);
 
-        this.getElement().setAttribute('unselectable', 'on');
-        this.getElement().addEventListener('selectstart', () => false);
-
         this.spinPower = spinPower;
         this.snookr = snookr;
         this.resources = null;
@@ -29,13 +26,18 @@ class SnookrUITable extends SnookrUI {
         }());
         resourcesFactory.initResources().then(resources => this.resources = resources);
 
-        this.getElement().addEventListener('mousemove', ({clientX, clientY}) => this.handleMouseMove(clientX, clientY));
-        this.getElement().addEventListener('mousedown', ({clientY}) => this.startCueDrag(clientY));
-        this.getElement().addEventListener('mouseup', () => this.endCueDrag());
-        this.getElement().addEventListener('dragstart', () => false);
-        this.getElement().addEventListener('contextmenu', () => false);
-
         this.snookr.getEventListener().on(SnookrEvent.REPAINT, gameState => this.repaint());
+    }
+
+    onMount() {
+        const domElement = this.getElement();
+        domElement.setAttribute('unselectable', 'on');
+        domElement.addEventListener('selectstart', () => false);
+        domElement.addEventListener('mousemove', ({clientX, clientY}) => this.handleMouseMove(clientX, clientY));
+        domElement.addEventListener('mousedown', ({clientY}) => this.startCueDrag(clientY));
+        domElement.addEventListener('mouseup', () => this.endCueDrag());
+        domElement.addEventListener('dragstart', () => false);
+        domElement.addEventListener('contextmenu', () => false);
     }
 
     updateView() {
@@ -70,8 +72,7 @@ class SnookrUITable extends SnookrUI {
 
             this.scaledResources = {};
 
-            const cueScreenLength = this.getScreenSize(this.snookr.getTable().getOuterLength() * 0.4);
-            this.cueElement.style.width = cueScreenLength;
+            this.cueElement.style.width = this.getScreenSize(this.snookr.getTable().getOuterLength() * 0.4);
         }
 
         this.context.clearRect(0, 0, width, height);
@@ -169,7 +170,7 @@ class SnookrUITable extends SnookrUI {
         if (mouseY - this.dragStartOffset + this.getScreenSize(this.snookr.getInitialCueDistance()) < 0) {
             const shotPower = Math.min(this.snookr.getPhysics().getSetting('maxShotPower'), this.getTableSize(this.dragPreviousOffset - mouseY));
             const speed = this.dragSpeedVector.normalize().scale(shotPower);
-            const forwardSpin = speed.scale(-this.spinPower.getForwardSpinPower() * Math.sqrt(speed.getLength() / 5) * this.snookr.getPhysics().getSetting('forwardSpinScale'));
+            const forwardSpin = speed.scale(this.spinPower.getForwardSpinPower() * Math.sqrt(speed.getLength() / 5) * this.snookr.getPhysics().getSetting('forwardSpinScale'));
             const sideSpin = -this.spinPower.getSideSpinPower() * speed.getLength() * this.snookr.getPhysics().getSetting('sideSpinScale');
             const movement = new BallMovement(speed, new Spin(forwardSpin, sideSpin));
 
@@ -288,7 +289,7 @@ class SnookrUITable extends SnookrUI {
         context.lineTo(bulkLine2.getX(), bulkLine2.getY());
         context.stroke();
 
-        const bulkCircleCenter = this.getScreenPosition(Point.create(0 + 33.867, 107.886));
+        const bulkCircleCenter = this.getScreenPosition(Point.create(33.867, 107.886));
         const bulkCircleRadius = this.getScreenSize(11);
         context.beginPath();
         context.lineWidth = 2;

@@ -6,7 +6,10 @@ class SnookrUISpinnerBall extends SnookrUI {
      */
     constructor(domElement, {spinPower}) {
         super(domElement, {spinPower});
+    }
 
+    onMount() {
+        const domElement = this.getElement();
         domElement.addEventListener('snookrEvent.arrowUp', () => this.updateForwardSpin(1));
         domElement.addEventListener('snookrEvent.arrowDown', () => this.updateForwardSpin(-1));
         domElement.addEventListener('snookrEvent.arrowLeft', () => this.updateSideSpin(-1));
@@ -16,7 +19,7 @@ class SnookrUISpinnerBall extends SnookrUI {
     updateView() {
         const forwardSpinPower = this.getData().spinPower.getForwardSpinPower();
         const sideSpinPower = this.getData().spinPower.getSideSpinPower();
-        this.getElement().innerHTML = `<div><div style="top: ${forwardSpinPower * 24}px; left: ${sideSpinPower * 24}px"></div></div>`;
+        this.getElement().innerHTML = `<div><div style="top: ${-forwardSpinPower * 24}px; left: ${sideSpinPower * 24}px"></div></div>`;
     }
 
     updateForwardSpin(delta) {
