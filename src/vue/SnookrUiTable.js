@@ -224,6 +224,38 @@ Vue.component('snookr-ui-table', {
             }
 
             this.context.drawImage(this.scaledResources[ballType], absoluteBallPosition.getX() - canvasBallRadius - spritePadding, absoluteBallPosition.getY() - canvasBallRadius - spritePadding);
+            if (ball === this.cueBall && this.settingCueBall) {
+                this.context.beginPath();
+                this.context.moveTo(absoluteBallPosition.getX(), absoluteBallPosition.getY());
+
+                this.context.lineTo(absoluteBallPosition.getX(), absoluteBallPosition.getY() + canvasBallRadius * 0.6);
+                this.context.lineTo(absoluteBallPosition.getX() + canvasBallRadius * 0.2, absoluteBallPosition.getY() + canvasBallRadius * 0.4);
+                this.context.lineTo(absoluteBallPosition.getX() - canvasBallRadius * 0.2, absoluteBallPosition.getY() + canvasBallRadius * 0.4);
+                this.context.lineTo(absoluteBallPosition.getX(), absoluteBallPosition.getY() + canvasBallRadius * 0.6);
+                this.context.lineTo(absoluteBallPosition.getX(), absoluteBallPosition.getY());
+
+                this.context.lineTo(absoluteBallPosition.getX(), absoluteBallPosition.getY() - canvasBallRadius * 0.6);
+                this.context.lineTo(absoluteBallPosition.getX() + canvasBallRadius * 0.2, absoluteBallPosition.getY() - canvasBallRadius * 0.4);
+                this.context.lineTo(absoluteBallPosition.getX() - canvasBallRadius * 0.2, absoluteBallPosition.getY() - canvasBallRadius * 0.4);
+                this.context.lineTo(absoluteBallPosition.getX(), absoluteBallPosition.getY() - canvasBallRadius * 0.6);
+                this.context.lineTo(absoluteBallPosition.getX(), absoluteBallPosition.getY());
+
+                this.context.lineTo(absoluteBallPosition.getX() + canvasBallRadius * 0.6, absoluteBallPosition.getY());
+                this.context.lineTo(absoluteBallPosition.getX() + canvasBallRadius * 0.4, absoluteBallPosition.getY() + canvasBallRadius * 0.2);
+                this.context.lineTo(absoluteBallPosition.getX() + canvasBallRadius * 0.4, absoluteBallPosition.getY() - canvasBallRadius * 0.2);
+                this.context.lineTo(absoluteBallPosition.getX() + canvasBallRadius * 0.6, absoluteBallPosition.getY());
+                this.context.lineTo(absoluteBallPosition.getX(), absoluteBallPosition.getY());
+
+                this.context.lineTo(absoluteBallPosition.getX() - canvasBallRadius * 0.6, absoluteBallPosition.getY());
+                this.context.lineTo(absoluteBallPosition.getX() - canvasBallRadius * 0.4, absoluteBallPosition.getY() + canvasBallRadius * 0.2);
+                this.context.lineTo(absoluteBallPosition.getX() - canvasBallRadius * 0.4, absoluteBallPosition.getY() - canvasBallRadius * 0.2);
+                this.context.lineTo(absoluteBallPosition.getX() - canvasBallRadius * 0.6, absoluteBallPosition.getY());
+                this.context.lineTo(absoluteBallPosition.getX(), absoluteBallPosition.getY());
+
+                this.context.strokeStyle = this.mouseOnCueBall ? '#aaa' : '#666';
+                this.context.lineWidth = 2;
+                this.context.stroke();
+            }
         },
 
         paintGhost: function paintGhost() {

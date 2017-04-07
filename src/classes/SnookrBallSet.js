@@ -9,6 +9,16 @@ class SnookrBallSet {
 
     /**
      *
+     * @param {SnookrBallSet} ballSet
+     * @returns {SnookrBallSet}
+     */
+    import(ballSet) {
+        this.balls = ballSet.balls.slice(0);
+        return this;
+    }
+
+    /**
+     *
      * @returns {Number}
      */
     count() {

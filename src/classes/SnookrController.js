@@ -36,8 +36,9 @@ class SnookrController {
                     break;
                 case 90:
                     if (ctrlKey && self.stateManager.canPopState() && confirm('Undo?')) {
+                        self.gameState.currentGameState.playing = false;
                         self.stateManager.popState();
-                        self.gameState.spinPower.clear();
+                        self.resetShot();
                         self.updateGameState({
                             shooting: true,
                             playing: false,

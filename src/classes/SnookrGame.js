@@ -4,6 +4,7 @@ class SnookrGame {
             throw new TypeError('Cannot instantiate abstract class');
         }
 
+        this.ballSet = new SnookrBallSet();
         this.table = this.createTable();
         this.physics = new SnookrPhysics(this.table, this.getPhysicsSettings());
         this.resetGame();
@@ -14,7 +15,7 @@ class SnookrGame {
      * @returns {SnookrGame}
      */
     resetGame() {
-        this.ballSet = this.createBallSet();
+        this.ballSet.import(this.createBallSet());
         return this;
     }
 
