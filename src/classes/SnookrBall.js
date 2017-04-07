@@ -31,30 +31,6 @@ class SnookrBall {
 
     /**
      *
-     * @returns {{position: Point, movement: BallMovement, potted: boolean}}
-     */
-    save() {
-        return {
-            position: this.getPosition(),
-            movement: this.getMovement(),
-            potted: this.isPotted()
-        };
-    }
-
-    /**
-     *
-     * @param {Point} position
-     * @param {BallMovement} movement
-     * @param {boolean} potted
-     */
-    restore({position, movement, potted}) {
-        this.position = position;
-        this.movement = movement;
-        this.potted = potted;
-    }
-
-    /**
-     *
      * @returns {boolean}
      */
     isPotted() {

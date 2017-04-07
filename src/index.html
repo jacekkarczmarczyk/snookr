@@ -21,8 +21,7 @@
     <audio data-type="ball" src="audio/ball.mp3"></audio>
 </div>
 
-<snookr-ui-app></snookr-ui-app>
-
+<script src="vue@2.2.6.js"></script>
 <script src="classes/Point.js"></script>
 <script src="classes/LineSegment.js"></script>
 <script src="classes/LineArc.js"></script>
@@ -39,6 +38,7 @@
 <script src="classes/SnookrBall.js"></script>
 <script src="classes/SnookrBallSet.js"></script>
 <script src="classes/SnookrPhysics.js"></script>
+<script src="classes/SnookrGameStateManager.js"></script>
 <script src="classes/SnookrGame.js"></script>
 <script src="classes/SnookrGameArcade.js"></script>
 <script src="classes/SnookrGameRegular.js"></script>
@@ -47,11 +47,6 @@
 <script src="classes/SnookrEvent.js"></script>
 <script src="classes/SnookrEventListener.js"></script>
 <script src="classes/SpinPower.js"></script>
-<script src="classes/SnookrUI.js"></script>
-<script src="classes/SnookrUIBoard.js"></script>
-<script src="classes/SnookrUITable.js"></script>
-<script src="classes/SnookrUISpinnerBall.js"></script>
-<script src="classes/SnookrUIApp.js"></script>
 <script src="classes/SnookrShotResult.js"></script>
 <script src="classes/SnookrRule.js"></script>
 <script src="classes/SnookrRuleExpectingAnyColor.js"></script>
@@ -61,53 +56,78 @@
 <script src="classes/SnookrRuleRepeat.js"></script>
 <script src="classes/SnookrHistory.js"></script>
 <script src="classes/SnookrHistoryEntry.js"></script>
+<script src="classes/SnookrController.js"></script>
+
+<script src="vue/SnookrUiApp.js"></script>
+<script src="vue/SnookrUiBoard.js"></script>
+<script src="vue/SnookrUiPlayerPanel.js"></script>
+<script src="vue/SnookrUiSpinnerBall.js"></script>
+<script src="vue/SnookrUiTable.js"></script>
+
+<div id="app">
+    <snookr-ui-app v-bind:game-state="gameState"></snookr-ui-app>
+</div>
+
 <script type="text/javascript">
-    function createGame() {
-        switch (window.location.hash) {
-            case '#test':
-                return new SnookrGameTest();
-            case '#arcade':
-                return new SnookrGameArcade();
-            case '#regular':
-                return new SnookrGameRegular();
-            case '#real':
-                return new SnookrGameReal();
-            default:
-                return new SnookrGameArcade();
-        }
-    }
-
-    const data = {
-        snookr: createGame(),
-        spinPower: new SpinPower()
+    const gameState = {
+        players: [{
+            name: 'Player 1',
+            score: 1,
+            framesWon: 2,
+            breakValue: 3,
+        }, {
+            name: 'Player 2',
+            score: 0,
+            framesWon: 0,
+            breakValue: 0,
+        }],
+        spinPower: new SpinPower(0, 0),
+        currentPlayer: Math.floor(Math.random() * 2),
+        currentRule: 'red',
+        isSnookr: false,
+        numberOfFrames: 7,
+        currentGameState: SnookrGameStateManager.GAME_STATE_SHOOTING
     };
-    const view = new SnookrUIApp(document.querySelector('snookr-ui-app'), data);
 
-    window.addEventListener('hashchange', () => (data.snookr = createGame()) && view.updateView());
-    window.addEventListener('load', () => (data.snookr = createGame()) && view.updateView());
-    window.addEventListener('keydown', function({which, ctrlKey}) {
-        let eventType;
-        switch (which) {
-            case 37:
-                eventType = 'snookrEvent.arrowLeft';
-                break;
-            case 39:
-                eventType = 'snookrEvent.arrowRight';
-                break;
-            case 40:
-                eventType = 'snookrEvent.arrowDown';
-                break;
-            case 38:
-                eventType = 'snookrEvent.arrowUp';
-                break;
-            case 90:
-                eventType = ctrlKey ? 'snookrEvent.rollback' : null;
-                break;
-        }
 
-        if (eventType) {
-            view.getElement().dispatchEvent(new Event(eventType));
-            return false;
-        }
+    // https://github.com/yangmingshan/vue-bus
+    //
+    function VueBus(Vue) {
+        const bus = new Vue();
+
+        Object.defineProperties(bus, {
+            on: {
+                get: function() { return this.$on; }
+            },
+            once: {
+                get: function() { return this.$once; }
+            },
+            off: {
+                get: function() { return this.$off; }
+            },
+            emit: {
+                get: function() { return this.$emit; }
+            }
+        });
+
+        Object.defineProperty(Vue.prototype, '$bus', {
+            get: function() {
+                return bus;
+            }
+        });
+    }
+    Vue.use(VueBus);
+
+
+
+
+
+
+
+    const app = new Vue({
+        el: '#app',
+        data: {gameState}
     });
+
+    window.addEventListener('load', () => (new SnookrController).run(gameState));
 </script>

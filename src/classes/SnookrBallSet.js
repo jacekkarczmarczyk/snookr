@@ -100,24 +100,6 @@ class SnookrBallSet {
 
     /**
      *
-     * @returns {Array}
-     */
-    save() {
-        return this.map(ball => ball.save());
-    }
-
-    /**
-     *
-     * @param {Array} map
-     */
-    restore(map) {
-        this.balls.forEach(function (ball, index) {
-            ball.restore(map[index]);
-        });
-    }
-
-    /**
-     *
      * @param callback
      * @returns {Array}
      */
@@ -141,5 +123,24 @@ class SnookrBallSet {
         return !this.reduce((ballsMoving, ball) => ballsMoving || ball.getSpeed().getX() || ball.getSpeed().getY(), false);
     }
 
+    /**
+     *
+     * @param {Point} position
+     * @param {SnookrBall} ball
+     */
+    isPositionFree(position, ball) {
+        let free = true;
+
+        this.forEach(function (ballOnTable) {
+            if (ballOnTable.isPotted()) {
+                return;
+            }
+            if (ballOnTable.getPosition().getDistance(position) < ballOnTable.getBallRadius() + ball.getBallRadius()) {
+                free = false;
+            }
+        });
+
+        return free;
+    }
 }
 

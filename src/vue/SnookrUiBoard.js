@@ -1,0 +1,12 @@
+"use strict";
+
+Vue.component('snookr-ui-board', {
+    template: `
+<div class="snookr-ui-board">
+    <snookr-ui-player-panel v-bind:player="gameState.players[0]" v-bind:current="gameState.currentPlayer === 0" v-bind:rule="gameState.rule" v-bind:is-snooker="gameState.isSnooker"></snookr-ui-player-panel>
+    <snookr-ui-spinner-ball v-bind:spin-power="gameState.spinPower"></snookr-ui-spinner-ball>
+    <snookr-ui-player-panel v-bind:player="gameState.players[1]" v-bind:current="gameState.currentPlayer === 1" v-bind:rule="gameState.rule" v-bind:is-snooker="gameState.isSnooker"></snookr-ui-player-panel>
+</div>`,
+    props: ['gameState'],
+    data: () => ({})
+});

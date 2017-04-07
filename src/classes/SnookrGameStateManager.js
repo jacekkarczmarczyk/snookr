@@ -16,20 +16,95 @@ class SnookrGameStateManager {
     /**
      *
      * @param {SnookrBallSet} ballSet
+     * @param {SnookrRule} initialRule
      */
-    constructor(ballSet) {
-        this.ballSet = ballSet;
-        this.reset();
+    constructor(ballSet, initialRule) {
+        this._ballSet = ballSet;
+        this._ballSetPositions = this.getBallSetData();
+        this._history = new SnookrHistory();
+        this._player = 0;
+        this._score = [0, 0];
+        this._breakScore = [0, 0];
+        this._rule = initialRule;
+        this._canSetWhitePosition = true;
+        this._nextRules = null;
+        this._ballsToUnpot = null
     }
 
-    reset() {
-        this.history = new SnookrHistory();
-        this.player = 0;
-        this.score = [0, 0];
-        this.breakScore = [0, 0];
-        this.rule = new SnookrRuleExpectingRed();
-        this.canSetWhitePosition = true;
-        this.nextRules = null;
+    /**
+     *
+     * @returns {number}
+     */
+    getPlayer() {
+        return this._player;
+    }
+
+    /**
+     *
+     * @returns {[number,number]}
+     */
+    getScore() {
+        return this._score;
+    }
+
+    /**
+     *
+     * @returns {[number,number]}
+     */
+    getBreakScore() {
+        return this._breakScore;
+    }
+
+    /**
+     *
+     * @returns {SnookrRule}
+     */
+    getRule() {
+        return this._rule;
+    }
+
+    getBallsToUnpot() {
+        return this._ballsToUnpot;
+    }
+
+    /**
+     *
+     * @returns {boolean}
+     */
+    canSetWhitePosition() {
+        return this._canSetWhitePosition;
+    }
+
+    /**
+     *
+     * @returns {Array.<SnookrRule>}
+     */
+    getNextRules() {
+        return this._nextRules;
+    }
+
+    /**
+     *
+     * @returns {Array}
+     */
+    getBallSetData() {
+        return this._ballSet.map(ball => ({
+            position: ball.getPosition(),
+            movement: ball.getMovement(),
+            potted: ball.isPotted()
+        }));
+    }
+
+    /**
+     *
+     * @param {Array} ballSetData
+     */
+    setBallSetData(ballSetData) {
+        this._ballSet.forEach(function (ball, index) {
+            ball.setPosition(ballSetData[index].position);
+            ball.setMovement(ballSetData[index].movement);
+            ball.setPotted(ballSetData[index].potted);
+        });
     }
 
     /**
@@ -38,43 +113,38 @@ class SnookrGameStateManager {
      * @param {SnookrBallSet} ballsPotted
      */
     pushResult(firstTouched, ballsPotted) {
-        const lastShotResult = this.rule.getShotResult(firstTouched, ballsPotted, this.ballSet.unpotted());
+        const historyEntry = new SnookrHistoryEntry(this._ballSetPositions, this._rule, this._player, this._score);
+        this._history.push(historyEntry);
+        this._ballSetPositions = this.getBallSetData();
 
-        this.score[this.player] += lastShotResult.getPointsForCurrentPlayer();
-        this.score[1 - this.player] += lastShotResult.getPointsForOpponent();
+        const lastShotResult = this._rule.getShotResult(firstTouched, ballsPotted, this._ballSet.unpotted());
+
+        this._score[this._player] += lastShotResult.getPointsForCurrentPlayer();
+        this._score[1 - this._player] += lastShotResult.getPointsForOpponent();
 
         if (lastShotResult.playerChanges()) {
-            this.player = 1 - this.player;
-            this.breakScore = [0, 0];
+            this._player = 1 - this._player;
+            this._breakScore = [0, 0];
         } else {
-            this.breakScore[this.player] += this.score[this.player];
-            this.breakScore[1 - this.player] += this.score[1 - this.player];
+            this._breakScore[this._player] += this._score[this._player];
+            this._breakScore[1 - this._player] += this._score[1 - this._player];
         }
 
-        this.nextRules = lastShotResult.getNextRules();
+        this._nextRules = lastShotResult.getNextRules();
+        this._ballsToUnpot = lastShotResult.getBallsToUnpot();
     }
 
     /**
      *
-     * @returns {Array.<SnookrRule>}
+     * @param {SnookrRule} rule
      */
-    getNextRules() {
-        return this.nextRules.slice(0);
-    }
+    selectNextRule(rule) {
+        this._rule = rule;
 
-    /**
-     *
-     * @param {number} ruleId
-     */
-    selectNextRule(ruleId) {
-        if (typeof this.nextRules[ruleId] === 'undefined') {
-            throw 'Invalid rule';
-        }
-
-        this.rule = this.nextRules[ruleId];
-        if (this.rule instanceof SnookrRuleRepeat) {
-            this.rule = this.rule.getRuleToRepeat();
-            this.player = 1 - this.player();
+        if (this._rule instanceof SnookrRuleRepeat) {
+            const score = this._score;
+            this.rollback();
+            this._score = score;
         }
     }
 
@@ -83,19 +153,40 @@ class SnookrGameStateManager {
      * @returns {boolean}
      */
     canRollback() {
-        return this.history.count() > 0;
+        return this._history.count() > 0;
     }
 
     /**
      * @todo Add canSetWhitePosition to historyEntry
      */
     rollback() {
-        const historyEntry = this.history.pop();
+        const historyEntry = this._history.pop();
 
-        this.player = historyEntry.getPlayer();
-        this.score = historyEntry.getScore();
-        this.breakScore = [0, 0];
-        this.rule = historyEntry.getRule();
-        this.ballSet.restore(historyEntry.getBalls());
+        this._player = historyEntry.getPlayer();
+        this._score = historyEntry.getScore();
+        this._breakScore = [0, 0];
+        this._rule = historyEntry.getRule();
+        this.setBallSetData(historyEntry.getBalls());
     }
 }
+
+Object.defineProperty(SnookrGameStateManager, 'GAME_STATE_CUEBALL_POSITIONING', {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+    value: 'GAME_STATE_CUEBALL_POSITIONING'
+});
+
+Object.defineProperty(SnookrGameStateManager, 'GAME_STATE_SHOOTING', {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+    value: 'GAME_STATE_SHOOTING'
+});
+
+Object.defineProperty(SnookrGameStateManager, 'GAME_STATE_PLAYING', {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+    value: 'GAME_STATE_PLAYING'
+});

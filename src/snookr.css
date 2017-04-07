@@ -6,14 +6,19 @@ html, body {
     overflow: hidden;
 }
 
-snookr-ui-app {
+#app {
+    width: 100%;
+    height: 100%;
+}
+
+.snookr-ui-app {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
 }
 
-snookr-ui-table {
+.snookr-ui-table {
     position: relative;
     flex: 1;
     -moz-user-select: none;
@@ -23,97 +28,101 @@ snookr-ui-table {
     -o-user-select: none;
 }
 
-snookr-ui-table .snookr-table-background {
+.snookr-ui-table .snookr-table-background {
     position: absolute;
     z-index: 1000;
 }
 
-snookr-ui-table .snookr-table-canvas {
+.snookr-ui-table .snookr-table-canvas {
     position: absolute;
     z-index: 1001;
 }
 
-snookr-ui-table .snookr-table-cue {
+.snookr-ui-table .snookr-table-cue {
     position: absolute;
     z-index: 1002;
 }
 
-snookr-ui-board {
+.snookr-ui-board {
     background: #369;
     font-family: arial, sans-serif;
     display: flex;
     flex-direction: row;
-    padding: 0px;
+    padding: 0;
     font-size: 1.5em;
     color: #000;
 }
 
-snookr-ui-board .frames-won {
+.snookr-ui-player-panel {
+    flex: 1;
+}
+
+.snookr-ui-player-panel .frames-won {
     padding: 0 0.5em;
 }
 
-snookr-ui-board .score {
+.snookr-ui-player-panel .score {
     font-size: 1em;
     font-weight: bold;
     background: #def;
     padding: 0 0.3em;
 }
 
-snookr-ui-board .player-name {
+.snookr-ui-player-panel .player-name {
     flex: 1;
 }
 
-snookr-ui-board .next-rule {
+.snookr-ui-player-panel .next-rule {
     font-size: 0.7em;
     padding: 0.1em 0.3em;
     font-style: italic;
     display: none;
 }
 
-snookr-ui-board .player.current .next-rule {
+.snookr-ui-player-panel .current .next-rule {
     display: block;
 }
 
-snookr-ui-board .break {
+.snookr-ui-player-panel .break {
     font-size: 0.5em;
     padding: 0.3em;
     display: none;
 }
 
-snookr-ui-board .player.current .break {
+.snookr-ui-player-panel .current .break {
     display: block;
 }
 
-snookr-ui-board .player {
+.snookr-ui-player-panel > div {
     border: 3px solid transparent;
-    width: 50%;
-    box-sizing: border-box;
     text-align: center;
+    height: 100%;
+    box-sizing: border-box;
 }
 
-snookr-ui-board .player.current {
+.snookr-ui-player-panel .current {
     border-color: #fff;
 }
 
-snookr-ui-board .player.current.snookered {
+.snookr-ui-player-panel .current.snookered {
     border-color: red;
 }
 
-snookr-ui-board .score-container {
+.snookr-ui-player-panel .score-container {
     display: flex;
     flex-direction: row;
     align-items: center
 }
 
-snookr-ui-board .player-1 > .score-container {
+.snookr-ui-spinner-ball + .snookr-ui-player-panel .score-container {
     flex-direction: row-reverse;
 }
 
-snookr-ui-spinner-ball {
+.snookr-ui-spinner-ball {
     width: 68px;
 }
 
-snookr-ui-spinner-ball > div {
+.snookr-ui-spinner-ball > div {
     box-sizing: border-box;
     width: 64px;
     height: 64px;
@@ -124,7 +133,7 @@ snookr-ui-spinner-ball > div {
     position: relative;
 }
 
-snookr-ui-spinner-ball > div > div {
+.snookr-ui-spinner-ball > div > div {
     position: absolute;
     box-sizing: border-box;
     width: 10px;
@@ -136,7 +145,7 @@ snookr-ui-spinner-ball > div > div {
     transform: translate(27px, 27px);;
 }
 
-snookr-ui-spinner-ball > div > div:after {
+.snookr-ui-spinner-ball > div > div:after {
     display: block;
     content: '';
     position: absolute;

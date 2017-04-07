@@ -14,7 +14,6 @@ class SnookrGameTest extends SnookrGameRegular {
 
         this.ballSet.only('white').first().setSpeed(Vector.create(-120, -160));
         this.inAction = true;
-        this.eventListener.trigger(SnookrEvent.SHOOT_FIRED);
     }
 
     getFrameLength() {
