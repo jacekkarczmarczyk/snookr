@@ -1,17 +1,20 @@
-/*
-const stateManager = new SnookrGameStateManager(ballSet);
-if (ballStopped) {
-    stateManager.pushShotResult(shotResult);
-}
-if (ctrlz) {
-    if (stateManager.canRollback()) {
-        stateManager.rollback();
-    }
-}
-nextRules = stateManager.getNextRules();
-stateManager.selectNextRule(0);
-*/
-
+// pushState();
+// shotFired();
+// if (ctrlz) {
+//     popState();
+//     shotFired();
+// }
+// if (shotCompleted) {
+//     setShotResult(firstTouched, ballsPotted);
+//     setRule(chooseRule(getNextRules));
+// }
+//
+// setRule() {
+//     if (repeat) {
+//         popState()
+//     }
+// }
+//
 class SnookrGameStateManager {
     /**
      *
@@ -20,7 +23,6 @@ class SnookrGameStateManager {
      */
     constructor(ballSet, initialRule) {
         this._ballSet = ballSet;
-        this._ballSetPositions = this.getBallSetData();
         this._history = new SnookrHistory();
         this._player = 0;
         this._score = [0, 0];
@@ -112,11 +114,7 @@ class SnookrGameStateManager {
      * @param {SnookrBall} firstTouched
      * @param {SnookrBallSet} ballsPotted
      */
-    pushResult(firstTouched, ballsPotted) {
-        const historyEntry = new SnookrHistoryEntry(this._ballSetPositions, this._rule, this._player, this._score);
-        this._history.push(historyEntry);
-        this._ballSetPositions = this.getBallSetData();
-
+    setResult(firstTouched, ballsPotted) {
         const lastShotResult = this._rule.getShotResult(firstTouched, ballsPotted, this._ballSet.unpotted());
 
         this._score[this._player] += lastShotResult.getPointsForCurrentPlayer();
@@ -143,23 +141,26 @@ class SnookrGameStateManager {
 
         if (this._rule instanceof SnookrRuleRepeat) {
             const score = this._score;
-            this.rollback();
+            if (this._rule.getRestoreBalls()) {
+                this.popState();
+            } else {
+                this._rule = this._rule.getRuleToRepeat();
+                this._player = 1 - this._player;
+            }
+
             this._score = score;
         }
     }
 
-    /**
-     *
-     * @returns {boolean}
-     */
-    canRollback() {
-        return this._history.count() > 0;
+    pushState() {
+        const historyEntry = new SnookrHistoryEntry(this.getBallSetData(), this._rule, this._player, this._score);
+        this._history.push(historyEntry);
     }
 
     /**
      * @todo Add canSetWhitePosition to historyEntry
      */
-    rollback() {
+    popState() {
         const historyEntry = this._history.pop();
 
         this._player = historyEntry.getPlayer();
@@ -168,25 +169,13 @@ class SnookrGameStateManager {
         this._rule = historyEntry.getRule();
         this.setBallSetData(historyEntry.getBalls());
     }
+
+    /**
+     *
+     * @returns {boolean}
+     */
+    canPopState() {
+        return this._history.count() > 0;
+    }
 }
 
-Object.defineProperty(SnookrGameStateManager, 'GAME_STATE_CUEBALL_POSITIONING', {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: 'GAME_STATE_CUEBALL_POSITIONING'
-});
-
-Object.defineProperty(SnookrGameStateManager, 'GAME_STATE_SHOOTING', {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: 'GAME_STATE_SHOOTING'
-});
-
-Object.defineProperty(SnookrGameStateManager, 'GAME_STATE_PLAYING', {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: 'GAME_STATE_PLAYING'
-});

@@ -4,7 +4,6 @@ class SnookrGame {
             throw new TypeError('Cannot instantiate abstract class');
         }
 
-        this.inAction = false;
         this.table = this.createTable();
         this.eventListener = new SnookrEventListener();
         this.physics = new SnookrPhysics(this.table, this.getPhysicsSettings());
@@ -74,27 +73,23 @@ class SnookrGame {
         throw new TypeError('Abstract class method called');
     }
 
-    shotAttempt(initialMovement) {
-        //{shotPower, forwardSpinValue, sideSpinValue}
-        if (!this.inAction) {
-            if (!this.gameStateManager) {
-                this.gameStateManager = new SnookrGameStateManager(this.ballSet, this.rule);
-            }
-
-            this.getBallSet().first('white').setMovement(initialMovement);
-            this.inAction = true;
-        }
+    /**
+     *
+     * @returns {SnookrBall}
+     */
+    getCueBall() {
+        return this.getBallSet().first('white');
     }
 
     getFrameLength() {
         return 1;
     }
 
+    /**
+     *
+     * @returns {{firstTouched: SnookrBall, ballsPotted: SnookrBallSet}}
+     */
     tick() {
-        if (!this.inAction) {
-            return true;
-        }
-
         const recalculateResult = this.physics.recalculatePositions(this.ballSet, this.getFrameLength());
         const allStopped = this.ballSet.allStopped();
 
@@ -114,16 +109,18 @@ class SnookrGame {
             this.eventListener.trigger(SnookrEvent.BALL_HITS_BALL, recalculateResult.ballHitsBallPower);
         }
 
-        if (!allStopped) {
-            return true;
+        if (allStopped) {
+            const result = {
+                firstTouched: this.firstTouched,
+                ballsPotted: this.ballsPotted
+            };
+            this.firstTouched = null;
+            this.ballsPotted = new SnookrBallSet();
+            return result;
         }
 
-        if (this.inAction) {
-            this.gameStateManager.pushResult(this.firstTouched, this.ballsPotted);
-            this.inAction = false;
-            this.unpotBalls(this.gameStateManager.getBallsToUnpot());
-        }
-        return false;
+        return null;
+
 
         // if (nextRules) {
         //     if (SnookrRule.isSnooker(this.ballSet, nextRules[0].getBallsToPot(this.ballSet))) {
@@ -132,14 +129,6 @@ class SnookrGame {
         //
         //     this.eventListener.trigger(SnookrEvent.NEXT_RULE_CHOICE, shotResult.getNextRules());
         // }
-    }
-
-    /**
-     *
-     * @param {SnookrRule} nextRule
-     */
-    nextRuleChosen(nextRule) {
-        this.gameStateManager.selectNextRule(nextRule);
     }
 
     /**

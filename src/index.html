@@ -69,27 +69,6 @@
 </div>
 
 <script type="text/javascript">
-    const gameState = {
-        players: [{
-            name: 'Player 1',
-            score: 1,
-            framesWon: 2,
-            breakValue: 3,
-        }, {
-            name: 'Player 2',
-            score: 0,
-            framesWon: 0,
-            breakValue: 0,
-        }],
-        spinPower: new SpinPower(0, 0),
-        currentPlayer: Math.floor(Math.random() * 2),
-        currentRule: 'red',
-        isSnookr: false,
-        numberOfFrames: 7,
-        currentGameState: SnookrGameStateManager.GAME_STATE_SHOOTING
-    };
-
-
     // https://github.com/yangmingshan/vue-bus
     //
     function VueBus(Vue) {
@@ -118,16 +97,13 @@
     }
     Vue.use(VueBus);
 
-
-
-
-
-
-
+    const controller = new SnookrController(['Player 1', 'Player 2']);
     const app = new Vue({
         el: '#app',
-        data: {gameState}
+        data: {
+            gameState: controller.getGameState()
+        }
     });
 
-    window.addEventListener('load', () => (new SnookrController).run(gameState));
+    window.addEventListener('load', () => controller.tick());
 </script>

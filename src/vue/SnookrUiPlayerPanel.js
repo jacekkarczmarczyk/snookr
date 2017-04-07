@@ -9,7 +9,7 @@ Vue.component('snookr-ui-player-panel', {
             <div class="score">{{ player.score }}</div>
             <div class="frames-won">{{ player.framesWon }}</div>
         </div>
-        <div class="break">{{ player.breakValue }}</div>
+        <div v-show="current" class="break">Break: {{ player.breakValue }}</div>
         <div v-show="current" class="next-rule">{{ rule }}</div>
     </div>
 </div>

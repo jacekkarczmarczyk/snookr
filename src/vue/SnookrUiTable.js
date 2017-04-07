@@ -3,21 +3,27 @@
 Vue.component('snookr-ui-table', {
     template: `
 <div class="snookr-ui-table" unselectable="on" v-on:selectstart="() => false" v-on:dragstart="() => false" v-on:contextmenu="() => false" v-on:mousemove="handleMouseMove" v-on:mousedown="handleMouseDown" v-on:mouseup="handleMouseUp">
-    <img class="snookr-table-background">
-    <canvas class="snookr-table-canvas"></canvas>
-    <img v-show="ghostPosition" class="snookr-table-cue">
+    <img class="snookr-table-background" />
+    <canvas v-bind:style="{cursor: (settingCueBall && mouseOnCueBall) ? 'move' : 'default'}" class="snookr-table-canvas"></canvas>
+    <img class="snookr-table-cue" v-bind:style="cueStyle" src="resources/cue.png" />
 </div>`,
-    props: ['currentGameState'],
-    data: () => ({}),
+    props: [
+        'playing',
+        'shooting',
+        'settingCueBall',
+    ],
+    data: () => ({
+        dragData: null,
+        ghostScreenPosition: null,
+        cueScreenDistance: null,
+        mouseOnCueBall: false,
+        cueStyle: {
+            display: 'none'
+        }
+    }),
     created: function () {
         this.resources = null;
         this.scaledResources = {};
-        this.cueDistance = null;
-        this.ghostPosition = null;
-        this.drag = false;
-        this.dragStartOffset = 0;
-        this.dragPreviousOffset = 0;
-        this.dragSpeedVector = null;
 
         this.$bus.on('snookrEvent.repaintTable', data => this.repaint(data));
 
@@ -28,115 +34,126 @@ Vue.component('snookr-ui-table', {
         }());
         resourcesFactory.initResources().then(resources => this.resources = resources);
     },
+
     mounted: function () {
         this.canvasElement = this.$el.querySelector('canvas');
         this.backgroundElement = this.$el.querySelector('.snookr-table-background');
         this.context = this.canvasElement.getContext('2d');
         this.cueElement = this.$el.querySelector('.snookr-table-cue');
-        this.cueElement.src = 'resources/cue.png';
     },
+
     methods: {
+        computeCueStyle: function computeCueStyle() {
+            if (!this.cueBall || !this.shooting || this.isDraggingCueBall() || (this.settingCueBall && this.mouseOnCueBall) || !this.ghostScreenPosition) {
+                return {
+                    display: 'none'
+                };
+            }
+
+            const cueBallScreenRadius = this.getScreenSize(this.cueBall.getBallRadius());
+            const cueTipScreenPosition = this.getScreenPosition(this.cueBall.getPosition());
+            const ghostTablePosition = this.getTablePosition(this.isDraggingCue() ? this.dragData.startPosition : this.ghostScreenPosition);
+
+            if (this.cueScreenDistance === null) {
+                this.cueScreenDistance = this.getScreenSize(this.cueBall.getBallRadius());
+            }
+
+            return {
+                display: 'block',
+                top: (cueTipScreenPosition.getY() - this.cueElement.offsetHeight / 2) + 'px',
+                left: (cueTipScreenPosition.getX() + this.cueScreenDistance + cueBallScreenRadius) + 'px',
+                transformOrigin: `-${cueBallScreenRadius + this.cueScreenDistance}px 50%`,
+                transform: 'rotate(' + (90 + this.cueBall.getPosition().vectorTo(ghostTablePosition).getAngle() * 180 / Math.PI) + 'deg)',
+            };
+        },
+
+        handleMouseDown: function handleMouseDown() {
+            if (!this.snookr || (!this.shooting && !this.settingCueBall) || !this.ghostScreenPosition) {
+                return;
+            }
+
+            if (this.settingCueBall && this.mouseOnCueBall) {
+                this.dragData = {
+                    mode: 'cueBall',
+                    startPosition: this.ghostScreenPosition,
+                    dragOffset: Vector.create(),
+                };
+            } else if (this.shooting) {
+                this.dragData = {
+                    mode: 'cue',
+                    startPosition: this.ghostScreenPosition,
+                    dragOffset: Vector.create(),
+                };
+            }
+        },
+
+        handleMouseUp: function handleMouseUp() {
+            if (this.isDraggingCueBall()) {
+                this.$bus.emit('snookrEvent.cueBallPositionChanged', {
+                    position: this.getTablePosition(this.getScreenPosition(this.cueBall.getPosition()).translate(this.dragData.dragOffset))
+                });
+            }
+            this.dragData = null;
+            this.cueScreenDistance = null;
+        },
+
+        isDraggingCue: function isDraggingCue() {
+            return this.shooting && this.dragData && this.dragData.mode === 'cue';
+        },
+
+        isDraggingCueBall: function isDraggingCueBall() {
+            return this.settingCueBall && this.dragData && this.dragData.mode === 'cueBall';
+        },
+
         handleMouseMove: function handleMouseMove(event) {
             if (!this.snookr) {
                 return;
             }
 
-            const ghostPosition = Point.create(event.clientX, event.clientY);
+            this.ghostScreenPosition = Point.create(event.clientX, event.clientY);
+            const cueBallTablePosition = this.cueBall.getPosition();
+            const mouseTablePosition = this.getTablePosition(this.ghostScreenPosition);
+            this.mouseOnCueBall = this.isDraggingCueBall() || cueBallTablePosition.getDistance(mouseTablePosition) < this.cueBall.getBallRadius();
 
-            if (this.currentGameState === SnookrGameStateManager.GAME_STATE_SHOOTING) {
-                if (this.drag) {
-                    this.handleCueDrag(event.clientY);
-                } else {
-                    if (this.cueDistance === null) {
-                        this.cueDistance = this.snookr.getBallSet().first('white').getBallRadius();
-                    }
-
-                    this.ghostPosition = ghostPosition;
-                }
-                this.updateCue();
-            } else if (this.currentGameState === SnookrGameStateManager.GAME_STATE_CUEBALL_POSITIONING) {
-                if (this.drag) {
-                    this.handleCueBallDrag(event.clientX, event.clientY);
-                    this.ghostPosition = null
-                } else {
-                    this.ghostPosition = ghostPosition;
-                }
-            } else if (this.currentGameState === SnookrGameStateManager.GAME_STATE_PLAYING) {
-                this.ghostPosition = ghostPosition;
+            if (this.isDraggingCue()) {
+                this.handleCueDrag(event);
+            } else if (this.isDraggingCueBall()) {
+                this.handleCueBallDrag(event);
             }
         },
 
-        updateCue() {
-            if (!this.ghostPosition) {
-                return;
-            }
-
-            const whiteBall = this.snookr.getBallSet().first('white');
-            const ballScreenRadius = this.getScreenSize(whiteBall.getBallRadius());
-            const cueTipScreenPosition = this.getScreenPosition(whiteBall.getPosition());
-            const ghostScreenPosition = this.getTablePosition(this.ghostPosition);
-            const cueScreenDistance = this.getScreenSize(this.cueDistance);
-            this.cueElement.style.top = (cueTipScreenPosition.getY() - this.cueElement.offsetHeight / 2) + 'px';
-            this.cueElement.style.left = (cueTipScreenPosition.getX() + cueScreenDistance + ballScreenRadius) + 'px';
-            this.cueElement.style.transformOrigin = `-${ballScreenRadius + cueScreenDistance}px 50%`;
-            this.cueElement.style.transform = 'rotate(' + (90 + whiteBall.getPosition().vectorTo(ghostScreenPosition).getAngle() * 180 / Math.PI) + 'deg)';
-            this.cueElement.style.display = 'block';
-        },
-
-        handleCueDrag: function handleCueDrag(mouseY) {
+        handleCueDrag: function handleCueDrag(event) {
             if (!this.snookr) {
                 return;
             }
 
-            const initialCueDistance = this.snookr.getBallSet().first('white').getBallRadius();
-            if (this.cueDistance === null) {
-                this.cueDistance = initialCueDistance;
-            }
+            const previousOffset = this.dragData.dragOffset.getY();
+            const initialCueScreenDistance = this.getScreenSize(this.cueBall.getBallRadius());
+            this.dragData.dragOffset = this.dragData.startPosition.vectorTo(Point.create(event.clientX, event.clientY));
 
-            if (mouseY - this.dragStartOffset + this.getScreenSize(initialCueDistance) < 0) {
-                const shotPower = this.getTableSize(this.dragPreviousOffset - mouseY);
+            if (this.dragData.dragOffset.getY() + initialCueScreenDistance < 0) {
                 this.$bus.emit('snookrEvent.shotFired', {
-                    shotPower,
-                    dragSpeedVector: this.dragSpeedVector
+                    speed: this.cueBall.getPosition().vectorTo(this.getTablePosition(this.dragData.startPosition)).normalize().scale(this.getTableSize(previousOffset - this.dragData.dragOffset.getY()))
                 });
 
-                this.ghostPosition = null;
-                this.drag = false;
-                this.cueDistance = null;
+                this.dragData = null;
+                this.cueScreenDistance = initialCueScreenDistance;
             } else {
-                this.cueDistance = initialCueDistance + this.getTableSize(mouseY - this.dragStartOffset);
-                this.dragPreviousOffset = mouseY;
+                this.cueScreenDistance = initialCueScreenDistance + this.dragData.dragOffset.getY();
             }
         },
 
-        handleMouseDown: function handleMouseDown(event) {
-            if (!this.snookr || this.drag) {
-                return;
-            }
-
-            if (this.currentGameState === SnookrGameStateManager.GAME_STATE_CUEBALL_POSITIONING) {
-                // todo
-            } else if (this.currentGameState === SnookrGameStateManager.GAME_STATE_SHOOTING) {
-                this.drag = true;
-                this.dragPreviousOffset = 0;
-                this.dragStartOffset = event.clientY;
-                this.dragSpeedVector = this.snookr.getBallSet().first('white').getPosition().vectorTo(this.getTablePosition(this.ghostPosition));
-            }
-        },
-
-        handleMouseUp: function handleMouseUp() {
+        handleCueBallDrag(event) {
             if (!this.snookr) {
                 return;
             }
 
-            if (this.currentGameState === SnookrGameStateManager.GAME_STATE_SHOOTING) {
-                this.cueDistance = null;
-                this.drag = false;
-            }
+            this.dragData.dragOffset = this.dragData.startPosition.vectorTo(Point.create(event.clientX, event.clientY));
         },
 
         repaint: function repaint(data) {
             this.snookr = data.snookr;
+            this.cueBall = data.snookr.getCueBall();
 
             let height = this.$el.offsetHeight;
             let width = height * 1440 / 758;
@@ -159,12 +176,13 @@ Vue.component('snookr-ui-table', {
 
                 this.scaledResources = {};
 
-                this.cueElement.style.width = this.getScreenSize(this.snookr.getTable().getOuterLength() * 0.4) + 'px';
+                this.cueElement.setAttribute('width', this.getScreenSize(this.snookr.getTable().getOuterLength() * 0.4).toFixed(0));
             }
 
             this.context.clearRect(0, 0, width, height);
             this.snookr.getBallSet().forEach(ball => this.paintBall(ball));
             this.paintGhost();
+            this.cueStyle = this.computeCueStyle();
         },
 
         /**
@@ -177,9 +195,13 @@ Vue.component('snookr-ui-table', {
             }
 
             const canvasBallRadius = this.getScreenSize(ball.getBallRadius());
-            const absoluteBallPosition = this.getScreenPosition(ball.getPosition());
+            let absoluteBallPosition = this.getScreenPosition(ball.getPosition())
             const ballType = ball.getBallType();
             const spritePadding = 2;
+
+            if (ball === this.cueBall && this.isDraggingCueBall()) {
+                absoluteBallPosition = absoluteBallPosition.translate(this.dragData.dragOffset);
+            }
 
             if (!this.scaledResources[ballType]) {
                 const tmpCanvas = this.$el.ownerDocument.createElement('canvas');
@@ -205,14 +227,15 @@ Vue.component('snookr-ui-table', {
         },
 
         paintGhost: function paintGhost() {
-            if (!this.ghostPosition) {
+            if (!this.ghostScreenPosition || this.mouseOnCueBall || !this.shooting) {
                 return;
             }
 
-            const canvasBallRadius = this.getScreenSize(this.snookr.getBallSet().first('white').getBallRadius());
+            const canvasBallRadius = this.getScreenSize(this.cueBall.getBallRadius());
+            const ghostScreenPosition = this.isDraggingCue() ? this.dragData.startPosition : this.ghostScreenPosition;
 
             this.context.beginPath();
-            this.context.arc(this.ghostPosition.getX(), this.ghostPosition.getY(), canvasBallRadius - 0.25, 0, 2 * Math.PI, false);
+            this.context.arc(ghostScreenPosition.getX(), ghostScreenPosition.getY(), canvasBallRadius - 0.25, 0, 2 * Math.PI, false);
             this.context.fillStyle = 'rgba(255, 255, 255, 0.7)';
             this.context.fill();
             this.context.strokeStyle = 'black';
@@ -349,6 +372,7 @@ Vue.component('snookr-ui-table', {
         /**
          *
          * @param {Point} tablePosition
+         * @returns {Point}
          */
         getScreenPosition: function getScreenPosition(tablePosition) {
             const table = this.snookr.getTable();
@@ -357,11 +381,21 @@ Vue.component('snookr-ui-table', {
             return Point.create(screenX, screenY);
         },
 
+        /**
+         *
+         * @param {number} tableSize
+         * @returns {number}
+         */
         getScreenSize: function getScreenSize(tableSize) {
             const table = this.snookr.getTable();
             return tableSize * this.canvasElement.width / table.getOuterLength();
         },
 
+        /**
+         *
+         * @param {Point} screenPosition
+         * @returns {Point}
+         */
         getTablePosition: function getTablePosition(screenPosition) {
             const table = this.snookr.getTable();
             const tableX = (this.canvasElement.height - screenPosition.getY()) * table.getOuterWidth() / this.canvasElement.height - (table.getOuterWidth() - table.getInnerWidth()) / 2;
@@ -369,6 +403,11 @@ Vue.component('snookr-ui-table', {
             return Point.create(tableX, tableY);
         },
 
+        /**
+         *
+         * @param {number} screenSize
+         * @returns {number}
+         */
         getTableSize: function getTableSize(screenSize) {
             const table = this.snookr.getTable();
             return screenSize * table.getOuterLength() / this.canvasElement.width;
