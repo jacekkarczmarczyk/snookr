@@ -5,24 +5,31 @@ class SnookrGame {
         }
 
         this.table = this.createTable();
-        this.eventListener = new SnookrEventListener();
         this.physics = new SnookrPhysics(this.table, this.getPhysicsSettings());
-        this.history = new SnookrHistory();
-
-        this.firstTouched = null;
-        this.ballsPotted = new SnookrBallSet();
-        this.break = 0;
-
         this.resetGame();
     }
 
     /**
      *
-     * @returns {SnookrGameStateManager}
+     * @returns {SnookrGame}
      */
-    getGameStateManager() {
-        return this.gameStateManager;
+    resetGame() {
+        this.ballSet = this.createBallSet();
+        return this;
     }
+
+    /**
+     *
+     * @returns {SnookrRule}
+     */
+    getInitialRule() {
+        return new SnookrRuleExpectingRed();
+    }
+
+    /**
+     *
+     * @returns {*}
+     */
 
     getPhysicsSettings() {
         return {};
@@ -52,6 +59,10 @@ class SnookrGame {
         throw new TypeError('Abstract class method called');
     }
 
+    /**
+     *
+     * @returns {number}
+     */
     getBallRandomness() {
         return 0.003;
     }
@@ -64,13 +75,12 @@ class SnookrGame {
         return this.table;
     }
 
-    resetGame() {
-        this.ballSet = this.createBallSet();
-        this.gameStateManager = new SnookrGameStateManager(this.ballSet, new SnookrRuleExpectingRed());
-    }
-
+    /**
+     *
+     * @returns {number}
+     */
     getBallRadius() {
-        throw new TypeError('Abstract class method called');
+        return 1;
     }
 
     /**
@@ -81,54 +91,12 @@ class SnookrGame {
         return this.getBallSet().first('white');
     }
 
-    getFrameLength() {
-        return 1;
-    }
-
     /**
      *
-     * @returns {{firstTouched: SnookrBall, ballsPotted: SnookrBallSet}}
+     * @returns {number}
      */
-    tick() {
-        const recalculateResult = this.physics.recalculatePositions(this.ballSet, this.getFrameLength());
-        const allStopped = this.ballSet.allStopped();
-
-        this.firstTouched = this.firstTouched || recalculateResult.firstTouched;
-        this.ballsPotted.add(recalculateResult.ballsPotted);
-
-        if (recalculateResult.ballsPotted.count()) {
-            this.eventListener.trigger(SnookrEvent.BALL_POTTED);
-            if (this.gameStateManager.getRule().getPoints(this.firstTouched, this.ballsPotted) >= 0) {
-                this.eventListener.trigger(SnookrEvent.RIGHT_BALL_POTTED);
-            } else {
-                this.eventListener.trigger(SnookrEvent.WRONG_BALL_POTTED);
-            }
-        }
-
-        if (recalculateResult.ballHitsBallPower) {
-            this.eventListener.trigger(SnookrEvent.BALL_HITS_BALL, recalculateResult.ballHitsBallPower);
-        }
-
-        if (allStopped) {
-            const result = {
-                firstTouched: this.firstTouched,
-                ballsPotted: this.ballsPotted
-            };
-            this.firstTouched = null;
-            this.ballsPotted = new SnookrBallSet();
-            return result;
-        }
-
-        return null;
-
-
-        // if (nextRules) {
-        //     if (SnookrRule.isSnooker(this.ballSet, nextRules[0].getBallsToPot(this.ballSet))) {
-        //         this.eventListener.trigger(SnookrEvent.SNOOKER_CREATED);
-        //     }
-        //
-        //     this.eventListener.trigger(SnookrEvent.NEXT_RULE_CHOICE, shotResult.getNextRules());
-        // }
+    getFrameLength() {
+        return 1;
     }
 
     /**
@@ -182,6 +150,7 @@ class SnookrGame {
      * @returns {SnookrBallSet}
      */
     createBallSet() {
-        throw 'Abstract class method called';
+        return new SnookrBallSet();
     }
+
 }

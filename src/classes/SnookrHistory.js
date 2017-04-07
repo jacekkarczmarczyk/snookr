@@ -22,6 +22,15 @@ class SnookrHistory {
 
     /**
      *
+     * @returns {SnookrHistory}
+     */
+    clear() {
+        this.history = [];
+        return this;
+    }
+
+    /**
+     *
      * @returns {Number}
      */
     count() {

@@ -47,12 +47,28 @@ class SnookrController {
                     break;
             }
         });
+    }
 
-//        this.audioPlayer = new SnookrAudioPlayer(snookr.getEventListener());
-//         this.getData().snookr.getEventListener().on(SnookrEvent.NEXT_RULE_CHOICE, nextRules => this.selectNextRule(nextRules));
-//         this.getData().snookr.getEventListener().on(SnookrEvent.BALLS_STOPPED, () => this.ballsStopped(false));
-//         this.getData().snookr.getEventListener().on(SnookrEvent.GAME_OVER, score => this.endGame(score));
-//         this.getData().snookr.getEventListener().on(SnookrEvent.SNOOKER_CREATED, () => this.ballsStopped(true));
+    /**
+     *
+     * @param {string} name
+     * @returns {*}
+     */
+    static getGameConstructor(name) {
+        return {
+            regular: SnookrGameRegular,
+            real: SnookrGameReal,
+            black: SnookrGameBlack,
+            'default': SnookrGameArcade,
+        }[name];
+    }
+
+    /**
+     *
+     * @returns {SnookrGame}
+     */
+    getGame() {
+        return this.snookr;
     }
 
     /**
@@ -63,14 +79,24 @@ class SnookrController {
         return this.gameState;
     }
 
+    resetShot() {
+        this.firstTouched = null;
+        this.ballsPotted = new SnookrBallSet();
+        this.gameState.spinPower.clear();
+    }
+
     resetGame() {
-        this.stateManager = this.snookr.getGameStateManager();
+        this.getGame().resetGame();
+        this.stateManager.reset(this.breakingPlayer);
+        this.breakingPlayer = 1 - this.breakingPlayer;
 
         this.updateGameState({
             playing: false,
             shooting: true,
             settingCueBall: true
         });
+
+        this.resetShot();
     }
 
     resetMatch() {
@@ -82,19 +108,10 @@ class SnookrController {
     }
 
     resetTable() {
-        this.snookr = (function () {
-            switch (window.location.hash) {
-                case '#test':
-                    return new SnookrGameTest();
-                case '#regular':
-                    return new SnookrGameRegular();
-                case '#real':
-                    return new SnookrGameReal();
-                default:
-                    return new SnookrGameArcade();
-            }
-        }());
-
+        const gameConstructor = SnookrController.getGameConstructor(window.location.hash.replace('#', '')) || SnookrController.getGameConstructor('default');
+        this.snookr = new gameConstructor;
+        this.breakingPlayer = Math.floor(Math.random() * 2);
+        this.stateManager = new SnookrGameStateManager(this.getGame().getBallSet(), this.getGame().getInitialRule(), this.breakingPlayer);
         this.resetMatch();
     }
 
@@ -116,12 +133,19 @@ class SnookrController {
 
     tick() {
         this.$bus.emit('snookrEvent.repaintTable', {
-            snookr: this.snookr
+            snookr: this.getGame()
         });
 
-        const result = this.gameState.currentGameState.playing ? this.snookr.tick() : null;
-        if (result) {
-            this.shotCompleted(result.firstTouched, result.ballsPotted);
+        if (this.gameState.currentGameState.playing) {
+            const recalculateResult = this.getGame().getPhysics().recalculatePositions(this.getGame().getBallSet(), this.getGame().getFrameLength());
+            const allStopped = this.getGame().getBallSet().allStopped();
+
+            this.firstTouched = this.firstTouched || recalculateResult.firstTouched;
+            this.ballsPotted.add(recalculateResult.ballsPotted);
+
+            if (allStopped) {
+                this.shotCompleted();
+            }
         }
 
         window.requestAnimationFrame(() => this.tick());
@@ -134,37 +158,35 @@ class SnookrController {
     shotFired(speed) {
         this.stateManager.pushState();
 
-        const shotPower = Math.min(this.snookr.getPhysics().getSetting('maxShotPower'), speed.getLength());
+        const shotPower = Math.min(this.getGame().getPhysics().getSetting('maxShotPower'), speed.getLength());
         speed = speed.scale(shotPower / speed.getLength());
-        const forwardSpin = speed.scale(this.gameState.spinPower.getForwardSpinPower() * Math.sqrt(shotPower / 5) * this.snookr.getPhysics().getSetting('forwardSpinScale'));
-        const sideSpin = -this.gameState.spinPower.getSideSpinPower() * shotPower * this.snookr.getPhysics().getSetting('sideSpinScale');
+        const forwardSpin = speed.scale(this.gameState.spinPower.getForwardSpinPower() * Math.sqrt(shotPower / 5) * this.getGame().getPhysics().getSetting('forwardSpinScale'));
+        const sideSpin = -this.gameState.spinPower.getSideSpinPower() * shotPower * this.getGame().getPhysics().getSetting('sideSpinScale');
 
-        this.snookr.getCueBall().setMovement(new BallMovement(speed, new Spin(forwardSpin, sideSpin)));
+        this.getGame().getCueBall().setMovement(new BallMovement(speed, new Spin(forwardSpin, sideSpin)));
         this.gameState.currentGameState.playing = true;
         this.gameState.currentGameState.shooting = false;
         this.gameState.currentGameState.settingCueBall = false;
     }
 
-    shotCompleted(firstTouched, ballsPotted) {
-        this.stateManager.setResult(firstTouched, ballsPotted);
+    shotCompleted() {
+        this.stateManager.setResult(this.firstTouched, this.ballsPotted);
 
-        const ballsToUnpot = this.stateManager.getBallsToUnpot();
-        this.snookr.unpotBalls(ballsToUnpot);
-        this.gameState.spinPower.clear();
+        this.resetShot();
 
-        const nextRules = this.snookr.getGameStateManager().getNextRules();
-        if (!nextRules) {
+        this.getGame().unpotBalls(this.stateManager.getBallsToUnpot());
+
+        const nextRules = this.stateManager.getNextRules();
+        if (nextRules) {
+            this.stateManager.selectNextRule(this.selectNextRule(nextRules));
+            this.updateGameState({
+                playing: false,
+                shooting: true,
+                settingCueBall: !!this.stateManager.getBallsToUnpot().first('white')
+            });
+        } else {
             this.gameCompleted();
-            return;
         }
-
-        this.snookr.getGameStateManager().selectNextRule(this.selectNextRule(nextRules));
-
-        this.updateGameState({
-            playing: false,
-            shooting: true,
-            settingCueBall: ballsToUnpot.first('white') ? true : false
-        });
     }
 
     gameCompleted() {
@@ -172,8 +194,11 @@ class SnookrController {
         this.gameState.players[1].framesWon += 1 * (this.stateManager.getScore()[1] > this.stateManager.getScore()[0]);
 
         if (this.gameState.players[0].framesWon + this.gameState.players[1].framesWon === this.gameState.numberOfFrames) {
-            alert('Game over!');
-            this.resetMatch();
+            const self = this;
+            window.setTimeout(function () {
+                alert('Game over!');
+                self.resetMatch();
+            });
         } else {
             this.resetGame();
         }

@@ -20,14 +20,26 @@ class SnookrGameStateManager {
      *
      * @param {SnookrBallSet} ballSet
      * @param {SnookrRule} initialRule
+     * @param {number} player
      */
-    constructor(ballSet, initialRule) {
+    constructor(ballSet, initialRule, player) {
         this._ballSet = ballSet;
         this._history = new SnookrHistory();
-        this._player = 0;
+        this._initialRule = initialRule;
+
+        this.reset(player);
+    }
+
+    /**
+     *
+     * @param {number} player
+     */
+    reset(player) {
+        this._history.clear();
+        this._player = player;
         this._score = [0, 0];
         this._breakScore = [0, 0];
-        this._rule = initialRule;
+        this._rule = this._initialRule;
         this._canSetWhitePosition = true;
         this._nextRules = null;
         this._ballsToUnpot = null
