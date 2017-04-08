@@ -93,7 +93,6 @@ class SnookrPhysics {
      *
      * @param {SnookrBallSet} ballSet
      * @param frameLength
-     * @param inFrame
      * @returns {{firstTouched: SnookrBall|null, ballsPotted: SnookrBallSet, ballHitsBallPower: number}}
      */
     recalculatePositions(ballSet, frameLength) {
