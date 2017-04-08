@@ -24,7 +24,7 @@ class SnookrController {
         }.bind(this));
         this.$bus.on('snookrEvent.cueBallPositionChanged', function ({gameId, position}) {
             gameId === this.getGameId() && this.setCueBallPosition(position);
-        });
+        }.bind(this));
 
         const self = this;
         window.addEventListener('hashchange', () => this.resetTable());
