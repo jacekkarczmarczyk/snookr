@@ -25,11 +25,11 @@ class SnookrRuleExpectingRed extends SnookrRule {
         const points = this.getPoints(firstTouched, ballsPotted);
         const ballsToUnpot = points < 0 ? ballsPotted.not('red') : new SnookrBallSet();
         const nextRule = this.getNextRule(points, (new SnookrBallSet).add(ballsLeft).add(ballsToUnpot));
-        const isMiss = !firstTouched || firstTouched.getBallType() !== 'red';
+        const canRepeat = nextRule instanceof SnookrRuleFreeBall || ballsPotted.first('white') || !firstTouched || firstTouched.getBallType() !== 'red';
 
         return new SnookrShotResult(
             points,
-            isMiss ? [nextRule, new SnookrRuleRepeat(this, false), new SnookrRuleRepeat(this, true)] : [nextRule],
+            canRepeat ? [nextRule, new SnookrRuleRepeat(this, false), new SnookrRuleRepeat(this, true)] : [nextRule],
             ballsToUnpot
         );
     }
