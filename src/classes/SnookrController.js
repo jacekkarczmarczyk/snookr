@@ -170,13 +170,7 @@ class SnookrController {
      * @param {Point} position
      */
     setCueBallPosition(position) {
-        if (!this.getGame().getBallSet().isPositionFree(position, this.getGame().getCueBall())) {
-            return;
-        }
-        if (!this.getGame().getTable().isInCueBallArea(position)) {
-            return false;
-        }
-        this.snookr.getCueBall().setPosition(position);
+        this.getGame().setCueBallPosition(position);
     }
 
     /**

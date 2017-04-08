@@ -154,4 +154,19 @@ class SnookrGame {
         return new SnookrBallSet();
     }
 
+    /**
+     *
+     * @param {Point} position
+     * @returns {boolean}
+     */
+    setCueBallPosition(position) {
+        if (!this.getBallSet().isPositionFree(position, this.getCueBall())) {
+            return false;
+        }
+        if (!this.getTable().isInCueBallArea(position)) {
+            return false;
+        }
+        this.getCueBall().setPosition(position);
+        return true;
+    }
 }
