@@ -352,8 +352,10 @@ class SnookrBall {
             return data.collisionPower;
         };
 
+        const getCollisionTime = () => t;
+
         return {
-            getCollisionTime: () => t,
+            getCollisionTime,
             getCollisionPower,
             getCollisionSpeed,
             // getCollisionSpeed(ball) {
@@ -444,8 +446,10 @@ class SnookrBall {
             return data.collisionPower;
         };
 
+        const getCollisionTime = () => t;
+
         return {
-            getCollisionTime: () => t,
+            getCollisionTime,
             getCollisionPower,
             getCollisionSpeed,
         };
@@ -511,23 +515,25 @@ class SnookrBall {
             return null;
         }
 
+        const getCollisionTime = () => t;
+
+        const getCollisionSpeed = function () {
+            if (collisionSpeed === null) {
+                vx -= sideSpin * speed.getLength();
+                collisionSpeed = Vector.create(vx * cos - vy * sin, -vy * cos - vx * sin);
+                // [vx, vy] = [vx - sideSpin * speed.getLength(), -vy];
+                // [vx, vy] = [vx * cos + vy * sin, vy * cos - vx * sin];
+                // collisionSpeed = Vector.create(vx, vy);
+            }
+
+            return collisionSpeed;
+        };
+
         const sideSpin = this.getSideSpin();
         let collisionSpeed = null;
         return {
-            getCollisionTime() {
-                return t;
-            },
-            getCollisionSpeed() {
-                if (collisionSpeed === null) {
-                    vx -= sideSpin * speed.getLength();
-                    collisionSpeed = Vector.create(vx * cos - vy * sin, -vy * cos - vx * sin);
-                    // [vx, vy] = [vx - sideSpin * speed.getLength(), -vy];
-                    // [vx, vy] = [vx * cos + vy * sin, vy * cos - vx * sin];
-                    // collisionSpeed = Vector.create(vx, vy);
-                }
-
-                return collisionSpeed;
-            }
+            getCollisionTime,
+            getCollisionSpeed
         };
     }
 
