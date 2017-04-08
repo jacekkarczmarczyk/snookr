@@ -136,8 +136,8 @@ class SnookrGameStateManager {
             this._player = 1 - this._player;
             this._breakScore = [0, 0];
         } else {
-            this._breakScore[this._player] += this._score[this._player];
-            this._breakScore[1 - this._player] += this._score[1 - this._player];
+            this._breakScore[this._player] += lastShotResult.getPointsForCurrentPlayer();
+            this._breakScore[1 - this._player] += lastShotResult.getPointsForOpponent();
         }
 
         this._nextRules = lastShotResult.getNextRules();
