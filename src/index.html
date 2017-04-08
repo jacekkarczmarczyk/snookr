@@ -64,8 +64,17 @@
 <script src="vue/SnookrUiSpinnerBall.js"></script>
 <script src="vue/SnookrUiTable.js"></script>
 
-<div id="app">
-    <snookr-ui-app v-bind:game-state="gameState"></snookr-ui-app>
+<!--<div style="display: flex; width: 100%; height: 100%;" unselectable="on" v-on:selectstart="() => false" v-on:dragstart="() => false">-->
+    <!--<div id="app1" class="app">-->
+        <!--<snookr-ui-app v-bind:game-state="gameState" v-bind:game-id="gameId"></snookr-ui-app>-->
+    <!--</div>-->
+    <!--<div id="app2" class="app">-->
+        <!--<snookr-ui-app v-bind:game-state="gameState" v-bind:game-id="gameId"></snookr-ui-app>-->
+    <!--</div>-->
+<!--</div>-->
+
+<div id="app1" class="app">
+<snookr-ui-app v-bind:game-state="gameState" v-bind:game-id="gameId"></snookr-ui-app>
 </div>
 
 <script type="text/javascript">
@@ -97,13 +106,23 @@
     }
     Vue.use(VueBus);
 
-    const controller = new SnookrController(['Player 1', 'Player 2']);
-    const app = new Vue({
-        el: '#app',
+    const controller1 = new SnookrController(['Player 1', 'Player 2']);
+    const app1 = new Vue({
+        el: '#app1',
         data: {
-            gameState: controller.getGameState()
+            gameId: controller1.getGameId(),
+            gameState: controller1.getGameState()
+        }
+    });
+    const controller2 = new SnookrController(['Player 1', 'Player 2']);
+    const app2 = new Vue({
+        el: '#app2',
+        data: {
+            gameId: controller2.getGameId(),
+            gameState: controller2.getGameState()
         }
     });
 
-    window.addEventListener('load', () => controller.tick());
+    window.addEventListener('load', () => controller1.tick());
+    window.addEventListener('load', () => controller2.tick());
 </script>

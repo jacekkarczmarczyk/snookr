@@ -5,15 +5,16 @@ const BALL_STROKE_OFFSET = 0;
 
 Vue.component('snookr-ui-table', {
     template: `
-<div class="snookr-ui-table" unselectable="on" v-on:selectstart="() => false" v-on:dragstart="() => false" v-on:contextmenu="() => false" v-on:mousemove="handleMouseMove" v-on:mousedown="handleMouseDown" v-on:mouseup="handleMouseUp">
-    <img class="snookr-table-background" />
-    <canvas v-bind:style="{cursor: (settingCueBall && mouseOnCueBall) ? 'move' : 'default'}" class="snookr-table-canvas"></canvas>
-    <img class="snookr-table-cue" v-bind:style="cueStyle" src="resources/cue.png" />
+<div class="snookr-ui-table" unselectable="on" v-on:selectstart="() => false" v-on:dragstart="() => false" v-on:contextmenu="() => false">
+    <img class="snookr-table-background" unselectable="on" v-on:selectstart="() => false" v-on:dragstart="() => false" v-on:contextmenu="() => false" />
+    <canvas v-bind:style="{cursor: (settingCueBall && mouseOnCueBall) ? 'move' : 'default'}" class="snookr-table-canvas" unselectable="on" v-on:selectstart="() => false" v-on:dragstart="() => false" v-on:contextmenu="() => false" v-on:mousemove="handleMouseMove" v-on:mousedown="handleMouseDown" v-on:mouseup="handleMouseUp"></canvas>
+    <img class="snookr-table-cue" v-bind:style="cueStyle" src="resources/cue.png" unselectable="on" v-on:selectstart="() => false" v-on:dragstart="() => false" v-on:contextmenu="() => false" />
 </div>`,
     props: [
         'playing',
         'shooting',
         'settingCueBall',
+        'gameId'
     ],
     data: () => ({
         dragData: null,
@@ -28,7 +29,7 @@ Vue.component('snookr-ui-table', {
         this.resources = null;
         this.scaledResources = {};
 
-        this.$bus.on('snookrEvent.repaintTable', data => this.repaint(data));
+        this.$bus.on('snookrEvent.repaintTable', data => data.gameId === this.gameId && this.repaint(data));
 
         const resourcesFactory = new StaticResourcesFactory(function () {
             const resources = {};
@@ -93,6 +94,7 @@ Vue.component('snookr-ui-table', {
         handleMouseUp: function handleMouseUp() {
             if (this.isDraggingCueBall()) {
                 this.$bus.emit('snookrEvent.cueBallPositionChanged', {
+                    gameId: this.gameId,
                     position: this.getTablePosition(this.getScreenPosition(this.cueBall.getPosition()).translate(this.dragData.dragOffset))
                 });
             }
@@ -113,7 +115,7 @@ Vue.component('snookr-ui-table', {
                 return;
             }
 
-            this.ghostScreenPosition = Point.create(event.clientX, event.clientY);
+            this.ghostScreenPosition = Point.create(event.layerX, event.layerY);
             const cueBallTablePosition = this.cueBall.getPosition();
             const mouseTablePosition = this.getTablePosition(this.ghostScreenPosition);
             this.mouseOnCueBall = this.isDraggingCueBall() || cueBallTablePosition.getDistance(mouseTablePosition) < this.cueBall.getBallRadius();
@@ -132,10 +134,11 @@ Vue.component('snookr-ui-table', {
 
             const previousOffset = this.dragData.dragOffset.getY();
             const initialCueScreenDistance = this.getScreenSize(this.cueBall.getBallRadius());
-            this.dragData.dragOffset = this.dragData.startPosition.vectorTo(Point.create(event.clientX, event.clientY));
+            this.dragData.dragOffset = this.dragData.startPosition.vectorTo(Point.create(event.layerX, event.layerY));
 
             if (this.dragData.dragOffset.getY() + initialCueScreenDistance < 0) {
                 this.$bus.emit('snookrEvent.shotFired', {
+                    gameId: this.gameId,
                     speed: this.cueBall.getPosition().vectorTo(this.getTablePosition(this.dragData.startPosition)).normalize().scale(this.getTableSize(previousOffset - this.dragData.dragOffset.getY()))
                 });
 
@@ -151,7 +154,7 @@ Vue.component('snookr-ui-table', {
                 return;
             }
 
-            this.dragData.dragOffset = this.dragData.startPosition.vectorTo(Point.create(event.clientX, event.clientY));
+            this.dragData.dragOffset = this.dragData.startPosition.vectorTo(Point.create(event.layerX, event.layerY));
         },
 
         repaint: function repaint(data) {
@@ -198,7 +201,7 @@ Vue.component('snookr-ui-table', {
             }
 
             const canvasBallRadius = this.getScreenSize(ball.getBallRadius());
-            let absoluteBallPosition = this.getScreenPosition(ball.getPosition())
+            let absoluteBallPosition = this.getScreenPosition(ball.getPosition());
             const ballType = ball.getBallType();
             const spritePadding = 2;
 

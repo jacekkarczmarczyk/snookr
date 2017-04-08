@@ -4,6 +4,10 @@ class SnookrController {
      * @param {[string, string]} playerNames
      */
     constructor(playerNames) {
+        this.gameId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+            return v.toString(16);
+        });
         this.gameState = {
             players: [{
                 name: playerNames[0]
@@ -15,8 +19,8 @@ class SnookrController {
         this.resetTable();
 
         this.$bus = (new Vue).$bus;
-        this.$bus.on('snookrEvent.shotFired', ({speed}) => this.shotFired(speed));
-        this.$bus.on('snookrEvent.cueBallPositionChanged', ({position}) => this.snookr.getCueBall().setPosition(position));
+        this.$bus.on('snookrEvent.shotFired', ({gameId, speed}) => gameId === this.getGameId() && this.shotFired(speed));
+        this.$bus.on('snookrEvent.cueBallPositionChanged', ({gameId, position}) => gameId === this.getGameId() && this.snookr.getCueBall().setPosition(position));
 
         const self = this;
         window.addEventListener('hashchange', () => this.resetTable());
@@ -48,6 +52,14 @@ class SnookrController {
                     break;
             }
         });
+    }
+
+    /**
+     *
+     * @returns {string}
+     */
+    getGameId() {
+        return this.gameId;
     }
 
     /**
@@ -134,6 +146,7 @@ class SnookrController {
 
     tick() {
         this.$bus.emit('snookrEvent.repaintTable', {
+            gameId: this.getGameId(),
             snookr: this.getGame()
         });
 

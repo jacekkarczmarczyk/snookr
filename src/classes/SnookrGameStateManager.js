@@ -167,7 +167,6 @@ class SnookrGameStateManager {
     pushState() {
         const historyEntry = new SnookrHistoryEntry(this.getBallSetData(), this._rule, this._player, this._score);
         this._history.push(historyEntry);
-        console.log(this._history);
     }
 
     /**
