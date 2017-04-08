@@ -1,5 +1,5 @@
 class SnookrAudioPlayer {
-    constructor(eventListener) {
+    constructor() {
         const applause1Element = document.querySelector('audio[data-type="applause1"]');
         const applause2Element = document.querySelector('audio[data-type="applause2"]');
         const disappointmentElement = document.querySelector('audio[data-type="disappointment"]');
@@ -15,12 +15,6 @@ class SnookrAudioPlayer {
             ballHitsBall: new AudioClip(ballElement, 2950, 300),
             ballHitsPocket: new AudioClip(ballElement, 3300, 300),
         };
-
-        eventListener.on(SnookrEvent.BALL_POTTED, () => this.playBallHitsPocket());
-        eventListener.on(SnookrEvent.RIGHT_BALL_POTTED, () => this.playApplause());
-        eventListener.on(SnookrEvent.WRONG_BALL_POTTED, () => this.playDisappointment());
-        eventListener.on(SnookrEvent.BALL_HITS_BALL, ballHitsBallPower => this.playBallHitsBall(ballHitsBallPower));
-        eventListener.on(SnookrEvent.CUE_HITS_BALL, shotPower => this.playCueHitsBall(shotPower));
     }
 
     playApplause() {

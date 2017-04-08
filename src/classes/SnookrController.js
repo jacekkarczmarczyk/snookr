@@ -19,8 +19,12 @@ class SnookrController {
         this.resetTable();
 
         this.$bus = (new Vue).$bus;
-        this.$bus.on('snookrEvent.shotFired', ({gameId, speed}) => gameId === this.getGameId() && this.shotFired(speed));
-        this.$bus.on('snookrEvent.cueBallPositionChanged', ({gameId, position}) => gameId === this.getGameId() && this.setCueBallPosition(position));
+        this.$bus.on('snookrEvent.shotFired', function ({gameId, speed}) {
+            gameId === this.getGameId() && this.shotFired(speed);
+        }.bind(this));
+        this.$bus.on('snookrEvent.cueBallPositionChanged', function ({gameId, position}) {
+            gameId === this.getGameId() && this.setCueBallPosition(position);
+        });
 
         const self = this;
         window.addEventListener('hashchange', () => this.resetTable());
@@ -52,6 +56,9 @@ class SnookrController {
                     break;
             }
         });
+
+        this.tickBinded = this.tick.bind(this);
+        this.audioPlayer = new SnookrAudioPlayer();
     }
 
     /**
@@ -157,12 +164,20 @@ class SnookrController {
             this.firstTouched = this.firstTouched || recalculateResult.firstTouched;
             this.ballsPotted.add(recalculateResult.ballsPotted);
 
+            if (recalculateResult.ballHitsBallPower) {
+                this.audioPlayer.playBallHitsBall(recalculateResult.ballHitsBallPower);
+            }
+            if (recalculateResult.ballsPotted.count()) {
+                this.audioPlayer.playBallHitsPocket();
+            }
+
             if (allStopped) {
                 this.shotCompleted();
             }
+
         }
 
-        window.requestAnimationFrame(() => this.tick());
+        window.requestAnimationFrame(this.tickBinded);
     }
 
     /**
@@ -184,6 +199,8 @@ class SnookrController {
         speed = speed.scale(shotPower / speed.getLength());
         const forwardSpin = speed.scale(this.gameState.spinPower.getForwardSpinPower() * Math.sqrt(shotPower / 5) * this.getGame().getPhysics().getSetting('forwardSpinScale'));
         const sideSpin = -this.gameState.spinPower.getSideSpinPower() * shotPower * this.getGame().getPhysics().getSetting('sideSpinScale');
+
+        this.audioPlayer.playCueHitsBall(shotPower / this.getGame().getPhysics().getSetting('maxShotPower'));
 
         this.getGame().getCueBall().setMovement(new BallMovement(speed, new Spin(forwardSpin, sideSpin)));
         this.gameState.currentGameState.playing = true;
