@@ -6,16 +6,6 @@ class SnookrRuleExpectingRed extends SnookrRule {
 
     /**
      *
-     * @param {SnookrBallSet} ballSet
-     * @return {SnookrBallSet}
-     */
-    getBallsToPot(ballSet) {
-        return ballSet.unpotted().only('red');
-    }
-
-
-    /**
-     *
      * @param {SnookrBall} firstTouched
      * @param {SnookrBallSet} ballsPotted
      * @param {SnookrBallSet} ballsLeft

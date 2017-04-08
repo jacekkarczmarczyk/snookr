@@ -5,15 +5,6 @@ class SnookrRuleExpectingAnyColor extends SnookrRule {
 
     /**
      *
-     * @param {SnookrBallSet} ballSet
-     * @return {SnookrBallSet}
-     */
-    getBallsToPot(ballSet) {
-        return ballSet.unpotted().not('red').not('white');
-    }
-
-    /**
-     *
      * @param {SnookrBall} firstTouched
      * @param {SnookrBallSet} ballsPotted
      * @param {SnookrBallSet} ballsLeft

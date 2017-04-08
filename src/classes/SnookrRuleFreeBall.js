@@ -6,15 +6,6 @@ class SnookrRuleFreeBall extends SnookrRule {
 
     /**
      *
-     * @param {SnookrBallSet} ballSet
-     * @return {SnookrBallSet}
-     */
-    getBallsToPot(ballSet) {
-        return ballSet.unpotted();
-    }
-
-    /**
-     *
      * @returns {string}
      */
     toString() {

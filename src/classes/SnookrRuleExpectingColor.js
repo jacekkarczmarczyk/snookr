@@ -4,15 +4,6 @@ class SnookrRuleExpectingColor extends SnookrRule {
         this.expectedColor = expectedColor;
     }
 
-    /**
-     *
-     * @param {SnookrBallSet} ballSet
-     * @return {SnookrBallSet}
-     */
-    getBallsToPot(ballSet) {
-        return ballSet.unpotted().only(this.expectedColor);
-    }
-
     toString() {
         return this.constructor.name + ': ' + this.expectedColor;
     }
