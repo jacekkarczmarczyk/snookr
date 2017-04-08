@@ -142,7 +142,7 @@ class SnookrBallSet {
         let free = true;
 
         this.forEach(function (ballOnTable) {
-            if (ballOnTable.isPotted()) {
+            if (ballOnTable.isPotted() || ball === ballOnTable) {
                 return;
             }
             if (ballOnTable.getPosition().getDistance(position) < ballOnTable.getBallRadius() + ball.getBallRadius()) {

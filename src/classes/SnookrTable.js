@@ -263,4 +263,13 @@ class SnookrTable {
         return new LineArc(Point.create(x0, y0), r, angle1, angle2);
     }
 
+    /**
+     *
+     * @param {Point} position
+     * @returns {boolean}
+     */
+    isInCueBallArea(position) {
+        return position.getY() >= 107.886 && (position.getDistance(Point.create(33.867, 107.886))) <= 11;
+    }
+
 }

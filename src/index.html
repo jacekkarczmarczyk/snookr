@@ -74,7 +74,7 @@
 <!--</div>-->
 
 <div id="app1" class="app">
-<snookr-ui-app v-bind:game-state="gameState" v-bind:game-id="gameId"></snookr-ui-app>
+    <snookr-ui-app v-bind:game-state="gameState" v-bind:game-id="gameId"></snookr-ui-app>
 </div>
 
 <script type="text/javascript">
@@ -114,14 +114,14 @@
             gameState: controller1.getGameState()
         }
     });
-    const controller2 = new SnookrController(['Player 1', 'Player 2']);
-    const app2 = new Vue({
-        el: '#app2',
-        data: {
-            gameId: controller2.getGameId(),
-            gameState: controller2.getGameState()
-        }
-    });
+//    const controller2 = new SnookrController(['Player 1', 'Player 2']);
+//    const app2 = new Vue({
+//        el: '#app2',
+//        data: {
+//            gameId: controller2.getGameId(),
+//            gameState: controller2.getGameState()
+//        }
+//    });
 
     window.addEventListener('load', () => controller1.tick());
     window.addEventListener('load', () => controller2.tick());

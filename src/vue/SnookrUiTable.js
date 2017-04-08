@@ -81,6 +81,7 @@ Vue.component('snookr-ui-table', {
                     mode: 'cueBall',
                     startPosition: this.ghostScreenPosition,
                     dragOffset: Vector.create(),
+                    centerOffset: this.getTablePosition(this.ghostScreenPosition).vectorTo(this.cueBall.getPosition())
                 };
             } else if (this.shooting) {
                 this.dragData = {
@@ -154,7 +155,11 @@ Vue.component('snookr-ui-table', {
                 return;
             }
 
-            this.dragData.dragOffset = this.dragData.startPosition.vectorTo(Point.create(event.layerX, event.layerY));
+            const screenPosition = Point.create(event.layerX, event.layerY);
+            const tablePosition = this.getTablePosition(screenPosition).translate(this.dragData.centerOffset);
+            if (this.snookr.getTable().isInCueBallArea(tablePosition)) {
+                this.dragData.dragOffset = this.dragData.startPosition.vectorTo(screenPosition);
+            }
         },
 
         repaint: function repaint(data) {

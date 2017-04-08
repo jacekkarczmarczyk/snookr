@@ -20,7 +20,7 @@ class SnookrController {
 
         this.$bus = (new Vue).$bus;
         this.$bus.on('snookrEvent.shotFired', ({gameId, speed}) => gameId === this.getGameId() && this.shotFired(speed));
-        this.$bus.on('snookrEvent.cueBallPositionChanged', ({gameId, position}) => gameId === this.getGameId() && this.snookr.getCueBall().setPosition(position));
+        this.$bus.on('snookrEvent.cueBallPositionChanged', ({gameId, position}) => gameId === this.getGameId() && this.setCueBallPosition(position));
 
         const self = this;
         window.addEventListener('hashchange', () => this.resetTable());
@@ -163,6 +163,20 @@ class SnookrController {
         }
 
         window.requestAnimationFrame(() => this.tick());
+    }
+
+    /**
+     *
+     * @param {Point} position
+     */
+    setCueBallPosition(position) {
+        if (!this.getGame().getBallSet().isPositionFree(position, this.getGame().getCueBall())) {
+            return;
+        }
+        if (!this.getGame().getTable().isInCueBallArea(position)) {
+            return false;
+        }
+        this.snookr.getCueBall().setPosition(position);
     }
 
     /**
