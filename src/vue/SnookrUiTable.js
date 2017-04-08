@@ -1,5 +1,8 @@
 "use strict";
 
+const BALL_STROKE_WIDTH = 0.3;
+const BALL_STROKE_OFFSET = 0;
+
 Vue.component('snookr-ui-table', {
     template: `
 <div class="snookr-ui-table" unselectable="on" v-on:selectstart="() => false" v-on:dragstart="() => false" v-on:contextmenu="() => false" v-on:mousemove="handleMouseMove" v-on:mousedown="handleMouseDown" v-on:mouseup="handleMouseUp">
@@ -211,9 +214,9 @@ Vue.component('snookr-ui-table', {
                 const tmpContext = tmpCanvas.getContext('2d');
                 tmpContext.drawImage(this.resources.balls[ballType], spritePadding, spritePadding, canvasBallRadius * 2, canvasBallRadius * 2);
                 tmpContext.beginPath();
-                tmpContext.arc(canvasBallRadius + spritePadding, canvasBallRadius + spritePadding, canvasBallRadius - 0.2, 0, 2 * Math.PI, false);
+                tmpContext.arc(canvasBallRadius + spritePadding, canvasBallRadius + spritePadding, canvasBallRadius + BALL_STROKE_OFFSET, 0, 2 * Math.PI, false);
                 tmpContext.strokeStyle = '#000';
-                tmpContext.lineWidth = 0.4;
+                tmpContext.lineWidth = BALL_STROKE_WIDTH;
                 tmpContext.stroke();
 
                 const img = new Image();
@@ -267,11 +270,11 @@ Vue.component('snookr-ui-table', {
             const ghostScreenPosition = this.isDraggingCue() ? this.dragData.startPosition : this.ghostScreenPosition;
 
             this.context.beginPath();
-            this.context.arc(ghostScreenPosition.getX(), ghostScreenPosition.getY(), canvasBallRadius - 0.25, 0, 2 * Math.PI, false);
+            this.context.arc(ghostScreenPosition.getX(), ghostScreenPosition.getY(), canvasBallRadius + BALL_STROKE_OFFSET, 0, 2 * Math.PI, false);
             this.context.fillStyle = 'rgba(255, 255, 255, 0.7)';
             this.context.fill();
-            this.context.strokeStyle = 'black';
-            this.context.lineWidth = 0.5;
+            this.context.strokeStyle = '#000';
+            this.context.lineWidth = BALL_STROKE_WIDTH;
             this.context.stroke();
         },
 
