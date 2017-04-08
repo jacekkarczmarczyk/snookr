@@ -16,6 +16,11 @@ class SnookrController {
             }],
             spinPower: new SpinPower()
         };
+        this.resourcesFactory = new StaticResourcesFactory(function () {
+            const resources = {};
+            [].slice.call(document.querySelectorAll('img[data-resource]')).forEach(image => resources[image.getAttribute('data-resource')] = image);
+            return resources;
+        }());
         this.resetTable();
 
         this.$bus = (new Vue).$bus;
@@ -132,6 +137,8 @@ class SnookrController {
         this.snookr = new gameConstructor;
         this.breakingPlayer = Math.floor(Math.random() * 2);
         this.stateManager = new SnookrGameStateManager(this.getGame().getBallSet(), this.getGame().getInitialRule(), this.breakingPlayer);
+        this.tableRenderer = new SnookrTableRenderer(this.resourcesFactory, this.snookr.getTable(), this.snookr.getBallSet());
+        this.tableController = new SnookrTableController(this.tableRenderer, this.snookr.getBallSet().first('white'), this.$bus, this.getGameId());
         this.resetMatch();
     }
 
@@ -154,7 +161,7 @@ class SnookrController {
     tick() {
         this.$bus.emit('snookrEvent.repaintTable', {
             gameId: this.getGameId(),
-            snookr: this.getGame()
+            tableController: this.tableController
         });
 
         if (this.gameState.currentGameState.playing) {
