@@ -77,7 +77,7 @@ class Point {
      * @param {Point} point
      * @returns {Vector}
      */
-    vectorTo(point) {
+    createVectorTo(point) {
         return Vector.create(point.getX() - this.getX(), point.getY() - this.getY());
     }
 }

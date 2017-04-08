@@ -1,6 +1,3 @@
-/**
- * Immutable data object
- */
 class AudioClip {
     constructor(domElement, start = 0, length = 0) {
         this.domElement = domElement;

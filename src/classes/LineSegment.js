@@ -10,7 +10,7 @@ class LineSegment {
     constructor(source, destination) {
         this.p1 = source;
         this.p2 = destination instanceof Point ? destination : source.translate(destination);
-        this.w = destination instanceof Point ? source.vectorTo(destination) : destination;
+        this.w = destination instanceof Point ? source.createVectorTo(destination) : destination;
     }
 
     getP1() {

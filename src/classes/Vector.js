@@ -1,6 +1,3 @@
-/**
- * Immutable data object
- */
 class Vector {
     /**
      *
@@ -10,6 +7,22 @@ class Vector {
     constructor(x = 0, y = 0) {
         this.x = x;
         this.y = y;
+        this.dirty();
+    }
+
+    dirty() {
+        this.computedLength = null;
+        this.computedAngle = null;
+        this.computedSin = null;
+        this.computedCos = null;
+    }
+
+    /**
+     *
+     * @returns {Vector}
+     */
+    clone() {
+        return new Vector(this.x, this.y);
     }
 
     /**
@@ -24,10 +37,32 @@ class Vector {
 
     /**
      *
+     * @param {number} x
+     * @returns {Vector}
+     */
+    setX(x) {
+        this.x = x;
+        this.dirty();
+        return this;
+    }
+
+    /**
+     *
      * @returns {number}
      */
     getX() {
         return this.x;
+    }
+
+    /**
+     *
+     * @param {number} y
+     * @returns {Vector}
+     */
+    setY(y) {
+        this.y = y;
+        this.dirty();
+        return this;
     }
 
     /**
@@ -43,9 +78,10 @@ class Vector {
      * @returns {number}
      */
     getLength() {
-        const length = Math.sqrt(this.x * this.x + this.y * this.y);
-        this.getLength = () => length;
-        return length;
+        if (this.computedLength === null) {
+            this.computedLength = Math.sqrt(this.x * this.x + this.y * this.y);
+        }
+        return this.computedLength;
     }
 
     /**
@@ -53,9 +89,10 @@ class Vector {
      * @returns {number}
      */
     getSin() {
-        const sin = this.y / this.getLength();
-        this.getSin = () => sin;
-        return sin;
+        if (this.computedSin === null) {
+            this.computedSin = this.y / this.getLength();
+        }
+        return this.computedSin;
     }
 
     /**
@@ -63,9 +100,10 @@ class Vector {
      * @returns {number}
      */
     getCos() {
-        const cos = this.x / this.getLength();
-        this.getCos = () => cos;
-        return cos;
+        if (this.computedCos === null) {
+            this.computedCos = this.x / this.getLength();
+        }
+        return this.computedCos;
     }
 
     /**
@@ -73,11 +111,12 @@ class Vector {
      * @returns {number}
      */
     getAngle() {
-        const length = this.getLength();
-        const angle = length ? Math.acos(this.x / length) : 0;
-        const angleNormalized = (angle && this.y < 0) ? (Math.PI * 2 - angle) : angle;
-        this.getAngle = () => angleNormalized;
-        return angleNormalized;
+        if (this.computedAngle === null) {
+            const length = this.getLength();
+            const angle = length ? Math.acos(this.x / length) : 0;
+            this.computedAngle = (angle && this.y < 0) ? (Math.PI * 2 - angle) : angle;
+        }
+        return this.computedAngle;
     }
 
     /**
@@ -86,7 +125,22 @@ class Vector {
      * @returns {Vector}
      */
     add(vector) {
-        return Vector.create(this.x + vector.getX(), this.y + vector.getY());
+        this.x += vector.getX();
+        this.y += vector.getY();
+        this.dirty();
+        return this;
+    }
+
+    /**
+     *
+     * @param {Vector} vector
+     * @returns {Vector}
+     */
+    subtract(vector) {
+        this.x -= vector.getX();
+        this.y -= vector.getY();
+        this.dirty();
+        return this;
     }
 
     /**
@@ -95,16 +149,29 @@ class Vector {
      * @returns {Vector}
      */
     scale(scale) {
-        return Vector.create(this.x * scale, this.y * scale);
+        this.x *= scale;
+        this.y *= scale;
+        this.dirty();
+        return this;
     }
 
     /**
      *
+     * @param {number} normalizeTo
      * @returns {Vector}
      */
-    normalize() {
+    normalize(normalizeTo = 1) {
         const length = this.getLength();
-        return this.scale(length ? (1 / length) : 1);
+        if (!length) {
+            this.x = normalizeTo;
+            this.y = 0;
+        } else {
+            const scale = normalizeTo / length;
+            this.x *= scale;
+            this.y *= scale;
+        }
+        this.dirty();
+        return this;
     }
 
     /**
@@ -116,7 +183,10 @@ class Vector {
         const cos = Math.cos(angle);
         const x = this.x * cos - this.y * sin;
         const y = this.x * sin + this.y * cos;
-        return Vector.create(x, y);
+        this.x = x;
+        this.y = y;
+        this.dirty();
+        return this;
     }
 
     /**

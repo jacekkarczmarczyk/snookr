@@ -196,8 +196,8 @@ class SnookrController {
         this.stateManager.pushState();
 
         const shotPower = Math.min(this.getGame().getPhysics().getSetting('maxShotPower'), speed.getLength());
-        speed = speed.scale(shotPower / speed.getLength());
-        const forwardSpin = speed.scale(this.gameState.spinPower.getForwardSpinPower() * Math.sqrt(shotPower / 5) * this.getGame().getPhysics().getSetting('forwardSpinScale'));
+        speed = speed.clone().scale(shotPower / speed.getLength());
+        const forwardSpin = speed.clone().scale(this.gameState.spinPower.getForwardSpinPower() * Math.sqrt(shotPower / 5) * this.getGame().getPhysics().getSetting('forwardSpinScale'));
         const sideSpin = -this.gameState.spinPower.getSideSpinPower() * shotPower * this.getGame().getPhysics().getSetting('sideSpinScale');
 
         this.audioPlayer.playCueHitsBall(shotPower / this.getGame().getPhysics().getSetting('maxShotPower'));

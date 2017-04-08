@@ -44,7 +44,9 @@ class SnookrBall {
      */
     setPotted(potted = true) {
         this.potted = potted;
-        this.movement = new BallMovement();
+        this.movement.setSpeed(Vector.create());
+        this.movement.setForwardSpin(Vector.create());
+        this.movement.setSideSpin(0);
         return this;
     }
 
@@ -107,7 +109,9 @@ class SnookrBall {
      * @param {BallMovement} movement
      */
     setMovement(movement) {
-        this.movement = movement;
+        this.movement.setSpeed(movement.getSpeed());
+        this.movement.setForwardSpin(movement.getForwardSpin());
+        this.movement.setSideSpin(movement.getSideSpin());
         return this;
     }
 
@@ -125,7 +129,7 @@ class SnookrBall {
      * @returns {SnookrBall}
      */
     setSpeed(speed) {
-        this.movement = this.movement.setSpeed(speed);
+        this.movement.setSpeed(speed);
         return this;
     }
 
@@ -143,7 +147,7 @@ class SnookrBall {
      * @returns {SnookrBall}
      */
     setForwardSpin(forwardSpin) {
-        this.movement = this.movement.setForwardSpin(forwardSpin);
+        this.movement.setForwardSpin(forwardSpin);
         return this;
     }
 
@@ -153,10 +157,14 @@ class SnookrBall {
      * @returns {SnookrBall}
      */
     setSideSpin(sideSpin) {
-        this.movement = this.movement.setSideSpin(sideSpin);
+        this.movement.setSideSpin(sideSpin);
         return this;
     }
 
+    /**
+     *
+     * @returns {number}
+     */
     getSideSpin() {
         return this.movement.getSideSpin();
     }
@@ -179,8 +187,8 @@ class SnookrBall {
         const sx = cx + (bx - cx) * cr / (cr + br);
         const sy = cy + (by - cy) * cr / (cr + br);
 
-        const SB = Point.create(sx, sy).vectorTo(hidingBall.getPosition());
-        const SO = Point.create(sx, sy).vectorTo(this.getPosition());
+        const SB = Point.create(sx, sy).createVectorTo(hidingBall.getPosition());
+        const SO = Point.create(sx, sy).createVectorTo(this.getPosition());
 
         // beta - kat miedzy linia SO a styczna do hidingBall przechodzaca przez S
         const alpha = Math.asin(br / SB.getLength());
@@ -217,8 +225,8 @@ class SnookrBall {
         const sx = cx + (bx - cx) * cr / (cr + br);
         const sy = cy + (by - cy) * cr / (cr + br);
 
-        const SB = Point.create(sx, sy).vectorTo(hidingBall.getPosition());
-        const SO = Point.create(sx, sy).vectorTo(this.getPosition());
+        const SB = Point.create(sx, sy).createVectorTo(hidingBall.getPosition());
+        const SO = Point.create(sx, sy).createVectorTo(this.getPosition());
 
         // beta - kat miedzy linia SO a styczna do hidingBall przechodzaca przez S
         const alpha = Math.asin(br / SB.getLength());
@@ -240,7 +248,7 @@ class SnookrBall {
     /**
      *
      * @param {SnookrBall} ball2
-     * @param tMax
+     * @param {number} tMax
      * @return {{getCollisionTime, getCollisionSpeed}|null}
      */
     calculateBallCollision(ball2, tMax) {
@@ -327,7 +335,7 @@ class SnookrBall {
                     (v1x * data.cos2 + v2x * data.sin2 - data.my) / data.d2,
                     (v1y * data.sin2 + v2y * data.cos2 - data.mx) / data.d2
                 );
-                data.collisionPower = data.ball1Speed.add(speed1.scale(-1)).getLength() + data.ball2Speed.add(speed2.scale(-1)).getLength();
+                data.collisionPower = data.ball1Speed.clone().subtract(speed1).getLength() + data.ball2Speed.clone().subtract(speed2).getLength();
             }
 
             if (ball === ball1) {
@@ -352,12 +360,12 @@ class SnookrBall {
             //     Version 2 - slow, but more descriptive
             //
             //     const alpha = position1.translate(speed1, t).vectorTo(position2.translate(speed2, t)).getAngle();
-            //     const v1rotated = speed1.rotate(-alpha);
-            //     const v2rotated = speed2.rotate(-alpha);
+            //     const v1rotated = speed1.clone().rotate(-alpha);
+            //     const v2rotated = speed2.clone().rotate(-alpha);
             //     const v1prim = Vector.create(v2rotated.getX(), v1rotated.getY());
             //     const v2prim = Vector.create(v1rotated.getX(), v2rotated.getY());
-            //     const v1 = v1prim.rotate(alpha);
-            //     const v2 = v2prim.rotate(alpha);
+            //     const v1 = v1prim.clone().rotate(alpha);
+            //     const v2 = v2prim.clone().rotate(alpha);
             //     return ball === ball1 ? v1 : (ball === ball2 ? v2 : null);
             // }
         };
@@ -366,7 +374,7 @@ class SnookrBall {
     /**
      *
      * @param {SnookrBall} ball2
-     * @param tMax
+     * @param {number} tMax
      * @return {{getCollisionTime, getCollisionSpeed}|null}
      */
     calculateStaticBallCollision(ball2, tMax) {
@@ -423,7 +431,7 @@ class SnookrBall {
                     (v1x * data.sin2 + data.my) / data.d2,
                     (v1y * data.cos2 + data.mx) / data.d2
                 );
-                data.collisionPower = data.ball1Speed.add(speed1.scale(-1)).getLength();
+                data.collisionPower = data.ball1Speed.subtract(speed1).getLength();
             }
 
             return data.ballSpeed;
@@ -535,11 +543,12 @@ class SnookrBall {
             return null;
         }
 
-        const ballPositionOnCollision = this.getPosition().translate(this.getSpeed().scale(0.999 * ballCollision.getCollisionTime()));
-        const centerVector = ballPositionOnCollision.vectorTo(arcBall.getPosition());
-        const touchPoint = ballPositionOnCollision.translate(centerVector.normalize().scale(1.001 * this.getBallRadius()));
-        const p1 = touchPoint.translate(centerVector.rotate(Math.PI / 2));
-        const p2 = touchPoint.translate(centerVector.rotate(-Math.PI / 2));
+        const ballPositionOnCollision = this.getPosition().translate(this.getSpeed().clone().scale(0.999 * ballCollision.getCollisionTime()));
+        const centerVector = ballPositionOnCollision.createVectorTo(arcBall.getPosition());
+        const centerVectorScaled = centerVector.clone().normalize(1.001 * this.getBallRadius());
+        const touchPoint = ballPositionOnCollision.translate(centerVectorScaled);
+        const p1 = touchPoint.translate(centerVector.clone().rotate(Math.PI / 2));
+        const p2 = touchPoint.translate(centerVector.clone().rotate(-Math.PI / 2));
         return this.calculateLineSegmentCollision(new LineSegment(p1, p2), tMax);
     }
 

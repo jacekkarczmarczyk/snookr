@@ -1,6 +1,3 @@
-/**
- * Immutable data object
- */
 class BallMovement {
     /**
      *
@@ -8,8 +5,16 @@ class BallMovement {
      * @param {Spin|null} spin
      */
     constructor(speed = null, spin = null) {
-        this.speed = speed || new Vector(0, 0);
-        this.spin = spin || new Spin();
+        this.speed = speed ? speed.clone() : Vector.create();
+        this.spin = spin ? spin.clone() : Spin.create();
+    }
+
+    /**
+     *
+     * @returns {BallMovement}
+     */
+    clone() {
+        return new BallMovement(this.speed, this.spin);
     }
 
     /**
@@ -28,7 +33,9 @@ class BallMovement {
      * @returns {BallMovement}
      */
     setSpeed(speed) {
-        return BallMovement.create(speed, this.spin);
+        this.speed.setX(speed.getX());
+        this.speed.setY(speed.getY());
+        return this;
     }
 
     /**
@@ -45,7 +52,8 @@ class BallMovement {
      * @returns {BallMovement}
      */
     setForwardSpin(forwardSpin) {
-        return new BallMovement(this.speed, this.spin.setForwardSpin(forwardSpin));
+        this.spin.setForwardSpin(forwardSpin);
+        return this;
     }
 
     /**
@@ -62,7 +70,8 @@ class BallMovement {
      * @returns {BallMovement}
      */
     setSideSpin(sideSpin) {
-        return new BallMovement(this.speed, this.spin.setSideSpin(sideSpin));
+        this.spin.setSideSpin(sideSpin);
+        return this;
     }
 
     /**

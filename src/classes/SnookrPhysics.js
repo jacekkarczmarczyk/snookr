@@ -155,8 +155,8 @@ class SnookrPhysics {
 
         const forwardSpin = movement.getForwardSpin();
         const forwardSpinLength = forwardSpin.getLength();
-        const forwardSpinToBall = forwardSpinLength > this.getSetting('forwardSpinLinearSlowdownRatio') ? forwardSpin.scale(this.getSetting('forwardSpinLinearSlowdownRatio')) : forwardSpin;
-        const forwardSpinLeft = forwardSpin.add(forwardSpinToBall.scale(-1));
+        const forwardSpinToBall = forwardSpinLength > this.getSetting('forwardSpinLinearSlowdownRatio') ? forwardSpin.clone().scale(this.getSetting('forwardSpinLinearSlowdownRatio')) : forwardSpin;
+        const forwardSpinLeft = forwardSpin.subtract(forwardSpinToBall);
 
         const sideSpin = Math.sign(movement.getSideSpin()) * Math.max(0, Math.abs(movement.getSideSpin()) - this.getSetting('sideSpinLinearSlowdownRatio'));
 
@@ -164,7 +164,7 @@ class SnookrPhysics {
         const speedLength = speed.getLength();
         const scale = Math.pow(this.getSetting('slowdownRatio') * (1 - Math.exp(-this.getSetting('slowdownBreaker') * speedLength)), timeDiff);
 
-        return ball.setMovement(new BallMovement(speed.scale(scale).add(forwardSpinToBall), new Spin(forwardSpinLeft, sideSpin)));
+        return ball.setMovement(new BallMovement(speed.clone().scale(scale).add(forwardSpinToBall), new Spin(forwardSpinLeft, sideSpin)));
     }
 
 

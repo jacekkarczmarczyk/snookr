@@ -210,8 +210,8 @@ class SnookrTable {
      * @returns {LineSegment}
      */
     static createLineSegment(p1, p2, startOffset = 0, endOffset = 0) {
-        const w1 = p1.vectorTo(p2).normalize().scale(startOffset);
-        const w2 = p2.vectorTo(p1).normalize().scale(endOffset);
+        const w1 = p1.createVectorTo(p2).normalize(startOffset);
+        const w2 = p2.createVectorTo(p1).normalize(endOffset);
         return new LineSegment(p1.translate(w1), p2.translate(w2));
     }
 
@@ -224,15 +224,15 @@ class SnookrTable {
      * @returns {LineArc}
      */
     static createLineArc(p1, p2, p3, d) {
-        const w1 = p2.vectorTo(p1);
-        const w2 = p2.vectorTo(p3);
+        const w1 = p2.createVectorTo(p1);
+        const w2 = p2.createVectorTo(p3);
         const alpha = w1.getAngle();
 
         // Translate: (-p2.x, -p2.y)
         // Rotate: -alpha
         //
         const beta = w2.getAngle() - alpha;
-        const gamma = beta - Math.sign(w2.rotate(-alpha).getY()) * Math.PI / 2;
+        const gamma = beta - Math.sign(w2.clone().rotate(-alpha).getY()) * Math.PI / 2;
 
         // Calculating center and radius of the circle
         //

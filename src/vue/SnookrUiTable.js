@@ -67,7 +67,7 @@ Vue.component('snookr-ui-table', {
                 top: (cueTipScreenPosition.getY() - this.cueElement.offsetHeight / 2) + 'px',
                 left: (cueTipScreenPosition.getX() + this.cueScreenDistance + cueBallScreenRadius) + 'px',
                 transformOrigin: `-${cueBallScreenRadius + this.cueScreenDistance}px 50%`,
-                transform: 'rotate(' + (90 + this.cueBall.getPosition().vectorTo(ghostTablePosition).getAngle() * 180 / Math.PI) + 'deg)',
+                transform: 'rotate(' + (90 + this.cueBall.getPosition().createVectorTo(ghostTablePosition).getAngle() * 180 / Math.PI) + 'deg)',
             };
         },
 
@@ -81,7 +81,7 @@ Vue.component('snookr-ui-table', {
                     mode: 'cueBall',
                     startPosition: this.ghostScreenPosition,
                     dragOffset: Vector.create(),
-                    centerOffset: this.getTablePosition(this.ghostScreenPosition).vectorTo(this.cueBall.getPosition())
+                    centerOffset: this.getTablePosition(this.ghostScreenPosition).createVectorTo(this.cueBall.getPosition())
                 };
             } else if (this.shooting) {
                 this.dragData = {
@@ -135,12 +135,12 @@ Vue.component('snookr-ui-table', {
 
             const previousOffset = this.dragData.dragOffset.getY();
             const initialCueScreenDistance = this.getScreenSize(this.cueBall.getBallRadius());
-            this.dragData.dragOffset = this.dragData.startPosition.vectorTo(Point.create(event.layerX, event.layerY));
+            this.dragData.dragOffset = this.dragData.startPosition.createVectorTo(Point.create(event.layerX, event.layerY));
 
             if (this.dragData.dragOffset.getY() + initialCueScreenDistance < 0) {
                 this.$bus.emit('snookrEvent.shotFired', {
                     gameId: this.gameId,
-                    speed: this.cueBall.getPosition().vectorTo(this.getTablePosition(this.dragData.startPosition)).normalize().scale(this.getTableSize(previousOffset - this.dragData.dragOffset.getY()))
+                    speed: this.cueBall.getPosition().createVectorTo(this.getTablePosition(this.dragData.startPosition)).normalize(this.getTableSize(previousOffset - this.dragData.dragOffset.getY()))
                 });
 
                 this.dragData = null;
@@ -158,7 +158,7 @@ Vue.component('snookr-ui-table', {
             const screenPosition = Point.create(event.layerX, event.layerY);
             const tablePosition = this.getTablePosition(screenPosition).translate(this.dragData.centerOffset);
             if (this.snookr.getTable().isInCueBallArea(tablePosition)) {
-                this.dragData.dragOffset = this.dragData.startPosition.vectorTo(screenPosition);
+                this.dragData.dragOffset = this.dragData.startPosition.createVectorTo(screenPosition);
             }
         },
 

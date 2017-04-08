@@ -1,6 +1,3 @@
-/**
- * Immutable data object
- */
 class Spin {
     /**
      *
@@ -23,10 +20,20 @@ class Spin {
 
     /**
      *
+     * @returns {Spin}
+     */
+    clone() {
+        return new Spin(this.forwardSpin, this.sideSpin);
+    }
+
+    /**
+     *
      * @param {Vector} forwardSpin
      */
     setForwardSpin(forwardSpin) {
-        return Spin.create(forwardSpin, this.sideSpin);
+        this.forwardSpin.setX(forwardSpin.getX());
+        this.forwardSpin.setY(forwardSpin.getY());
+        return this;
     }
 
     /**
@@ -43,7 +50,8 @@ class Spin {
      * @returns Spin
      */
     setSideSpin(sideSpin) {
-        return Spin.create(this.forwardSpin, sideSpin);
+        this.sideSpin = sideSpin;
+        return this;
     }
 
     /**
