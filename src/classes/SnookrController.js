@@ -16,7 +16,7 @@ class SnookrController {
             }],
             spinPower: new SpinPower()
         };
-        this.tableRenderer = new SnookrTableRenderer(resources);
+        this.tableRenderer = new SnookrRenderer(resources);
         this.tableController = new SnookrTableController(this.tableRenderer, {
             cueBallPositionChangedCallback: ({position}) => this.setCueBallPosition(position),
             shotFiredCallback: ({speed}) => this.shotFired(speed)
@@ -82,6 +82,7 @@ class SnookrController {
     static getGameConstructor(name) {
         return {
             regular: SnookrGameRegular,
+            funky: SnookrGameFunky,
             real: SnookrGameReal,
             black: SnookrGameBlack,
             'default': SnookrGameArcade,

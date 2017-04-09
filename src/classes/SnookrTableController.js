@@ -1,7 +1,7 @@
 class SnookrTableController {
     /**
      *
-     * @param {SnookrTableRenderer} tableRenderer
+     * @param {SnookrRenderer} tableRenderer
      * @param shotFiredCallback
      * @param cueBallPositionChangedCallback
      */
@@ -17,7 +17,7 @@ class SnookrTableController {
 
     /**
      *
-     * @returns {SnookrTableRenderer}
+     * @returns {SnookrRenderer}
      */
     getTableRenderer() {
         return this.tableRenderer;

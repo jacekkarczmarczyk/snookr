@@ -1,9 +1,6 @@
 class SnookrTable {
     constructor() {
-        this.innerWidth = 67.733;
-        this.outerWidth = 75.733;
-        this.innerLength = 135.962;
-        this.outerLength = 143.962;
+        this.initDimensions();
         this.boundaryElements = this.createBoundaryElements();
         this.boundaryArcBalls = this.boundaryElements.map(function (arc) {
             if (arc instanceof LineArc) {
@@ -16,6 +13,11 @@ class SnookrTable {
         this.pots = this.createPots();
     }
 
+    initDimensions() {
+        this.outerWidth = 75.733;
+        this.outerLength = 143.962;
+    }
+
     /**
      *
      * @returns {Array}
@@ -23,12 +25,12 @@ class SnookrTable {
     createPots() {
         const potRadius = 2;
         return [
-            {center: Point.create(33.867 + 35.567, 67.981), radius: potRadius},
-            {center: Point.create(33.867 + -35.567, 67.981), radius: potRadius},
-            {center: Point.create(33.867 + 34.567 - 1, -0.71 + 1), radius: potRadius},
-            {center: Point.create(33.867 + -34.567 + 1, -0.71 + 1), radius: potRadius},
-            {center: Point.create(33.867 + 34.567 - 1, 136.65 - 1), radius: potRadius},
-            {center: Point.create(33.867 + -34.567 + 1, 136.65 - 1), radius: potRadius},
+            {center: Point.create(4 + 33.867 + 35.567, 4 + 67.981), radius: potRadius},
+            {center: Point.create(4 + 33.867 + -35.567, 4 + 67.981), radius: potRadius},
+            {center: Point.create(4 + 33.867 + 34.567 - 1, 4 + -0.71 + 1), radius: potRadius},
+            {center: Point.create(4 + 33.867 + -34.567 + 1, 4 + -0.71 + 1), radius: potRadius},
+            {center: Point.create(4 + 33.867 + 34.567 - 1, 4 + 136.65 - 1), radius: potRadius},
+            {center: Point.create(4 + 33.867 + -34.567 + 1, 4 + 136.65 - 1), radius: potRadius},
         ];
     }
 
@@ -40,34 +42,34 @@ class SnookrTable {
         const cornerD = 2.5;
         const middleD = 1;
         return [
-            /* 22 */ [Point.create(33.867 + -37.867, 66.43), 0],
-            /* 23 */ [Point.create(33.867 + -35.6, 66.43), 0],
-            /* 24 */ [Point.create(33.867 + -33.867, 64.867), middleD],
-            /* 25 */ [Point.create(33.867 + -33.867, 3), cornerD],
-            /* 26 */ [Point.create(33.867 + -35.867, 0), 0],
-            /* 27 */ [Point.create(33.867 + -33.867, -2), 0],
-            /* 28 */ [Point.create(33.867 + -30.867, 0), cornerD],
-            /* 01 */ [Point.create(33.867 + 30.867, 0), cornerD],
-            /* 02 */ [Point.create(33.867 + 33.867, -2), 0],
-            /* 03 */ [Point.create(33.867 + 35.867, 0), 0],
-            /* 04 */ [Point.create(33.867 + 33.867, 3), cornerD],
-            /* 05 */ [Point.create(33.867 + 33.867, 64.867), middleD],
-            /* 06 */ [Point.create(33.867 + 35.6, 66.43), 0],
-            /* 07 */ [Point.create(33.867 + 37.867, 66.43), 0],
-            /* 08 */ [Point.create(33.867 + 37.867, 69.53), 0],
-            /* 09 */ [Point.create(33.867 + 35.6, 69.53), 0],
-            /* 10 */ [Point.create(33.867 + 33.867, 71.1), middleD],
-            /* 11 */ [Point.create(33.867 + 33.867, 132.967), cornerD],
-            /* 12 */ [Point.create(33.867 + 35.93, 135.937), 0],
-            /* 13 */ [Point.create(33.867 + 33.85, 138.05), 0],
-            /* 14 */ [Point.create(33.867 + 30.867, 135.937), cornerD],
-            /* 15 */ [Point.create(33.867 + -30.867, 135.937), cornerD],
-            /* 16 */ [Point.create(33.867 + -33.85, 138.05), 0],
-            /* 17 */ [Point.create(33.867 + -35.93, 135.937), 0],
-            /* 18 */ [Point.create(33.867 + -33.867, 132.967), cornerD],
-            /* 19 */ [Point.create(33.867 + -33.867, 71.1), middleD],
-            /* 20 */ [Point.create(33.867 + -35.6, 69.53), 0],
-            /* 21 */ [Point.create(33.867 + -37.867, 69.53), 0],
+            /* 22 */ [Point.create(4 + 33.867 + -37.867, 4 + 66.43), 0],
+            /* 23 */ [Point.create(4 + 33.867 + -35.6, 4 + 66.43), 0],
+            /* 24 */ [Point.create(4 + 33.867 + -33.867, 4 + 64.867), middleD],
+            /* 25 */ [Point.create(4 + 33.867 + -33.867, 4 + 3), cornerD],
+            /* 26 */ [Point.create(4 + 33.867 + -35.867, 4 + 0), 0],
+            /* 27 */ [Point.create(4 + 33.867 + -33.867, 4 + -2), 0],
+            /* 28 */ [Point.create(4 + 33.867 + -30.867, 4 + 0), cornerD],
+            /* 01 */ [Point.create(4 + 33.867 + 30.867, 4 + 0), cornerD],
+            /* 02 */ [Point.create(4 + 33.867 + 33.867, 4 + -2), 0],
+            /* 03 */ [Point.create(4 + 33.867 + 35.867, 4 + 0), 0],
+            /* 04 */ [Point.create(4 + 33.867 + 33.867, 4 + 3), cornerD],
+            /* 05 */ [Point.create(4 + 33.867 + 33.867, 4 + 64.867), middleD],
+            /* 06 */ [Point.create(4 + 33.867 + 35.6, 4 + 66.43), 0],
+            /* 07 */ [Point.create(4 + 33.867 + 37.867, 4 + 66.43), 0],
+            /* 08 */ [Point.create(4 + 33.867 + 37.867, 4 + 69.53), 0],
+            /* 09 */ [Point.create(4 + 33.867 + 35.6, 4 + 69.53), 0],
+            /* 10 */ [Point.create(4 + 33.867 + 33.867, 4 + 71.1), middleD],
+            /* 11 */ [Point.create(4 + 33.867 + 33.867, 4 + 132.967), cornerD],
+            /* 12 */ [Point.create(4 + 33.867 + 35.93, 4 + 135.937), 0],
+            /* 13 */ [Point.create(4 + 33.867 + 33.85, 4 + 138.05), 0],
+            /* 14 */ [Point.create(4 + 33.867 + 30.867, 4 + 135.937), cornerD],
+            /* 15 */ [Point.create(4 + 33.867 + -30.867, 4 + 135.937), cornerD],
+            /* 16 */ [Point.create(4 + 33.867 + -33.85, 4 + 138.05), 0],
+            /* 17 */ [Point.create(4 + 33.867 + -35.93, 4 + 135.937), 0],
+            /* 18 */ [Point.create(4 + 33.867 + -33.867, 4 + 132.967), cornerD],
+            /* 19 */ [Point.create(4 + 33.867 + -33.867, 4 + 71.1), middleD],
+            /* 20 */ [Point.create(4 + 33.867 + -35.6, 4 + 69.53), 0],
+            /* 21 */ [Point.create(4 + 33.867 + -37.867, 4 + 69.53), 0],
         ];
     }
 
@@ -97,16 +99,8 @@ class SnookrTable {
         return boundaryElements;
     }
 
-    getInnerWidth() {
-        return this.innerWidth;
-    }
-
     getOuterWidth() {
         return this.outerWidth;
-    }
-
-    getInnerLength() {
-        return this.innerLength;
     }
 
     getOuterLength() {

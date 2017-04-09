@@ -2,7 +2,7 @@ const BALL_STROKE_WIDTH = 0.3;
 const BALL_STROKE_OFFSET = 0;
 const BALL_SPRITE_PADDING = 2;
 
-class SnookrTableRenderer {
+class SnookrRenderer {
     /**
      *
      * @param resources
@@ -47,7 +47,7 @@ class SnookrTableRenderer {
      * @param {HTMLCanvasElement} canvasElement
      * @param {HTMLImageElement} backgroundImageElement
      * @param {HTMLImageElement} cueElement
-     * @returns {SnookrTableRenderer}
+     * @returns {SnookrRenderer}
      */
     mount(containerElement, canvasElement, backgroundImageElement, cueElement) {
         this.containerElement = containerElement;
@@ -297,6 +297,10 @@ class SnookrTableRenderer {
      * @returns {string}
      */
     getBackgroundImageDataUrl() {
+        if (this.table instanceof SnookrTableFunky) {
+            return 'resources/funky-arcade-table.png';
+        }
+
         const table = this.table;
         const self = this;
         const canvas = this.canvasElement;
@@ -331,85 +335,86 @@ class SnookrTableRenderer {
         // brown part
         //
         context.fillStyle = '#4A2106';
+        p = self.getScreenPosition(Point.create(4 + 0, 4 + -4));
+        context.beginPath();
+        context.moveTo(p.getX(), p.getY());
+        p = self.getScreenPosition(Point.create(4 + 67.8, 4 + -4));
+        context.lineTo(p.getX(), p.getY());
+        p = self.getScreenPosition(Point.create(4 + 67.8, 4 + -1.8));
+        context.lineTo(p.getX(), p.getY());
+        p = self.getScreenPosition(Point.create(4 + 0, 4 + -1.8));
+        context.lineTo(p.getX(), p.getY());
+        context.closePath();
+        context.fill();
+        p = self.getScreenPosition(Point.create(4 + 0, 4 + 137.8));
+        context.beginPath();
+        context.moveTo(p.getX(), p.getY());
+        p = self.getScreenPosition(Point.create(4 + 67.8, 4 + 137.8));
+        context.lineTo(p.getX(), p.getY());
+        p = self.getScreenPosition(Point.create(4 + 67.8, 4 + 140));
+        context.lineTo(p.getX(), p.getY());
+        p = self.getScreenPosition(Point.create(4 + 0, 4 + 140));
+        context.lineTo(p.getX(), p.getY());
+        context.closePath();
+        context.fill();
+        p = self.getScreenPosition(Point.create(4 + -4, 4 + -0.5));
+        context.beginPath();
+        context.moveTo(p.getX(), p.getY());
+        p = self.getScreenPosition(Point.create(4 + -1.8, 4 + -0.5));
+        context.lineTo(p.getX(), p.getY());
+        p = self.getScreenPosition(Point.create(4 + -1.8, 4 + 136));
+        context.lineTo(p.getX(), p.getY());
+        p = self.getScreenPosition(Point.create(4 + -4, 4 + 136));
+        context.lineTo(p.getX(), p.getY());
+        context.closePath();
+        context.fill();
+        p = self.getScreenPosition(Point.create(4 + 71.8, 4 + -0.5));
+        context.beginPath();
+        context.moveTo(p.getX(), p.getY());
+        p = self.getScreenPosition(Point.create(4 + 69.2, 4 + -0.5));
+        context.lineTo(p.getX(), p.getY());
+        p = self.getScreenPosition(Point.create(4 + 69.2, 4 + 136));
+        context.lineTo(p.getX(), p.getY());
+        p = self.getScreenPosition(Point.create(4 + 71.8, 4 + 136));
+        context.lineTo(p.getX(), p.getY());
+        context.closePath();
+        context.fill();
 
-        p = self.getScreenPosition(Point.create(0, -4));
-        context.beginPath();
-        context.moveTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(67.8, -4));
-        context.lineTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(67.8, -1.8));
-        context.lineTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(0, -1.8));
-        context.lineTo(p.getX(), p.getY());
-        context.closePath();
-        context.fill();
-        p = self.getScreenPosition(Point.create(0, 137.8));
-        context.beginPath();
-        context.moveTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(67.8, 137.8));
-        context.lineTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(67.8, 140));
-        context.lineTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(0, 140));
-        context.lineTo(p.getX(), p.getY());
-        context.closePath();
-        context.fill();
-        p = self.getScreenPosition(Point.create(-4, -0.5));
-        context.beginPath();
-        context.moveTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(-1.8, -0.5));
-        context.lineTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(-1.8, 136));
-        context.lineTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(-4, 136));
-        context.lineTo(p.getX(), p.getY());
-        context.closePath();
-        context.fill();
-        p = self.getScreenPosition(Point.create(71.8, -0.5));
-        context.beginPath();
-        context.moveTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(69.2, -0.5));
-        context.lineTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(69.2, 136));
-        context.lineTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(71.8, 136));
-        context.lineTo(p.getX(), p.getY());
-        context.closePath();
-        context.fill();
-
+        // bulk line
         context.lineWidth = 2;
         context.strokeStyle = '#dfd';
-        const bulkLine1 = this.getScreenPosition(Point.create(-33.867 + 33.867, 107.986));
-        const bulkLine2 = this.getScreenPosition(Point.create(+33.867 + 33.867, 107.986));
+        const bulkLine1 = this.getScreenPosition(Point.create(4 + -33.867 + 33.867, 4 + 107.986));
+        const bulkLine2 = this.getScreenPosition(Point.create(4 + +33.867 + 33.867, 4 + 107.986));
         context.beginPath();
         context.moveTo(bulkLine1.getX(), bulkLine1.getY());
         context.lineTo(bulkLine2.getX(), bulkLine2.getY());
         context.stroke();
-        const bulkCircleCenter = this.getScreenPosition(Point.create(33.867, 107.886));
+        const bulkCircleCenter = this.getScreenPosition(Point.create(4 + 33.867, 4 + 107.886));
         const bulkCircleRadius = this.getScreenSize(11);
         context.beginPath();
         context.arc(bulkCircleCenter.getX(), bulkCircleCenter.getY(), bulkCircleRadius, 1.5 * Math.PI, 0.5 * Math.PI);
         context.stroke();
 
+        // ball points
         context.fillStyle = '#dfd';
-        [new Point(33.867, 67.981), new Point(33.867, 33.990), new Point(33.867, 12.343)].map(point => this.getScreenPosition(point)).forEach(function (point) {
+        [new Point(4 + 33.867, 4 + 67.981), new Point(4 + 33.867, 4 + 33.990), new Point(4 + 33.867, 4 + 12.343)].map(point => this.getScreenPosition(point)).forEach(function (point) {
             context.beginPath();
-            context.arc(point.getX(), point.getY(), 4, 0, 2 * Math.PI);
+            context.arc(point.getX(), point.getY(), context.canvas.width * 0.002, 0, 2 * Math.PI);
             context.fill();
         });
 
         context.fillStyle = 'gold';
-        p = this.getScreenPosition(Point.create(0, -4));
+        p = this.getScreenPosition(Point.create(4 + 0, 4 + -4));
         context.fillRect(p.getX(), p.getY(), this.getScreenSize(4), this.getScreenSize(4));
-        p = this.getScreenPosition(Point.create(71.8, -4));
+        p = this.getScreenPosition(Point.create(4 + 71.8, 4 + -4));
         context.fillRect(p.getX(), p.getY(), this.getScreenSize(4), this.getScreenSize(4));
-        p = this.getScreenPosition(Point.create(0, 136));
+        p = this.getScreenPosition(Point.create(4 + 0, 4 + 136));
         context.fillRect(p.getX(), p.getY(), this.getScreenSize(4), this.getScreenSize(4));
-        p = this.getScreenPosition(Point.create(71.8, 136));
+        p = this.getScreenPosition(Point.create(4 + 71.8, 4 + 136));
         context.fillRect(p.getX(), p.getY(), this.getScreenSize(4), this.getScreenSize(4));
-        p = this.getScreenPosition(Point.create(71.8, 65.97));
+        p = this.getScreenPosition(Point.create(4 + 71.8, 4 + 65.97));
         context.fillRect(p.getX(), p.getY(), this.getScreenSize(4), this.getScreenSize(2.6));
-        p = this.getScreenPosition(Point.create(-1.85, 65.97));
+        p = this.getScreenPosition(Point.create(4 + -1.85, 4 + 65.97));
         context.fillRect(p.getX(), p.getY(), this.getScreenSize(4), this.getScreenSize(2.1));
 
         table.getPots().forEach(function (pot) {
@@ -430,8 +435,8 @@ class SnookrTableRenderer {
      * @returns {Point}
      */
     getScreenPosition(tablePosition) {
-        const screenX = (tablePosition.getY() + (this.table.getOuterLength() - this.table.getInnerLength()) / 2) * this.canvasElement.width / this.table.getOuterLength();
-        const screenY = this.canvasElement.height - (tablePosition.getX() + (this.table.getOuterWidth() - this.table.getInnerWidth()) / 2) * this.canvasElement.height / this.table.getOuterWidth();
+        const screenX = tablePosition.getY() * this.canvasElement.width / this.table.getOuterLength();
+        const screenY = this.canvasElement.height - tablePosition.getX() * this.canvasElement.height / this.table.getOuterWidth();
         return Point.create(screenX, screenY);
     }
 
@@ -450,8 +455,8 @@ class SnookrTableRenderer {
      * @returns {Point}
      */
     getTablePosition(screenPosition) {
-        const tableX = (this.canvasElement.height - screenPosition.getY()) * this.table.getOuterWidth() / this.canvasElement.height - (this.table.getOuterWidth() - this.table.getInnerWidth()) / 2;
-        const tableY = screenPosition.getX() * this.table.getOuterLength() / this.canvasElement.width - (this.table.getOuterLength() - this.table.getInnerLength()) / 2;
+        const tableX = (this.canvasElement.height - screenPosition.getY()) * this.table.getOuterWidth() / this.canvasElement.height;
+        const tableY = screenPosition.getX() * this.table.getOuterLength() / this.canvasElement.width;
         return Point.create(tableX, tableY);
     }
 
