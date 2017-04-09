@@ -144,7 +144,7 @@ class SnookrRenderer {
             return;
         }
 
-        this.cueElement.style = this.computeCueStyle(cueBall, shooting, isDraggingCueBall, settingCueBall, mouseOnCueBall, ghostScreenPosition, cueScreenDistance);
+        this.cueElement.setAttribute('style', this.computeCueStyle(cueBall, shooting, isDraggingCueBall, settingCueBall, mouseOnCueBall, ghostScreenPosition, cueScreenDistance));
     }
 
     /**
