@@ -4,22 +4,21 @@ class SnookrTableFunky extends SnookrTable {
     }
 
     initDimensions() {
-        this.outerWidth = 76.6;
-        this.outerLength = 140.0;
+        this.outerWidth = 76.0;
+        this.outerLength = 140.2;
     }
 
     createPots() {
-        const cornerR = 7.6;
+        const cornerR = 7.8;
         const cornerCenter = 4.2;
-        const midCenter = 3.4;
-        const midR = 3.6;
+        const midR = 3.5;
         return [
             {center: Point.create(cornerCenter, cornerCenter), radius: cornerR},
             {center: Point.create(cornerCenter, this.outerLength - cornerCenter), radius: cornerR},
-            {center: Point.create(this.outerWidth - cornerCenter, cornerCenter), radius: cornerR},
-            {center: Point.create(this.outerWidth - cornerCenter, this.outerLength - cornerCenter), radius: cornerR},
-            {center: Point.create(this.outerWidth - midCenter, this.outerLength / 2), radius: midR},
-            {center: Point.create(midCenter, this.outerLength / 2), radius: midR},
+            {center: Point.create(this.outerWidth - cornerCenter - 0.8, cornerCenter), radius: cornerR},
+            {center: Point.create(this.outerWidth - cornerCenter - 0.8, this.outerLength - cornerCenter), radius: cornerR},
+            {center: Point.create(this.outerWidth - 4, this.outerLength / 2), radius: midR},
+            {center: Point.create(3.9, this.outerLength / 2), radius: midR},
         ];
     }
 
@@ -31,10 +30,10 @@ class SnookrTableFunky extends SnookrTable {
         const l = 1400;
         const w = 766;
 
-        const top = 84;
-        const bottom = 85;
-        const left = 88;
-        const right = 84;
+        const top = 93;
+        const bottom = 86;
+        const left = 87;
+        const right = 85;
 
         return [
             [71, 0],
