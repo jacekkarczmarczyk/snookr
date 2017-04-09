@@ -30,40 +30,46 @@ class SnookrTableFunky extends SnookrTable {
     createBoundaryPoints() {
         const l = 1400;
         const w = 766;
+
+        const top = 84;
+        const bottom = 85;
+        const left = 88;
+        const right = 84;
+
         return [
             [71, 0],
-            [122, 88, 50],
+            [122, bottom, 50],
 
-            [657, 88, 40],
+            [657, bottom, 45],
             [684, 0],
             [l - 684, 0],
-            [l - 657, 88, 40],
+            [l - 657, bottom, 45],
 
-            [l - 122, 88, 50],
+            [l - 122, bottom, 50],
             [l - 71, 0],
             [l - 0, 0],
 
             [l - 0, 71],
-            [l - 88, 122, 50],
-            [l - 88, w - 122, 50],
+            [l - right, 122, 50],
+            [l - right, w - 122, 50],
             [l - 0, w - 71],
             [l - 0, w - 0],
 
             [l - 71, w - 0],
-            [l - 122, w - 88, 50],
+            [l - 122, w - top, 50],
 
-            [l - 657, w - 88, 40],
+            [l - 657, w - top, 45],
             [l - 684, w - 0],
             [684, w - 0],
-            [657, w - 88, 40],
+            [657, w - top, 45],
 
-            [122, w - 88, 50],
+            [122, w - top, 50],
             [71, w - 0],
             [0, w - 0],
 
             [0, w - 71],
-            [88, w - 122, 50],
-            [88, 122, 50],
+            [left, w - 122, 50],
+            [left, 122, 50],
             [0, 71],
             [0, 0],
         ].reverse().map(array => [Point.create(array[1] / 10, array[0] / 10), (array[2] >>> 0) / 10]);
