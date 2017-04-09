@@ -13,7 +13,7 @@ Vue.component('snookr-ui-table', {
         this.$bus.on('snookrEvent.repaintTable', function ({gameId, tableController}) {
             if (gameId === self.gameId) {
                 this.tableController = tableController;
-                tableController.getTableRenderer().mount(self.$el, self.canvasElement, self.backgroundElement, self.cueElement);
+                tableController.getTableRenderer().mount(self.$el, self.canvasElement, self.backgroundImageElement, self.cueElement);
                 tableController.repaint(self.$props);
             }
         });
@@ -21,7 +21,7 @@ Vue.component('snookr-ui-table', {
 
     mounted: function () {
         this.canvasElement = this.$el.querySelector('canvas');
-        this.backgroundElement = this.$el.querySelector('.snookr-table-background');
+        this.backgroundImageElement = this.$el.querySelector('.snookr-table-background');
         this.context = this.canvasElement.getContext('2d');
         this.cueElement = this.$el.querySelector('.snookr-table-cue');
     },
