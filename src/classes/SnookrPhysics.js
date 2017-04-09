@@ -150,14 +150,12 @@ class SnookrPhysics {
      * @returns {SnookrBall}
      */
     slowDown(ball, timeDiff) {
-        const movement = ball.getMovement();
-
-        const forwardSpin = movement.getForwardSpin();
+        const forwardSpin = ball.getForwardSpin();
         const forwardSpinLength = forwardSpin.getLength();
         const forwardSpinToBall = forwardSpinLength > this.getSetting('forwardSpinLinearSlowdownRatio') ? forwardSpin.clone().scale(this.getSetting('forwardSpinLinearSlowdownRatio')) : forwardSpin;
         const forwardSpinLeft = forwardSpin.subtract(forwardSpinToBall);
 
-        const sideSpin = Math.sign(movement.getSideSpin()) * Math.max(0, Math.abs(movement.getSideSpin()) - this.getSetting('sideSpinLinearSlowdownRatio'));
+        const sideSpin = Math.sign(ball.getSideSpin()) * Math.max(0, Math.abs(ball.getSideSpin()) - this.getSetting('sideSpinLinearSlowdownRatio'));
 
         const speedLength = ball.getSpeed().getLength();
         const scale = Math.pow(this.getSetting('slowdownRatio') * (1 - Math.exp(-this.getSetting('slowdownBreaker') * speedLength)), timeDiff);
@@ -171,13 +169,14 @@ class SnookrPhysics {
 
     //noinspection JSUnusedGlobalSymbols
     static testCollisions1() {
-        const centerBall = new SnookrBall(0.5, 'black', Point.create(), BallMovement.create(Vector.create(0.5, 0)));
+        const centerBall = new SnookrBall(0.5, 'black', Point.create(), Vector.create(0.5, 0));
 
         for (let i = 0; i < 12; i++) {
             for (let j = 0; j < 12; j++) {
                 const position = Vector.create(1.001, 0).rotate(i * Math.PI / 6).toPoint();
                 const speed = Vector.create(1.4, 0).rotate(j * Math.PI / 6);
-                const sideBall = SnookrBall.create(0.5, 'white', position, BallMovement.create(speed));
+                const sideBall = SnookrBall.create(0.5, 'white', position);
+                sideBall.setSpeed(speed);
                 const collision = centerBall.calculateBallCollision(sideBall, 1);
             }
         }
@@ -189,7 +188,8 @@ class SnookrPhysics {
         for (let i = 0; i < 3; i++) {
             const position = Vector.create(1.001, 0).rotate((i - 1) * 0.1).toPoint();
             const speed = Vector.create(-1, 0);
-            const sideBall = SnookrBall.create(0.5, 'white', position, BallMovement.create(speed));
+            const sideBall = SnookrBall.create(0.5, 'white', position);
+            sideBall.setSpeed(speed);
             const collision = centerBall.calculateBallCollision(sideBall, 1);
         }
     }

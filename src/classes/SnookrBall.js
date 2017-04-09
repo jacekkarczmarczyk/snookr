@@ -4,16 +4,17 @@ class SnookrBall {
      * @param ballRadius
      * @param {string} ballType
      * @param {Point} position
-     * @param {BallMovement|null} movement
-     * @param potted
+     * @returns {SnookrBall}
      */
-    constructor(ballRadius, ballType, position, movement = null, potted = false) {
+    constructor(ballRadius, ballType, position) {
         this.ballRadius = ballRadius;
         this.ballType = ballType;
         this.position = position;
         this.initialPosition = position;
-        this.movement = movement || new BallMovement();
-        this.potted = potted;
+        this.speed = Vector.create();
+        this.forwardSpin = Vector.create();
+        this.sideSpin = 0;
+        this.potted = false;
     }
 
     /**
@@ -21,12 +22,10 @@ class SnookrBall {
      * @param ballRadius
      * @param {string} ballType
      * @param {Point} position
-     * @param {BallMovement|null} movement
-     * @param {boolean} potted
      * @returns {SnookrBall}
      */
-    static create(ballRadius, ballType, position, movement = null, potted = false) {
-        return new SnookrBall(ballRadius, ballType, position, movement, potted);
+    static create(ballRadius, ballType, position) {
+        return new SnookrBall(ballRadius, ballType, position);
     }
 
     /**
@@ -44,9 +43,9 @@ class SnookrBall {
      */
     setPotted(potted = true) {
         this.potted = potted;
-        this.movement.setSpeed(Vector.create());
-        this.movement.setForwardSpin(Vector.create());
-        this.movement.setSideSpin(0);
+        this.setSpeed(Vector.create());
+        this.setForwardSpin(Vector.create());
+        this.setSideSpin(0);
         return this;
     }
 
@@ -72,7 +71,7 @@ class SnookrBall {
      * @returns {SnookrBall}
      */
     setPosition(position) {
-        this.position = position;
+        this.position = Point.create(position.getX(), position.getY());
         return this;
     }
 
@@ -100,27 +99,8 @@ class SnookrBall {
     randomizePosition(randomness) {
         const maxRnd = randomness * this.getBallRadius();
         const rnd = () => Math.random() * 2 * maxRnd - maxRnd;
-        this.position = this.position.translate(Vector.create(rnd(), rnd()));
+        this.position = new Point(this.position.getX() + rnd(), this.position.getY() + rnd());
         return this;
-    }
-
-    /**
-     *
-     * @param {BallMovement} movement
-     */
-    setMovement(movement) {
-        this.movement.setSpeed(movement.getSpeed());
-        this.movement.setForwardSpin(movement.getForwardSpin());
-        this.movement.setSideSpin(movement.getSideSpin());
-        return this;
-    }
-
-    /**
-     *
-     * @returns {BallMovement}
-     */
-    getMovement() {
-        return this.movement;
     }
 
     /**
@@ -129,7 +109,8 @@ class SnookrBall {
      * @returns {SnookrBall}
      */
     setSpeed(speed) {
-        this.movement.setSpeed(speed);
+        this.speed.setX(speed.getX());
+        this.speed.setY(speed.getY());
         return this;
     }
 
@@ -138,7 +119,7 @@ class SnookrBall {
      * @returns {Vector}
      */
     getSpeed() {
-        return this.movement.getSpeed();
+        return this.speed;
     }
 
     /**
@@ -147,8 +128,17 @@ class SnookrBall {
      * @returns {SnookrBall}
      */
     setForwardSpin(forwardSpin) {
-        this.movement.setForwardSpin(forwardSpin);
+        this.forwardSpin.setX(forwardSpin.getX());
+        this.forwardSpin.setY(forwardSpin.getY());
         return this;
+    }
+
+    /**
+     *
+     * @returns {Vector}
+     */
+    getForwardSpin() {
+        return this.forwardSpin;
     }
 
     /**
@@ -157,7 +147,7 @@ class SnookrBall {
      * @returns {SnookrBall}
      */
     setSideSpin(sideSpin) {
-        this.movement.setSideSpin(sideSpin);
+        this.sideSpin = sideSpin;
         return this;
     }
 
@@ -166,7 +156,7 @@ class SnookrBall {
      * @returns {number}
      */
     getSideSpin() {
-        return this.movement.getSideSpin();
+        return this.sideSpin;
     }
 
     /**

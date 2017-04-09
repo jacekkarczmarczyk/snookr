@@ -104,7 +104,9 @@ class SnookrGameStateManager {
     getBallSetData() {
         return this._ballSet.map(ball => ({
             position: ball.getPosition(),
-            movement: ball.getMovement(),
+            speed: ball.getSpeed(),
+            forwardSpin: ball.getForwardSpin(),
+            sideSpin: ball.getSideSpin(),
             potted: ball.isPotted()
         }));
     }
@@ -116,7 +118,9 @@ class SnookrGameStateManager {
     setBallSetData(ballSetData) {
         this._ballSet.forEach(function (ball, index) {
             ball.setPosition(ballSetData[index].position);
-            ball.setMovement(ballSetData[index].movement);
+            ball.setSpeed(ballSetData[index].speed);
+            ball.setForwardSpin(ballSetData[index].forwardSpin);
+            ball.setSideSpin(ballSetData[index].sideSpin);
             ball.setPotted(ballSetData[index].potted);
         });
     }

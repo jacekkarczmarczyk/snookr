@@ -208,7 +208,10 @@ class SnookrController {
 
         this.audioPlayer.playCueHitsBall(shotPower / this.getGame().getPhysics().getSetting('maxShotPower'));
 
-        this.getGame().getCueBall().setMovement(new BallMovement(speed, new Spin(forwardSpin, sideSpin)));
+        const cueBall = this.getGame().getCueBall();
+        cueBall.setSpeed(speed);
+        cueBall.setForwardSpin(forwardSpin);
+        cueBall.setSideSpin(sideSpin);
         this.gameState.currentGameState.playing = true;
         this.gameState.currentGameState.shooting = false;
         this.gameState.currentGameState.settingCueBall = false;
