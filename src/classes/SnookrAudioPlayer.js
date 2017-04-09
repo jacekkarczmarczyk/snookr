@@ -27,7 +27,7 @@ class SnookrAudioPlayer {
     }
 
     playCueHitsBall(shotPower) {
-        this.clips.cueHitsBall.play(Math.min(1, shotPower / 5));
+        this.clips.cueHitsBall.play(Math.min(1, shotPower / 2));
     }
 
     playBallHitsBall(ballHitsBallPower) {
