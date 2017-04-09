@@ -44,19 +44,19 @@ class SnookrGameFunky extends SnookrGame {
             new SnookrBall(radius, 'pink', new Point(38.4, 39.3)),
             new SnookrBall(radius, 'black', new Point(38.4, 17.5)),
 
-            new SnookrBall(radius, 'red', new Point(38.4, 39.5 - 2 * maxRnd - 2 * radius)),
+            new SnookrBall(radius, 'red', new Point(38.4, 39.3 - 2 * maxRnd - 2 * radius)),
 
-            new SnookrBall(radius, 'red', new Point(38.4 - stepX, 39.5 - 2 * maxRnd - 2 * radius - stepY)),
-            new SnookrBall(radius, 'red', new Point(38.4 + stepX, 39.5 - 2 * maxRnd - 2 * radius - stepY)),
+            new SnookrBall(radius, 'red', new Point(38.4 - stepX, 39.3 - 2 * maxRnd - 2 * radius - stepY)),
+            new SnookrBall(radius, 'red', new Point(38.4 + stepX, 39.3 - 2 * maxRnd - 2 * radius - stepY)),
 
-            new SnookrBall(radius, 'red', new Point(38.4 - 2 * stepX, 39.5 - 2 * maxRnd - 2 * radius - 2 * stepY)),
-            new SnookrBall(radius, 'red', new Point(38.4, 39.5 - 2 * maxRnd - 2 * radius - 2 * stepY)),
-            new SnookrBall(radius, 'red', new Point(38.4 + 2 * stepX, 39.5 - 2 * maxRnd - 2 * radius - 2 * stepY)),
+            new SnookrBall(radius, 'red', new Point(38.4 - 2 * stepX, 39.3 - 2 * maxRnd - 2 * radius - 2 * stepY)),
+            new SnookrBall(radius, 'red', new Point(38.4, 39.3 - 2 * maxRnd - 2 * radius - 2 * stepY)),
+            new SnookrBall(radius, 'red', new Point(38.4 + 2 * stepX, 39.3 - 2 * maxRnd - 2 * radius - 2 * stepY)),
 
-            new SnookrBall(radius, 'red', new Point(38.4 - 3 * stepX, 39.5 - 2 * maxRnd - 2 * radius - 3 * stepY)),
-            new SnookrBall(radius, 'red', new Point(38.4 - stepX, 39.5 - 2 * maxRnd - 2 * radius - 3 * stepY)),
-            new SnookrBall(radius, 'red', new Point(38.4 + stepX, 39.5 - 2 * maxRnd - 2 * radius - 3 * stepY)),
-            new SnookrBall(radius, 'red', new Point(38.4 + 3 * stepX, 39.5 - 2 * maxRnd - 2 * radius - 3 * stepY)),
+            new SnookrBall(radius, 'red', new Point(38.4 - 3 * stepX, 39.3 - 2 * maxRnd - 2 * radius - 3 * stepY)),
+            new SnookrBall(radius, 'red', new Point(38.4 - stepX, 39.3 - 2 * maxRnd - 2 * radius - 3 * stepY)),
+            new SnookrBall(radius, 'red', new Point(38.4 + stepX, 39.3 - 2 * maxRnd - 2 * radius - 3 * stepY)),
+            new SnookrBall(radius, 'red', new Point(38.4 + 3 * stepX, 39.3 - 2 * maxRnd - 2 * radius - 3 * stepY)),
         ]);
 
         ballSet.forEach(ball => ball.randomizePosition(this.getBallRandomness()));
