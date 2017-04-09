@@ -297,10 +297,6 @@ class SnookrTableRenderer {
      * @returns {string}
      */
     getBackgroundImageDataUrl() {
-        if (!this.isMounted()) {
-            return;
-        }
-
         const table = this.table;
         const self = this;
         const canvas = this.canvasElement;
@@ -381,22 +377,26 @@ class SnookrTableRenderer {
         context.closePath();
         context.fill();
 
+        context.lineWidth = 2;
+        context.strokeStyle = '#dfd';
         const bulkLine1 = this.getScreenPosition(Point.create(-33.867 + 33.867, 107.986));
         const bulkLine2 = this.getScreenPosition(Point.create(+33.867 + 33.867, 107.986));
         context.beginPath();
-        context.lineWidth = 2;
-        context.strokeStyle = '#cfc';
         context.moveTo(bulkLine1.getX(), bulkLine1.getY());
         context.lineTo(bulkLine2.getX(), bulkLine2.getY());
         context.stroke();
-
         const bulkCircleCenter = this.getScreenPosition(Point.create(33.867, 107.886));
         const bulkCircleRadius = this.getScreenSize(11);
         context.beginPath();
-        context.lineWidth = 2;
-        context.strokeStyle = '#cfc';
         context.arc(bulkCircleCenter.getX(), bulkCircleCenter.getY(), bulkCircleRadius, 1.5 * Math.PI, 0.5 * Math.PI);
         context.stroke();
+
+        context.fillStyle = '#dfd';
+        [new Point(33.867, 67.981), new Point(33.867, 33.990), new Point(33.867, 12.343)].map(point => this.getScreenPosition(point)).forEach(function (point) {
+            context.beginPath();
+            context.arc(point.getX(), point.getY(), 4, 0, 2 * Math.PI);
+            context.fill();
+        });
 
         context.fillStyle = 'gold';
         p = this.getScreenPosition(Point.create(0, -4));
