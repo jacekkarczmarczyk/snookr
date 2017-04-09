@@ -21,7 +21,9 @@
     <audio data-type="ball" src="audio/ball.mp3"></audio>
 </div>
 
-<script src="vue@2.2.6.js"></script>
+<script src="vendor/vue@2.2.6.js"></script>
+<script src="vendor/vue-bus.js"></script>
+
 <script src="classes/Point.js"></script>
 <script src="classes/LineSegment.js"></script>
 <script src="classes/LineArc.js"></script>
@@ -29,7 +31,7 @@
 <script src="classes/Spin.js"></script>
 <script src="classes/BallMovement.js"></script>
 <script src="classes/AudioClip.js"></script>
-<script src="classes/ResourcesFactory.js"></script>
+<script src="classes/ResourcesLoader.js"></script>
 <script src="classes/SnookrAudioPlayer.js"></script>
 <script src="classes/SnookrTable.js"></script>
 <script src="classes/SnookrTableArcade.js"></script>
@@ -80,51 +82,33 @@
 </div>
 
 <script type="text/javascript">
-    // https://github.com/yangmingshan/vue-bus
-    //
-    function VueBus(Vue) {
-        const bus = new Vue();
+    window.addEventListener('load', function () {
+        const resourcesFactory = new ResourcesLoader(function () {
+            const resources = {};
+            [].slice.call(document.querySelectorAll('img[data-resource]')).forEach(image => resources[image.getAttribute('data-resource')] = image);
+            return resources;
+        }());
 
-        Object.defineProperties(bus, {
-            on: {
-                get: function() { return this.$on; }
-            },
-            once: {
-                get: function() { return this.$once; }
-            },
-            off: {
-                get: function() { return this.$off; }
-            },
-            emit: {
-                get: function() { return this.$emit; }
-            }
+        resourcesFactory.loadResources().then(function (resources) {
+            const controller1 = new SnookrController(['Player 1', 'Player 2'], resources);
+            const app1 = new Vue({
+                el: '#app1',
+                data: {
+                    gameId: controller1.getGameId(),
+                    gameState: controller1.getGameState()
+                }
+            });
+            controller1.run();
+
+//            const controller2 = new SnookrController(['Player 1', 'Player 2'], resources);
+//            const app2 = new Vue({
+//                el: '#app2',
+//                data: {
+//                    gameId: controller2.getGameId(),
+//                    gameState: controller2.getGameState()
+//                }
+//            });
+//            controller2.run();
         });
-
-        Object.defineProperty(Vue.prototype, '$bus', {
-            get: function() {
-                return bus;
-            }
-        });
-    }
-    Vue.use(VueBus);
-
-    const controller1 = new SnookrController(['Player 1', 'Player 2']);
-    const app1 = new Vue({
-        el: '#app1',
-        data: {
-            gameId: controller1.getGameId(),
-            gameState: controller1.getGameState()
-        }
     });
-//    const controller2 = new SnookrController(['Player 1', 'Player 2']);
-//    const app2 = new Vue({
-//        el: '#app2',
-//        data: {
-//            gameId: controller2.getGameId(),
-//            gameState: controller2.getGameState()
-//        }
-//    });
-
-    window.addEventListener('load', () => controller1.tick());
-    window.addEventListener('load', () => controller2.tick());
 </script>

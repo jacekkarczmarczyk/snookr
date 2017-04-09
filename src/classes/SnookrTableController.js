@@ -2,18 +2,16 @@ class SnookrTableController {
     /**
      *
      * @param {SnookrTableRenderer} tableRenderer
-     * @param {SnookrBall} cueBall
-     * @param $bus
-     * @param {string} gameId
+     * @param shotFiredCallback
+     * @param cueBallPositionChangedCallback
      */
-    constructor(tableRenderer, cueBall, $bus, gameId) {
+    constructor(tableRenderer, {shotFiredCallback, cueBallPositionChangedCallback}) {
         this.tableRenderer = tableRenderer;
-        this.cueBall = cueBall;
-        this.$bus = $bus;
-        this.gameId = gameId;
+        this.shotFiredCallback = shotFiredCallback;
+        this.cueBallPositionChangedCallback = cueBallPositionChangedCallback
         this.ghostScreenPosition = null;
         this.dragData = null;
-        this.cueScreenDistance = 0; //this.tableRenderer.getScreenSize(this.cueBall.getBallRadius());
+        this.cueScreenDistance = null;
         this.mouseOnCueBall = false;
     }
 
@@ -27,15 +25,20 @@ class SnookrTableController {
 
     /**
      *
+     * @param {SnookrBallSet} ballSet
+     * @param {SnookrBall} cueBall
      * @param {boolean} shooting
      * @param {boolean} settingCueBall
      */
-    repaint({shooting, settingCueBall}) {
+    repaint(ballSet, cueBall, {shooting, settingCueBall}) {
         const screenCueBallOffset = this.getScreenCueBallOffset(settingCueBall);
         const ghostScreenPosition = this.getScreenGhostPosition(shooting);
 
-        this.getTableRenderer().paintCanvas(ghostScreenPosition, shooting, settingCueBall, screenCueBallOffset, this.isPointerOnCueBall());
-        this.getTableRenderer().paintCue(shooting, this.isDraggingCueBall(settingCueBall), settingCueBall, this.isPointerOnCueBall(), ghostScreenPosition, this.getCueScreenDistance());
+        this.getTableRenderer().invalidateCanvasSize();
+        this.getTableRenderer().paintCanvas(ballSet, cueBall, ghostScreenPosition, shooting, settingCueBall, screenCueBallOffset, this.isPointerOnCueBall());
+        if (this.cueScreenDistance) {
+            this.getTableRenderer().paintCue(cueBall, shooting, this.isDraggingCueBall(settingCueBall), settingCueBall, this.isPointerOnCueBall(), ghostScreenPosition, this.cueScreenDistance);
+        }
     }
 
     /**
@@ -56,25 +59,18 @@ class SnookrTableController {
         return this.isDraggingCueBall(settingCueBall) ? this.dragData.dragOffset : Vector.create();
     }
 
-    /**
-     *
-     * @returns {number}
-     */
-    getCueScreenDistance() {
-        return this.cueScreenDistance;
-    }
-
     isPointerOnCueBall() {
         return this.mouseOnCueBall;
     }
 
     /**
      *
+     * @param {SnookrBall} cueBall
      * @param {boolean} playing
      * @param {boolean} shooting
      * @param {boolean} settingCueBall
      */
-    handleMouseDown({shooting, settingCueBall}) {
+    handleMouseDown(cueBall, {shooting, settingCueBall}) {
         if ((!shooting && !settingCueBall) || !this.ghostScreenPosition) {
             return;
         }
@@ -84,7 +80,7 @@ class SnookrTableController {
                 mode: 'cueBall',
                 startPosition: this.ghostScreenPosition,
                 dragOffset: Vector.create(),
-                centerOffset: this.tableRenderer.getTablePosition(this.ghostScreenPosition).createVectorTo(this.cueBall.getPosition())
+                centerOffset: this.tableRenderer.getTablePosition(this.ghostScreenPosition).createVectorTo(cueBall.getPosition())
             };
         } else if (shooting) {
             this.dragData = {
@@ -97,17 +93,17 @@ class SnookrTableController {
 
     /**
      *
+     * @param {SnookrBall} cueBall
      * @param {boolean} settingCueBall
      */
-    handleMouseUp({settingCueBall}) {
+    handleMouseUp(cueBall, {settingCueBall}) {
         if (this.isDraggingCueBall(settingCueBall)) {
-            this.$bus.emit('snookrEvent.cueBallPositionChanged', {
-                gameId: this.gameId,
-                position: this.tableRenderer.getTablePosition(this.tableRenderer.getScreenPosition(this.cueBall.getPosition()).translate(this.dragData.dragOffset))
+            this.cueBallPositionChangedCallback({
+                position: this.tableRenderer.getTablePosition(this.tableRenderer.getScreenPosition(cueBall.getPosition()).translate(this.dragData.dragOffset))
             });
         }
         this.dragData = null;
-        this.cueScreenDistance = this.tableRenderer.getScreenSize(this.cueBall.getBallRadius());
+        this.cueScreenDistance = this.tableRenderer.getScreenSize(cueBall.getBallRadius());
     }
 
     /**
@@ -129,17 +125,22 @@ class SnookrTableController {
     /**
      *
      * @param event
+     * @param {SnookrBall} cueBall
      * @param {boolean} shooting
      * @param {boolean} settingCueBall
      */
-    handleMouseMove(event, {shooting, settingCueBall}) {
+    handleMouseMove(event, cueBall, {shooting, settingCueBall}) {
         this.ghostScreenPosition = Point.create(event.layerX, event.layerY);
-        const cueBallTablePosition = this.cueBall.getPosition();
+        const cueBallTablePosition = cueBall.getPosition();
         const mouseTablePosition = this.tableRenderer.getTablePosition(this.ghostScreenPosition);
-        this.mouseOnCueBall = this.isDraggingCueBall(settingCueBall) || cueBallTablePosition.getDistance(mouseTablePosition) < this.cueBall.getBallRadius();
+        this.mouseOnCueBall = this.isDraggingCueBall(settingCueBall) || cueBallTablePosition.getDistance(mouseTablePosition) < cueBall.getBallRadius();
+
+        if (this.cueScreenDistance === null) {
+            this.cueScreenDistance = this.tableRenderer.getScreenSize(cueBall.getBallRadius());
+        }
 
         if (this.isDraggingCue(shooting)) {
-            this.handleCueDrag(event);
+            this.handleCueDrag(event, cueBall);
         } else if (this.isDraggingCueBall(settingCueBall)) {
             this.handleCueBallDrag(event);
         }
@@ -149,17 +150,15 @@ class SnookrTableController {
      *
      * @param event
      */
-    handleCueDrag(event) {
+    handleCueDrag(event, cueBall) {
         const previousOffset = this.dragData.dragOffset.getY();
-        const initialCueScreenDistance = this.tableRenderer.getScreenSize(this.cueBall.getBallRadius());
+        const initialCueScreenDistance = this.tableRenderer.getScreenSize(cueBall.getBallRadius());
         this.dragData.dragOffset = this.dragData.startPosition.createVectorTo(Point.create(event.layerX, event.layerY));
 
         if (this.dragData.dragOffset.getY() + initialCueScreenDistance < 0) {
-            this.$bus.emit('snookrEvent.shotFired', {
-                gameId: this.gameId,
-                speed: this.cueBall.getPosition().createVectorTo(this.tableRenderer.getTablePosition(this.dragData.startPosition)).normalize(this.tableRenderer.getTableSize(previousOffset - this.dragData.dragOffset.getY()))
+            this.shotFiredCallback({
+                speed: cueBall.getPosition().createVectorTo(this.tableRenderer.getTablePosition(this.dragData.startPosition)).normalize(this.tableRenderer.getTableSize(previousOffset - this.dragData.dragOffset.getY()))
             });
-
             this.dragData = null;
             this.cueScreenDistance = initialCueScreenDistance;
         } else {

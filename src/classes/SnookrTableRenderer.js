@@ -5,20 +5,32 @@ const BALL_SPRITE_PADDING = 2;
 class SnookrTableRenderer {
     /**
      *
-     * @param {StaticResourcesFactory} resourcesFactory
-     * @param {SnookrTable} table
-     * @param {SnookrBallSet} ballSet
+     * @param resources
      */
-    constructor(resourcesFactory, table, ballSet) {
-        resourcesFactory.initResources().then(resources => this.resources = resources);
-
-        this.table = table;
-        this.ballSet = ballSet;
-        this.cueBall = this.ballSet.first('white');
+    constructor(resources) {
+        this.resources = resources;
+        this.scaledResources = {};
+        this.table = null;
         this.containerElement = null;
         this.canvasElement = null;
         this.backgroundImageElement = null;
         this.cueElement = null;
+    }
+
+    /**
+     *
+     * @returns {boolean}
+     */
+    isMounted() {
+        return !!this.containerElement;
+    }
+
+    /**
+     *
+     * @param {SnookrTable} table
+     */
+    setTable(table) {
+        this.table = table;
     }
 
     /**
@@ -71,21 +83,35 @@ class SnookrTableRenderer {
         this.backgroundImageElement.height = height;
         this.backgroundImageElement.src = this.getBackgroundImageDataUrl();
 
-        this.scaledResources = this.getScaledBallImages();
+        this.scaledResources = {};
 
         this.cueElement.setAttribute('width', this.getScreenSize(this.table.getOuterLength() * 0.4).toFixed(0));
     }
 
-    paintCanvas(ghostScreenPosition, shooting, settingCueBall, screenCueBallOffset, mouseOnCueBall) {
+    /**
+     *
+     * @param {SnookrBallSet} ballSet
+     * @param {SnookrBall} cueBall
+     * @param {Point} ghostScreenPosition
+     * @param {boolean} shooting
+     * @param {boolean} settingCueBall
+     * @param {Vector} screenCueBallOffset
+     * @param {boolean} mouseOnCueBall
+     */
+    paintCanvas(ballSet, cueBall, ghostScreenPosition, shooting, settingCueBall, screenCueBallOffset, mouseOnCueBall) {
+        if (!this.isMounted()) {
+            return;
+        }
+
         this.context.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
 
         const self = this;
-        this.ballSet.forEach(function (ball) {
+        ballSet.forEach(function (ball) {
             if (ball.isPotted()) {
                 return;
             }
 
-            if (ball.getBallType() === self.cueBall) {
+            if (ball.getBallType() === 'white') {
                 self.paintBall(ball, screenCueBallOffset);
                 if (settingCueBall) {
                     self.paintCueBallDragArrows(ball, screenCueBallOffset, mouseOnCueBall);
@@ -96,12 +122,16 @@ class SnookrTableRenderer {
         });
 
         if (ghostScreenPosition && !mouseOnCueBall && shooting) {
-            this.paintGhost(ghostScreenPosition);
+            this.paintGhost(cueBall, ghostScreenPosition);
         }
+
+        this.canvasElement.style.cursor = (settingCueBall && mouseOnCueBall) ? 'move' : 'default';
+
     }
 
     /**
      *
+     * @param {SnookrBall} cueBall
      * @param {boolean} shooting
      * @param {boolean} isDraggingCueBall
      * @param {boolean} settingCueBall
@@ -109,12 +139,17 @@ class SnookrTableRenderer {
      * @param {Point|null} ghostScreenPosition
      * @param {number} cueScreenDistance
      */
-    paintCue(shooting, isDraggingCueBall, settingCueBall, mouseOnCueBall, ghostScreenPosition, cueScreenDistance) {
-        this.cueElement.style = this.computeCueStyle(shooting, isDraggingCueBall, settingCueBall, mouseOnCueBall, ghostScreenPosition, cueScreenDistance);
+    paintCue(cueBall, shooting, isDraggingCueBall, settingCueBall, mouseOnCueBall, ghostScreenPosition, cueScreenDistance) {
+        if (!this.isMounted()) {
+            return;
+        }
+
+        this.cueElement.style = this.computeCueStyle(cueBall, shooting, isDraggingCueBall, settingCueBall, mouseOnCueBall, ghostScreenPosition, cueScreenDistance);
     }
 
     /**
      *
+     * @param {SnookrBall} cueBall
      * @param {boolean} shooting
      * @param {boolean} isDraggingCueBall
      * @param {boolean} settingCueBall
@@ -123,40 +158,20 @@ class SnookrTableRenderer {
      * @param {number} cueScreenDistance
      * @returns {string}
      */
-    computeCueStyle(shooting, isDraggingCueBall, settingCueBall, mouseOnCueBall, ghostScreenPosition, cueScreenDistance) {
+    computeCueStyle(cueBall, shooting, isDraggingCueBall, settingCueBall, mouseOnCueBall, ghostScreenPosition, cueScreenDistance) {
         if (!shooting || isDraggingCueBall || (settingCueBall && mouseOnCueBall) || !ghostScreenPosition) {
             return 'display: none';
         }
 
-        const cueBallScreenRadius = this.getScreenSize(this.cueBall.getBallRadius());
-        const cueTipScreenPosition = this.getScreenPosition(this.cueBall.getPosition());
+        const cueBallScreenRadius = this.getScreenSize(cueBall.getBallRadius());
+        const cueTipScreenPosition = this.getScreenPosition(cueBall.getPosition());
         const ghostTablePosition = this.getTablePosition(ghostScreenPosition);
 
-        const style = {
-            display: 'block',
-            top: (cueTipScreenPosition.getY() - this.cueElement.offsetHeight / 2) + 'px',
-            left: (cueTipScreenPosition.getX() + cueScreenDistance + cueBallScreenRadius) + 'px',
-            'transform-origin': `-${cueBallScreenRadius + cueScreenDistance}px 50%`,
-            transform: 'rotate(' + (90 + this.cueBall.getPosition().createVectorTo(ghostTablePosition).getAngle() * 180 / Math.PI) + 'deg)',
-        };
-        return Object.keys(style).map(function (property) {
-            return `${property}: ${style[property]}`;
-        }).join('; ');
-    }
-
-    /**
-     *
-     * @returns {*}
-     */
-    getScaledBallImages() {
-        const scaledBallImages = {};
-        const self = this;
-        this.ballSet.forEach(function (ball) {
-            if (!scaledBallImages.hasOwnProperty(ball.getBallType())) {
-                scaledBallImages[ball.getBallType()] = self.getScaledBallImage(ball);
-            }
-        });
-        return scaledBallImages;
+        const top = cueTipScreenPosition.getY() - this.cueElement.offsetHeight / 2;
+        const left = cueTipScreenPosition.getX() + cueScreenDistance + cueBallScreenRadius;
+        const transformOriginX = -(cueBallScreenRadius + cueScreenDistance);
+        const rotateAngle = 90 + cueBall.getPosition().createVectorTo(ghostTablePosition).getAngle() * 180 / Math.PI;
+        return `display: block; top: ${top}px; left: ${left}px; transform-origin: ${transformOriginX}px 50%; transform: rotate(${rotateAngle}deg)`;
     }
 
     /**
@@ -193,6 +208,13 @@ class SnookrTableRenderer {
      * @param {Vector} screenBallOffset
      */
     paintBall(ball, screenBallOffset) {
+        if (!this.isMounted()) {
+            return;
+        }
+
+        if (!this.scaledResources[ball.getBallType()]) {
+            this.scaledResources[ball.getBallType()] = this.getScaledBallImage(ball);
+        }
         const screenBallPosition = this.getScreenPosition(ball.getPosition());
         const screenBallRadius = this.getScreenSize(ball.getBallRadius());
         this.context.drawImage(
@@ -209,6 +231,10 @@ class SnookrTableRenderer {
      * @param {boolean} isPointerOnCueBall
      */
     paintCueBallDragArrows(ball, screenBallOffset, isPointerOnCueBall) {
+        if (!this.isMounted()) {
+            return;
+        }
+
         const context = this.context;
         const screenBallPosition = this.getScreenPosition(ball.getPosition()).translate(screenBallOffset);
         const screenBallRadius = this.getScreenSize(ball.getBallRadius());
@@ -245,11 +271,17 @@ class SnookrTableRenderer {
         context.stroke();
     }
 
-    paintGhost(screenGhostPosition) {
-        // const canvasBallRadius = this.getScreenSize(radius);
-        // const ghostScreenPosition = this.isDraggingCue() ? this.dragData.startPosition : this.ghostScreenPosition;
+    /**
+     *
+     * @param {SnookrBall} cueBall
+     * @param {Point} screenGhostPosition
+     */
+    paintGhost(cueBall, screenGhostPosition) {
+        if (!this.isMounted()) {
+            return;
+        }
 
-        const screenGhostRadius = this.getScreenSize(this.cueBall.getBallRadius());
+        const screenGhostRadius = this.getScreenSize(cueBall.getBallRadius());
 
         this.context.beginPath();
         this.context.arc(screenGhostPosition.getX(), screenGhostPosition.getY(), screenGhostRadius + BALL_STROKE_OFFSET, 0, 2 * Math.PI, false);
@@ -265,6 +297,10 @@ class SnookrTableRenderer {
      * @returns {string}
      */
     getBackgroundImageDataUrl() {
+        if (!this.isMounted()) {
+            return;
+        }
+
         const table = this.table;
         const self = this;
         const canvas = this.canvasElement;

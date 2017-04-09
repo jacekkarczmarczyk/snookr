@@ -3,7 +3,7 @@ class SnookrController {
      *
      * @param {[string, string]} playerNames
      */
-    constructor(playerNames) {
+    constructor(playerNames, resources) {
         this.gameId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             const r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
             return v.toString(16);
@@ -16,22 +16,22 @@ class SnookrController {
             }],
             spinPower: new SpinPower()
         };
-        this.resourcesFactory = new StaticResourcesFactory(function () {
-            const resources = {};
-            [].slice.call(document.querySelectorAll('img[data-resource]')).forEach(image => resources[image.getAttribute('data-resource')] = image);
-            return resources;
-        }());
+        this.tableRenderer = new SnookrTableRenderer(resources);
+        this.tableController = new SnookrTableController(this.tableRenderer, {
+            cueBallPositionChangedCallback: ({position}) => this.setCueBallPosition(position),
+            shotFiredCallback: ({speed}) => this.shotFired(speed)
+        });
         this.resetTable();
 
         this.$bus = (new Vue).$bus;
-        this.$bus.on('snookrEvent.shotFired', function ({gameId, speed}) {
-            gameId === this.getGameId() && this.shotFired(speed);
-        }.bind(this));
-        this.$bus.on('snookrEvent.cueBallPositionChanged', function ({gameId, position}) {
-            gameId === this.getGameId() && this.setCueBallPosition(position);
+        this.$bus.on('snookrEvent.tableViewMounted', function ({gameId, containerElement, canvasElement, backgroundImageElement, cueElement}) {
+            gameId === this.getGameId() && this.tableRenderer.mount(containerElement, canvasElement, backgroundImageElement, cueElement);
         }.bind(this));
 
         const self = this;
+        window.addEventListener('mousedown', event => this.snookr && this.tableController.handleMouseDown(this.snookr.getCueBall(), this.gameState.currentGameState));
+        window.addEventListener('mouseup', event => this.snookr && this.tableController.handleMouseUp(this.snookr.getCueBall(), this.gameState.currentGameState));
+        window.addEventListener('mousemove', event => this.snookr && this.tableController.handleMouseMove(event, this.snookr.getCueBall(), this.gameState.currentGameState));
         window.addEventListener('hashchange', () => this.resetTable());
         window.addEventListener('keydown', function ({which, ctrlKey}) {
             switch (which) {
@@ -137,8 +137,7 @@ class SnookrController {
         this.snookr = new gameConstructor;
         this.breakingPlayer = Math.floor(Math.random() * 2);
         this.stateManager = new SnookrGameStateManager(this.getGame().getBallSet(), this.getGame().getInitialRule(), this.breakingPlayer);
-        this.tableRenderer = new SnookrTableRenderer(this.resourcesFactory, this.snookr.getTable(), this.snookr.getBallSet());
-        this.tableController = new SnookrTableController(this.tableRenderer, this.snookr.getBallSet().first('white'), this.$bus, this.getGameId());
+        this.tableRenderer.setTable(this.snookr.getTable());
         this.resetMatch();
     }
 
@@ -158,11 +157,12 @@ class SnookrController {
         this.gameState.currentGameState = currentGameState;
     }
 
+    run() {
+        this.tick();
+    }
+
     tick() {
-        this.$bus.emit('snookrEvent.repaintTable', {
-            gameId: this.getGameId(),
-            tableController: this.tableController
-        });
+        this.tableController.repaint(this.snookr.getBallSet(), this.snookr.getCueBall(), this.gameState.currentGameState);
 
         if (this.gameState.currentGameState.playing) {
             const recalculateResult = this.getGame().getPhysics().recalculatePositions(this.getGame().getBallSet(), this.getGame().getFrameLength());
@@ -181,7 +181,6 @@ class SnookrController {
             if (allStopped) {
                 this.shotCompleted();
             }
-
         }
 
         window.requestAnimationFrame(this.tickBinded);

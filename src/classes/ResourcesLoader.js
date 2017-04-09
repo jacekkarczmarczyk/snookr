@@ -1,9 +1,9 @@
-class StaticResourcesFactory {
+class ResourcesLoader {
     constructor(resources) {
         this.resources = resources;
     }
 
-    initResources() {
+    loadResources() {
         return Promise.all([
             this.fetchCueImage(),
             this.fetchBallImage('white'),

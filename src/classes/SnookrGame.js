@@ -5,6 +5,7 @@ class SnookrGame {
         }
 
         this.ballSet = new SnookrBallSet();
+        this.cueBall = null;
         this.table = this.createTable();
         this.physics = new SnookrPhysics(this.table, this.getPhysicsSettings());
         this.resetGame();
@@ -16,6 +17,7 @@ class SnookrGame {
      */
     resetGame() {
         this.ballSet.import(this.createBallSet());
+        this.cueBall = this.ballSet.first('white');
         return this;
     }
 
@@ -89,7 +91,7 @@ class SnookrGame {
      * @returns {SnookrBall}
      */
     getCueBall() {
-        return this.getBallSet().first('white');
+        return this.cueBall;
     }
 
     /**
