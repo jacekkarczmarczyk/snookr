@@ -128,7 +128,7 @@ class SnookrPhysics {
                     }
                 }
 
-                ballHitsBallPower += firstEvent.collision.getCollisionPower();
+                ballHitsBallPower = ballHitsBallPower + firstEvent.collision.getCollisionPower();
             }
 
             timeLeft -= firstEvent.eventTime;
