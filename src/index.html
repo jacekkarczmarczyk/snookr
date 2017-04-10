@@ -3,18 +3,6 @@
 <meta charset="utf-8"/>
 <link rel="stylesheet" type="text/css" href="snookr.css" />
 <div style="display: none">
-    <img src="resources/cue.png" data-resource="cue" />
-    <img src="resources/ball-red.png" data-resource="ball-red"/>
-    <img src="resources/ball-white.png" data-resource="ball-white"/>
-    <img src="resources/ball-yellow.png" data-resource="ball-yellow"/>
-    <img src="resources/ball-green.png" data-resource="ball-green"/>
-    <img src="resources/ball-brown.png" data-resource="ball-brown"/>
-    <img src="resources/ball-blue.png" data-resource="ball-blue"/>
-    <img src="resources/ball-pink.png" data-resource="ball-pink"/>
-    <img src="resources/ball-black.png" data-resource="ball-black"/>
-
-    <img src="resources/canvas.jpg" data-resource="canvas"/>
-
     <audio data-type="applause1" src="audio/applause1.mp3"></audio>
     <audio data-type="applause2" src="audio/applause2.mp3"></audio>
     <audio data-type="disappointment" src="audio/disappointment.mp3"></audio>
@@ -29,7 +17,6 @@
 <script src="classes/LineArc.js"></script>
 <script src="classes/Vector.js"></script>
 <script src="classes/AudioClip.js"></script>
-<script src="classes/ResourcesLoader.js"></script>
 <script src="classes/SnookrAudioPlayer.js"></script>
 <script src="classes/SnookrTable.js"></script>
 <script src="classes/SnookrTableArcade.js"></script>
@@ -61,6 +48,9 @@
 <script src="classes/SnookrRenderer.js"></script>
 <script src="classes/SnookrTableController.js"></script>
 <script src="classes/SnookrController.js"></script>
+<script src="classes/ResourceLoader.js"></script>
+<script src="classes/ResourceNameResolver.js"></script>
+<script src="classes/SnookrResourceNameResolver.js"></script>
 
 <script src="vue/SnookrUiApp.js"></script>
 <script src="vue/SnookrUiBoard.js"></script>
@@ -83,14 +73,10 @@
 
 <script type="text/javascript">
     window.addEventListener('load', function () {
-        const resourcesFactory = new ResourcesLoader(function () {
-            const resources = {};
-            [].slice.call(document.querySelectorAll('img[data-resource]')).forEach(image => resources[image.getAttribute('data-resource')] = image);
-            return resources;
-        }());
+        const resourceLoader = new ResourceLoader(new SnookrResourceNameResolver());
 
-        resourcesFactory.loadResources().then(function (resources) {
-            const controller1 = new SnookrController(['Player 1', 'Player 2'], resources);
+        resourceLoader.loadResources(['table-canvas', 'cue', 'funky-table', 'ball-white', 'ball-black', 'ball-pink', 'ball-blue', 'ball-brown', 'ball-green', 'ball-yellow', 'ball-red']).then(function () {
+            const controller1 = new SnookrController(['Player 1', 'Player 2'], resourceLoader);
             const app1 = new Vue({
                 el: '#app1',
                 data: {

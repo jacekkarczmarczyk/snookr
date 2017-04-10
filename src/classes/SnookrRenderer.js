@@ -5,10 +5,10 @@ const BALL_SPRITE_PADDING = 2;
 class SnookrRenderer {
     /**
      *
-     * @param resources
+     * @param {ResourceLoader} resourceLoader
      */
-    constructor(resources) {
-        this.resources = resources;
+    constructor(resourceLoader) {
+        this.resourceLoader = resourceLoader;
         this.scaledResources = {};
         this.table = null;
         this.containerElement = null;
@@ -180,7 +180,7 @@ class SnookrRenderer {
      * @returns {Image}
      */
     getScaledBallImage(ball) {
-        const resource = this.resources.balls[ball.getBallType()];
+        const ballImage = this.resourceLoader.getCachedResource('ball-' + ball.getBallType());
         const tmpCanvas = document.createElement('canvas');
         const ballRadius = this.getScreenSize(ball.getBallRadius());
 
@@ -188,7 +188,7 @@ class SnookrRenderer {
         tmpCanvas.height = ballRadius * 2 + 2 * BALL_SPRITE_PADDING;
 
         const tmpContext = tmpCanvas.getContext('2d');
-        tmpContext.drawImage(resource, BALL_SPRITE_PADDING, BALL_SPRITE_PADDING, ballRadius * 2, ballRadius * 2);
+        tmpContext.drawImage(ballImage, BALL_SPRITE_PADDING, BALL_SPRITE_PADDING, ballRadius * 2, ballRadius * 2);
         tmpContext.beginPath();
         tmpContext.arc(ballRadius + BALL_SPRITE_PADDING, ballRadius + BALL_SPRITE_PADDING, ballRadius + BALL_STROKE_OFFSET, 0, 2 * Math.PI, false);
         tmpContext.strokeStyle = '#000';
@@ -314,7 +314,7 @@ class SnookrRenderer {
         context.strokeStyle = '#030';
         context.lineWidth = 1;
 //        context.fillStyle = '#228B22';
-        const canvasPattern = document.querySelector('img[data-resource="canvas"]');
+        const canvasPattern = this.resourceLoader.getCachedResource('table-canvas');
         context.fillStyle = context.createPattern(canvasPattern, 'repeat');
         context.beginPath();
         context.moveTo(self.getScreenPosition(table.getBoundaryElements()[0].getP1()).getX(), self.getScreenPosition(table.getBoundaryElements()[0].getP1()).getY());

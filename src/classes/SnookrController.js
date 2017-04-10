@@ -2,8 +2,9 @@ class SnookrController {
     /**
      *
      * @param {[string, string]} playerNames
+     * @param {ResourceLoader} resourceLoader
      */
-    constructor(playerNames, resources) {
+    constructor(playerNames, resourceLoader) {
         this.gameId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             const r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
             return v.toString(16);
@@ -16,7 +17,7 @@ class SnookrController {
             }],
             spinPower: new SpinPower()
         };
-        this.tableRenderer = new SnookrRenderer(resources);
+        this.tableRenderer = new SnookrRenderer(resourceLoader);
         this.tableController = new SnookrTableController(this.tableRenderer, {
             cueBallPositionChangedCallback: ({position}) => this.setCueBallPosition(position),
             shotFiredCallback: ({speed}) => this.shotFired(speed)
