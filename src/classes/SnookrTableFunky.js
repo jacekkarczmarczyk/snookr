@@ -73,4 +73,13 @@ class SnookrTableFunky extends SnookrTable {
             [0, 0],
         ].reverse().map(array => [Point.create(array[1] / 10, array[0] / 10), (array[2] >>> 0) / 10]);
     }
+
+    /**
+     *
+     * @param {Point} position
+     * @returns {boolean}
+     */
+    isInCueBallArea(position) {
+        return position.getY() >= 108.8 && (position.getDistance(Point.create(38.4, 108.8))) <= 11.1;
+    }
 }

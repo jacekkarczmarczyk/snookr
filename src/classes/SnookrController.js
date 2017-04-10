@@ -32,7 +32,7 @@ class SnookrController {
         const self = this;
         window.addEventListener('mousedown', event => this.snookr && this.tableController.handleMouseDown(this.snookr.getCueBall(), this.gameState.currentGameState));
         window.addEventListener('mouseup', event => this.snookr && this.tableController.handleMouseUp(this.snookr.getCueBall(), this.gameState.currentGameState));
-        window.addEventListener('mousemove', event => this.snookr && this.tableController.handleMouseMove(event, this.snookr.getCueBall(), this.gameState.currentGameState));
+        window.addEventListener('mousemove', event => this.snookr && this.tableController.handleMouseMove(event, this.snookr.getCueBall(), this.snookr.getBallSet(), this.gameState.currentGameState));
         window.addEventListener('hashchange', () => this.resetTable());
         window.addEventListener('keydown', function ({which, ctrlKey}) {
             switch (which) {

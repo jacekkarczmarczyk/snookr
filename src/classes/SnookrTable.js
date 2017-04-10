@@ -263,7 +263,7 @@ class SnookrTable {
      * @returns {boolean}
      */
     isInCueBallArea(position) {
-        return position.getY() >= 107.886 && (position.getDistance(Point.create(33.867, 107.886))) <= 11;
+        return position.getY() >= 4 + 107.886 && (position.getDistance(Point.create(4 + 33.867, 4 + 107.886))) <= 11;
     }
 
 }
