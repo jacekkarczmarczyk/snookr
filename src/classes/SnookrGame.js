@@ -120,8 +120,8 @@ class SnookrGame {
         let nextBallType;
 
         if (ballToUnpot.getBallType() === 'white') {
-            const bulkCenter = Point.create(33.867, 107.986);
-            const bulkR = 11;
+            const bulkCenter = this.getTable().getDCenter();
+            const bulkR = this.getTable().getDRadius();
             do {
                 const alpha = Math.random() * Math.PI;
                 newPosition = bulkCenter.translate(Vector.create(Math.random() * bulkR).rotate(alpha));
