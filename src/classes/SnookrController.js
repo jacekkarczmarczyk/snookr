@@ -2,7 +2,6 @@ class SnookrController {
     /**
      *
      * @param {[string, string]} playerNames
-     * @param {ResourceLoader} resourceLoader
      */
     constructor(playerNames) {
         this.gameId = SnookrController.gameId = (SnookrController.gameId >>> 0) + 1;
@@ -165,7 +164,7 @@ class SnookrController {
     }
 
     repaint() {
-        this.tableController.repaint(this.tableRenderer, this.snookr.getBallSet(), this.snookr.getCueBall(), this.gameState.currentGameState);
+        this.snookr && this.tableController.repaint(this.tableRenderer, this.snookr.getBallSet(), this.snookr.getCueBall(), this.gameState.currentGameState);
     }
 
     /**
