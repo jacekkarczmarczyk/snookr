@@ -4,10 +4,10 @@ class ResourceLoader {
      * @param {ResourceNameResolver} resourceNameResolver
      */
     constructor(resourceNameResolver) {
-        this.resourceNameResolver = resourceNameResolver;
-        this.cache = {};
-        this.loadingCount = 0;
-        this.loadedCount = 0;
+        this._resourceNameResolver = resourceNameResolver;
+        this._cache = {};
+        this._loadingCount = 0;
+        this._loadedCount = 0;
     }
 
     /**
@@ -21,8 +21,8 @@ class ResourceLoader {
     }
 
     getCachedResource(resourceName) {
-        if (resourceName in this.cache) {
-            return this.cache[resourceName];
+        if (resourceName in this._cache) {
+            return this._cache[resourceName];
         }
 
         throw `Resource "${resourceName}" is not loaded yet`;
@@ -48,18 +48,18 @@ class ResourceLoader {
      * @private
      */
     _loadResourcePromise(resourceName, isMandatory, resolve, reject) {
-        if (resourceName in this.cache) {
-            return this.cache[resourceName];
+        if (resourceName in this._cache) {
+            return this._cache[resourceName];
         }
 
-        const resourceNameResolved = this.resourceNameResolver.resolveResourceName(resourceName);
+        const resourceNameResolved = this._resourceNameResolver.resolveResourceName(resourceName);
         if (typeof resourceNameResolved === 'undefined') {
             reject(`Resource name "${resourceName}" cannot be resolved`);
         }
 
         const resourceImage = new Image();
-        resourceImage.src = this.resourceNameResolver.resolveResourceName(resourceName);
-        this.loadingCount = this.loadedCount + 1;
+        resourceImage.src = this._resourceNameResolver.resolveResourceName(resourceName);
+        this._loadingCount = this._loadedCount + 1;
 
         const timeout = window.setTimeout(() => this._resourceLoaded(resourceName, resourceImage, timeout, resolve), 100);
 
@@ -78,12 +78,12 @@ class ResourceLoader {
     _resourceLoaded(resourceName, resourceImage, timeout, resolve) {
         window.clearTimeout(timeout);
 
-        this.cache[resourceName] = resourceImage;
+        this._cache[resourceName] = resourceImage;
 
-        this.loadedCount = this.loadedCount + 1;
-        if (this.loadingCount === this.loadedCount) {
-            this.loadingCount = 0;
-            this.loadedCount = 0;
+        this._loadedCount = this._loadedCount + 1;
+        if (this._loadingCount === this._loadedCount) {
+            this._loadingCount = 0;
+            this._loadedCount = 0;
         }
 
         resolve(resourceImage);
@@ -104,10 +104,10 @@ class ResourceLoader {
         if (isMandatory) {
             reject(`Failed to load resource "${resourceName}"`);
         } else {
-            this.loadingCount = this.loadingCount - 1;
-            if (this.loadingCount === this.loadedCount) {
-                this.loadingCount = 0;
-                this.loadedCount = 0;
+            this._loadingCount = this._loadingCount - 1;
+            if (this._loadingCount === this._loadedCount) {
+                this._loadingCount = 0;
+                this._loadedCount = 0;
             }
 
             resolve(null);
