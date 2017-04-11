@@ -3,6 +3,17 @@ class SnookrGameReal extends SnookrGame {
         super();
     }
 
+    getPhysicsSettings() {
+        return {
+            slowdownBreaker: 200,
+            forwardSpinLinearSlowdownRatio: 0.05,
+            slowdownRatio: 0.987,
+            sideSpinScale: 0.1,
+            maxShotPower: 8.5,
+            forwardSpinScale: 0.15
+        };
+    }
+
     /**
      *
      * @returns {SnookrTable}

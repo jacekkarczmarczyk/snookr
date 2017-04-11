@@ -19,8 +19,8 @@ class SnookrController {
         };
         this.tableRenderer = new SnookrRenderer(resourceLoader);
         this.tableController = new SnookrTableController(this.tableRenderer, {
-            cueBallPositionChangedCallback: ({position}) => this.setCueBallPosition(position),
-            shotFiredCallback: ({speed}) => this.shotFired(speed)
+            cueBallPositionChangedCallback: this.setCueBallPosition.bind(this),
+            shotFiredCallback: this.shotFired.bind(this)
         });
         this.resetTable();
 
@@ -211,7 +211,7 @@ class SnookrController {
      *
      * @param {Point} position
      */
-    setCueBallPosition(position) {
+    setCueBallPosition({position}) {
         this.getGame().setCueBallPosition(position);
     }
 
@@ -219,12 +219,12 @@ class SnookrController {
      *
      * @param {Vector} speed
      */
-    shotFired(speed) {
+    shotFired({speed}) {
         this.stateManager.pushState();
 
         const shotPower = Math.min(this.getGame().getPhysics().getSetting('maxShotPower'), speed.getLength());
         speed = speed.clone().normalize(shotPower);
-        const forwardSpin = speed.clone().scale(this.gameState.spinPower.getForwardSpinPower() * Math.sqrt(shotPower / 5) * this.getGame().getPhysics().getSetting('forwardSpinScale'));
+        const forwardSpin = speed.clone().scale(this.gameState.spinPower.getForwardSpinPower() * Math.sqrt(shotPower) * this.getGame().getPhysics().getSetting('forwardSpinScale'));
         const sideSpin = -this.gameState.spinPower.getSideSpinPower() * shotPower * this.getGame().getPhysics().getSetting('sideSpinScale');
 
         this.audioPlayer.playCueHitsBall(shotPower / this.getGame().getPhysics().getSetting('maxShotPower'));

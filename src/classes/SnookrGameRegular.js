@@ -11,6 +11,17 @@ class SnookrGameRegular extends SnookrGame {
         return new SnookrTableRegular();
     }
 
+    getPhysicsSettings() {
+        return {
+            slowdownBreaker: 200,
+            forwardSpinLinearSlowdownRatio: 0.05,
+            slowdownRatio: 0.987,
+            sideSpinScale: 0.1,
+            maxShotPower: 8.3,
+            forwardSpinScale: 0.15
+        };
+    }
+
     getBallRadius() {
         return 1.5;
     }

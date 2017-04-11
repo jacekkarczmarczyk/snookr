@@ -4,7 +4,7 @@ class SnookrTableRegular extends SnookrTable {
     }
 
     createPots() {
-        const potRadius = 1.9;
+        const potRadius = 2.7;
         return [
             {center: Point.create(4 + 33.867 + 35.567, 4 + 67.981), radius: potRadius},
             {center: Point.create(4 + 33.867 + -35.567, 4 + 67.981), radius: potRadius},
