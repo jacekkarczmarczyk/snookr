@@ -27,8 +27,8 @@ class SnookrTableFunky extends SnookrTable {
      * @returns {Array}
      */
     createBoundaryPoints() {
-        const l = 1400;
-        const w = 766;
+        const l = this.getOuterLength() * 10;
+        const w = this.getOuterWidth() * 10;
 
         const top = 93;
         const bottom = 86;
