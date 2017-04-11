@@ -15,4 +15,21 @@ class SnookrTableArcade extends SnookrTable {
         ];
     }
 
+    /**
+     *
+     * @param {SnookrBall} ball
+     * @param {number} tMax
+     */
+    calculateBoundaryTouch(ball, tMax) {
+        const x = ball.getPosition().getX() + ball.getSpeed().getX() * tMax;
+        const y = ball.getPosition().getY() + ball.getSpeed().getY() * tMax;
+        const border =  4;
+        const r = ball.getBallRadius();
+
+        if (x - r > border && x + r < this.outerWidth - border && y - r > border && y + r < this.outerLength - border) {
+            return null;
+        }
+
+        return super.calculateBoundaryTouch(ball, tMax);
+    }
 }

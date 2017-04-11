@@ -71,8 +71,16 @@ class SnookrPhysics {
 
         // Check whether any two balls hit each other
         //
-        ballSet.filter(ball => ball.getSpeed().getX() || ball.getSpeed().getY()).forEach(function (ball1) {
-            ballSet.forEach(function (ball2) {
+        ballSet.forEach(function (ball1, i) {
+            ballSet.forEach(function (ball2, j) {
+                if (j <= i) {
+                    return;
+                }
+
+                if (ball1.getSpeed().getX() === 0 && ball1.getSpeed().getY() === 0 && ball2.getSpeed().getX() === 0 && ball2.getSpeed().getY() === 0) {
+                    return;
+                }
+
                 const collision = ball1.calculateBallCollision(ball2, frameLength);
                 if (collision !== null && (firstEvent === null || collision.getCollisionTime() < firstEvent.eventTime)) {
                     firstEvent = {

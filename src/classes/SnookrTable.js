@@ -168,7 +168,7 @@ class SnookrTable {
     /**
      *
      * @param {SnookrBall} ball
-     * @param tMax
+     * @param {number} tMax
      * @returns {{getCollisionTime, getCollisionSpeed} | null}
      */
     calculateBoundaryTouch(ball, tMax) {
