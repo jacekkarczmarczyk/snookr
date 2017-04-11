@@ -6,8 +6,13 @@ class SnookrGameBlack extends SnookrGameArcade {
         super();
     }
 
-    getInitialRule() {
-        return new SnookrRuleExpectingColor('black');
+    /**
+     *
+     * @param {number} player
+     * @returns {SnookrRuleExpectingColor}
+     */
+    getInitialRule(player) {
+        return new SnookrRuleExpectingColor(player, 'black');
     }
 
     /**

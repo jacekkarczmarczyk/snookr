@@ -180,7 +180,7 @@ class SnookrTableController {
         const screenOldPosition = this.tableRenderer.getScreenPosition(tableOldPosition);
 
         const check = function (position) {
-            if (!this.tableRenderer.getTable().isInCueBallArea(position)) {
+            if (!this.tableRenderer.getTable().isInDArea(position)) {
                 return false;
             }
             return ballSet.unpotted().not(cueBall).map(ball => ball.getPosition().getDistance(position) >= ball.getBallRadius() + cueBall.getBallRadius()).reduce((carry, item) => carry && item, true);

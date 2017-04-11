@@ -1,14 +1,22 @@
-class SnookrGameRegular extends SnookrGame {
+class SnookrGameRegular extends SnookrGameArcade {
     constructor() {
         super();
     }
 
     /**
      *
-     * @returns {SnookrTable}
+     * @returns {SnookrTablePots}
      */
-    createTable() {
-        return new SnookrTableRegular();
+    createTablePots() {
+        const potRadius = 3;
+        return new SnookrTablePots([
+            new SnookrTablePot(4 + 33.867 + 35.567, 4 + 67.981, potRadius),
+            new SnookrTablePot(4 + 33.867 + -35.567, 4 + 67.981, potRadius),
+            new SnookrTablePot(4 + 33.867 + 34.567 - 1, 4 + -0.71 + 1, potRadius),
+            new SnookrTablePot(4 + 33.867 + -34.567 + 1, 4 + -0.71 + 1, potRadius),
+            new SnookrTablePot(4 + 33.867 + 34.567 - 1, 4 + 136.65 - 1, potRadius),
+            new SnookrTablePot(4 + 33.867 + -34.567 + 1, 4 + 136.65 - 1, potRadius),
+        ]);
     }
 
     getPhysicsSettings() {

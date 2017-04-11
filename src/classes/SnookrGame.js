@@ -4,11 +4,83 @@ class SnookrGame {
             throw new TypeError('Cannot instantiate abstract class');
         }
 
-        this.ballSet = new SnookrBallSet();
-        this.cueBall = null;
-        this.table = this.createTable();
-        this.physics = new SnookrPhysics(this.table, this.getPhysicsSettings());
+        this._ballSet = new SnookrBallSet();
+        this._cueBall = null;
+        this._table = new SnookrTable(this.getTableWidth(), this.getTableLength(), this.createTableBoundary(), this.createTablePots(), this.getDCenter(), this.getDRadius());
+        this._physics = new SnookrPhysics(this.createTableBoundary(), this.createTablePots(), this.getPhysicsSettings());
         this.resetGame();
+    }
+
+    /**
+     *
+     * @returns {number}
+     */
+    getTableWidth() {
+        throw new TypeError('Abstract method called');
+    }
+
+    /**
+     *
+     * @returns {number}
+     */
+    getTableLength() {
+        throw new TypeError('Abstract method called');
+    }
+
+    /**
+     *
+     * @returns {Point}
+     */
+    getDCenter() {
+        throw new TypeError('Abstract method called');
+    }
+
+    /**
+     *
+     * @returns {number}
+     */
+    getDRadius() {
+        throw new TypeError('Abstract method called');
+    }
+
+    /**
+     *
+     * @returns {number}
+     */
+    getBallRadius() {
+        throw new TypeError('Abstract method called');
+    }
+
+    /**
+     *
+     * @returns {SnookrBallSet}
+     */
+    createBallSet() {
+        throw new TypeError('Abstract method called');
+    }
+
+    /**
+     *
+     * @returns {SnookrTableBoundary}
+     */
+    createTableBoundary() {
+        throw new TypeError('Abstract method called');
+    }
+
+    /**
+     *
+     * @returns {SnookrTablePots}
+     */
+    createTablePots() {
+        throw new TypeError('Abstract method called');
+    }
+
+    /**
+     *
+     * @returns {number}
+     */
+    getBallRandomness() {
+        throw new TypeError('Abstract method called');
     }
 
     /**
@@ -16,8 +88,8 @@ class SnookrGame {
      * @returns {SnookrGame}
      */
     resetGame() {
-        this.ballSet.import(this.createBallSet());
-        this.cueBall = this.ballSet.first('white');
+        this._ballSet.import(this.createBallSet());
+        this._cueBall = this._ballSet.first('white');
         return this;
     }
 
@@ -44,7 +116,7 @@ class SnookrGame {
      * @returns {SnookrPhysics}
      */
     getPhysics() {
-        return this.physics;
+        return this._physics;
     }
 
     /**
@@ -52,23 +124,7 @@ class SnookrGame {
      * @returns {SnookrBallSet}
      */
     getBallSet() {
-        return this.ballSet;
-    }
-
-    /**
-     *
-     * @returns {SnookrTable}
-     */
-    createTable() {
-        throw new TypeError('Abstract class method called');
-    }
-
-    /**
-     *
-     * @returns {number}
-     */
-    getBallRandomness() {
-        return 0.003;
+        return this._ballSet;
     }
 
     /**
@@ -76,15 +132,7 @@ class SnookrGame {
      * @returns {SnookrTable}
      */
     getTable() {
-        return this.table;
-    }
-
-    /**
-     *
-     * @returns {number}
-     */
-    getBallRadius() {
-        return 1;
+        return this._table;
     }
 
     /**
@@ -92,15 +140,7 @@ class SnookrGame {
      * @returns {SnookrBall}
      */
     getCueBall() {
-        return this.cueBall;
-    }
-
-    /**
-     *
-     * @returns {number}
-     */
-    getFrameLength() {
-        return 1;
+        return this._cueBall;
     }
 
     /**
@@ -126,11 +166,11 @@ class SnookrGame {
             do {
                 const alpha = Math.random() * Math.PI;
                 newPosition = bulkCenter.translate(Vector.create(Math.random() * bulkR).rotate(alpha));
-            } while (!this.ballSet.isPositionFree(newPosition, ballToUnpot));
+            } while (!this._ballSet.isPositionFree(newPosition, ballToUnpot));
         } else {
             while (!newPosition && (nextBallType = ballTypes.shift())) {
-                const nextColorPosition = this.ballSet.only(nextBallType).first().getInitialPosition();
-                if (this.ballSet.isPositionFree(nextColorPosition, ballToUnpot)) {
+                const nextColorPosition = this._ballSet.only(nextBallType).first().getInitialPosition();
+                if (this._ballSet.isPositionFree(nextColorPosition, ballToUnpot)) {
                     newPosition = nextColorPosition;
                 }
             }
@@ -139,22 +179,14 @@ class SnookrGame {
                 newPosition = ballToUnpot.getInitialPosition();
                 do {
                     newPosition = newPosition.translate(Vector.create(0, -0.1));
-                } while (!this.ballSet.isPositionFree(newPosition, ballToUnpot) && newPosition.getY() > ballToUnpot.getBallRadius());
+                } while (!this._ballSet.isPositionFree(newPosition, ballToUnpot) && newPosition.getY() > ballToUnpot.getBallRadius());
                 do {
                     newPosition = newPosition.translate(Vector.create(0, 0.1));
-                } while (!this.ballSet.isPositionFree(newPosition, ballToUnpot));
+                } while (!this._ballSet.isPositionFree(newPosition, ballToUnpot));
             }
         }
 
         ballToUnpot.setPotted(false).setPosition(newPosition);
-    }
-
-    /**
-     *
-     * @returns {SnookrBallSet}
-     */
-    createBallSet() {
-        return new SnookrBallSet();
     }
 
     /**
@@ -166,7 +198,7 @@ class SnookrGame {
         if (!this.getBallSet().isPositionFree(position, this.getCueBall())) {
             return false;
         }
-        if (!this.getTable().isInCueBallArea(position)) {
+        if (!this.getTable().isInDArea(position)) {
             return false;
         }
         this.getCueBall().setPosition(position);

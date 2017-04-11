@@ -15,6 +15,7 @@ class SnookrRenderer {
         this.canvasElement = null;
         this.backgroundImageElement = null;
         this.cueElement = null;
+        this.tableResourceName = null;
     }
 
     /**
@@ -43,6 +44,22 @@ class SnookrRenderer {
 
     /**
      *
+     * @param {string|null} tableResourceName
+     */
+    setTableResourceName(tableResourceName) {
+        this.tableResourceName = tableResourceName;
+    }
+
+    /**
+     *
+     * @returns {string|null}
+     */
+    getTableResourceName() {
+        return this.tableResourceName;
+    }
+
+    /**
+     *
      * @param {HTMLElement} containerElement
      * @param {HTMLCanvasElement} canvasElement
      * @param {HTMLImageElement} backgroundImageElement
@@ -61,7 +78,7 @@ class SnookrRenderer {
 
     invalidateCanvasSize() {
         let height = this.containerElement.offsetHeight;
-        let width = height * this.table.getOuterLength() / this.table.getOuterWidth();
+        let width = height * this.table.getTableLength() / this.table.getTableWidth();
 
         if (width > this.containerElement.offsetWidth) {
             height = height * this.containerElement.offsetWidth / width;
@@ -85,7 +102,7 @@ class SnookrRenderer {
 
         this.scaledResources = {};
 
-        this.cueElement.setAttribute('width', this.getScreenSize(this.table.getOuterLength() * 0.4).toFixed(0));
+        this.cueElement.setAttribute('width', this.getScreenSize(this.table.getTableLength() * 0.4).toFixed(0));
     }
 
     /**
@@ -297,8 +314,8 @@ class SnookrRenderer {
      * @returns {string}
      */
     getBackgroundImageDataUrl() {
-        if (this.table instanceof SnookrTableFunky) {
-            return 'resources/funky-arcade-table.png';
+        if (this.tableResourceName) {
+            return this.resourceLoader.getCachedResource(this.tableResourceName).src;
         }
 
         const table = this.table;
@@ -311,14 +328,15 @@ class SnookrRenderer {
         context.fillStyle = 'darkgreen';
         context.fillRect(0, 0, canvas.width, canvas.height);
 
+        const boundaryElements = table.getTableBoundary().getBoundaryElements();
         context.strokeStyle = '#030';
         context.lineWidth = 1;
 //        context.fillStyle = '#228B22';
         const canvasPattern = this.resourceLoader.getCachedResource('table-canvas');
         context.fillStyle = context.createPattern(canvasPattern, 'repeat');
         context.beginPath();
-        context.moveTo(self.getScreenPosition(table.getBoundaryElements()[0].getP1()).getX(), self.getScreenPosition(table.getBoundaryElements()[0].getP1()).getY());
-        table.getBoundaryElements().forEach(function (element) {
+        context.moveTo(self.getScreenPosition(boundaryElements[0].getP1()).getX(), self.getScreenPosition(boundaryElements[0].getP1()).getY());
+        boundaryElements.forEach(function (element) {
             if (element instanceof LineSegment) {
                 const p2 = self.getScreenPosition(element.getP2());
                 context.lineTo(p2.getX(), p2.getY());
@@ -336,7 +354,7 @@ class SnookrRenderer {
         context.lineWidth = 2;
         context.strokeStyle = '#dfd';
         const bulkLine1 = this.getScreenPosition(Point.create(0, table.getDCenter().getY()));
-        const bulkLine2 = this.getScreenPosition(Point.create(table.getOuterWidth(), table.getDCenter().getY()));
+        const bulkLine2 = this.getScreenPosition(Point.create(table.getTableWidth(), table.getDCenter().getY()));
         context.beginPath();
         context.moveTo(bulkLine1.getX(), bulkLine1.getY());
         context.lineTo(bulkLine2.getX(), bulkLine2.getY());
@@ -417,9 +435,9 @@ class SnookrRenderer {
         p = this.getScreenPosition(Point.create(4 + -1.85, 4 + 65.97));
         context.fillRect(p.getX(), p.getY(), this.getScreenSize(4), this.getScreenSize(2.1));
 
-        table.getPots().forEach(function (pot) {
-            const p = self.getScreenPosition(pot.center);
-            const r = self.getScreenSize(pot.radius);
+        table.getTablePots().getPots().forEach(function (pot) {
+            const p = self.getScreenPosition(pot.getCenter());
+            const r = self.getScreenSize(pot.getRadius());
             context.beginPath();
             context.arc(p.getX(), p.getY(), r - 0.1, 0, 2 * Math.PI, false);
             context.fillStyle = '#222';
@@ -435,8 +453,8 @@ class SnookrRenderer {
      * @returns {Point}
      */
     getScreenPosition(tablePosition) {
-        const screenX = tablePosition.getY() * this.canvasElement.width / this.table.getOuterLength();
-        const screenY = this.canvasElement.height - tablePosition.getX() * this.canvasElement.height / this.table.getOuterWidth();
+        const screenX = tablePosition.getY() * this.canvasElement.width / this.table.getTableLength();
+        const screenY = this.canvasElement.height - tablePosition.getX() * this.canvasElement.height / this.table.getTableWidth();
         return Point.create(screenX, screenY);
     }
 
@@ -446,7 +464,7 @@ class SnookrRenderer {
      * @returns {number}
      */
     getScreenSize(tableSize) {
-        return tableSize * this.canvasElement.width / this.table.getOuterLength();
+        return tableSize * this.canvasElement.width / this.table.getTableLength();
     }
 
     /**
@@ -455,8 +473,8 @@ class SnookrRenderer {
      * @returns {Point}
      */
     getTablePosition(screenPosition) {
-        const tableX = (this.canvasElement.height - screenPosition.getY()) * this.table.getOuterWidth() / this.canvasElement.height;
-        const tableY = screenPosition.getX() * this.table.getOuterLength() / this.canvasElement.width;
+        const tableX = (this.canvasElement.height - screenPosition.getY()) * this.table.getTableWidth() / this.canvasElement.height;
+        const tableY = screenPosition.getX() * this.table.getTableLength() / this.canvasElement.width;
         return Point.create(tableX, tableY);
     }
 
@@ -466,7 +484,7 @@ class SnookrRenderer {
      * @returns {number}
      */
     getTableSize(screenSize) {
-        return screenSize * this.table.getOuterLength() / this.canvasElement.width;
+        return screenSize * this.table.getTableLength() / this.canvasElement.width;
     }
 
 

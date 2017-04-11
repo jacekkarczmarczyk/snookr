@@ -11,13 +11,100 @@ class SnookrGameArcade extends SnookrGame {
             sideSpinScale: 0.1
         };
 	}
-	
+
     /**
      *
-     * @returns {SnookrTable}
+     * @returns {number}
      */
-    createTable() {
-        return new SnookrTableArcade();
+    getBallRandomness() {
+        return 0.003;
+    }
+
+    /**
+     *
+     * @returns {number}
+     */
+    getTableWidth() {
+        return 75.733;
+    }
+
+    /**
+     *
+     * @returns {number}
+     */
+    getTableLength() {
+        return 143.962;
+    }
+
+    /**
+     *
+     * @returns {Point}
+     */
+    getDCenter() {
+        return Point.create(4 + 33.867, 4 + 107.886);
+    }
+
+    /**
+     *
+     * @returns {number}
+     */
+    getDRadius() {
+        return 11;
+    }
+
+    /**
+     *
+     * @returns {SnookrTableBoundary}
+     */
+    createTableBoundary() {
+        const cornerD = 2.5;
+        const middleD = 1;
+        return new SnookrTableBoundary([
+            /* 22 */ new SnookrTableBoundaryPoint(4 + 33.867 + -37.867, 4 + 66.43, 0),
+            /* 23 */ new SnookrTableBoundaryPoint(4 + 33.867 + -35.6, 4 + 66.43, 0),
+            /* 24 */ new SnookrTableBoundaryPoint(4 + 33.867 + -33.867, 4 + 64.867, middleD),
+            /* 25 */ new SnookrTableBoundaryPoint(4 + 33.867 + -33.867, 4 + 3, cornerD),
+            /* 26 */ new SnookrTableBoundaryPoint(4 + 33.867 + -35.867, 4 + 0, 0),
+            /* 27 */ new SnookrTableBoundaryPoint(4 + 33.867 + -33.867, 4 + -2, 0),
+            /* 28 */ new SnookrTableBoundaryPoint(4 + 33.867 + -30.867, 4 + 0, cornerD),
+            /* 01 */ new SnookrTableBoundaryPoint(4 + 33.867 + 30.867, 4 + 0, cornerD),
+            /* 02 */ new SnookrTableBoundaryPoint(4 + 33.867 + 33.867, 4 + -2, 0),
+            /* 03 */ new SnookrTableBoundaryPoint(4 + 33.867 + 35.867, 4 + 0, 0),
+            /* 04 */ new SnookrTableBoundaryPoint(4 + 33.867 + 33.867, 4 + 3, cornerD),
+            /* 05 */ new SnookrTableBoundaryPoint(4 + 33.867 + 33.867, 4 + 64.867, middleD),
+            /* 06 */ new SnookrTableBoundaryPoint(4 + 33.867 + 35.6, 4 + 66.43, 0),
+            /* 07 */ new SnookrTableBoundaryPoint(4 + 33.867 + 37.867, 4 + 66.43, 0),
+            /* 08 */ new SnookrTableBoundaryPoint(4 + 33.867 + 37.867, 4 + 69.53, 0),
+            /* 09 */ new SnookrTableBoundaryPoint(4 + 33.867 + 35.6, 4 + 69.53, 0),
+            /* 10 */ new SnookrTableBoundaryPoint(4 + 33.867 + 33.867, 4 + 71.1, middleD),
+            /* 11 */ new SnookrTableBoundaryPoint(4 + 33.867 + 33.867, 4 + 132.967, cornerD),
+            /* 12 */ new SnookrTableBoundaryPoint(4 + 33.867 + 35.93, 4 + 135.937, 0),
+            /* 13 */ new SnookrTableBoundaryPoint(4 + 33.867 + 33.85, 4 + 138.05, 0),
+            /* 14 */ new SnookrTableBoundaryPoint(4 + 33.867 + 30.867, 4 + 135.937, cornerD),
+            /* 15 */ new SnookrTableBoundaryPoint(4 + 33.867 + -30.867, 4 + 135.937, cornerD),
+            /* 16 */ new SnookrTableBoundaryPoint(4 + 33.867 + -33.85, 4 + 138.05, 0),
+            /* 17 */ new SnookrTableBoundaryPoint(4 + 33.867 + -35.93, 4 + 135.937, 0),
+            /* 18 */ new SnookrTableBoundaryPoint(4 + 33.867 + -33.867, 4 + 132.967, cornerD),
+            /* 19 */ new SnookrTableBoundaryPoint(4 + 33.867 + -33.867, 4 + 71.1, middleD),
+            /* 20 */ new SnookrTableBoundaryPoint(4 + 33.867 + -35.6, 4 + 69.53, 0),
+            /* 21 */ new SnookrTableBoundaryPoint(4 + 33.867 + -37.867, 4 + 69.53, 0),
+        ]);
+    }
+
+    /**
+     *
+     * @returns {SnookrTablePots}
+     */
+    createTablePots() {
+        const potRadius = 3;
+        return new SnookrTablePots([
+            new SnookrTablePot(4 + 33.867 + 35.567, 4 + 67.981, potRadius),
+            new SnookrTablePot(4 + 33.867 + -35.567, 4 + 67.981, potRadius),
+            new SnookrTablePot(4 + 33.867 + 34.567 - 1, 4 + -0.71 + 1, potRadius),
+            new SnookrTablePot(4 + 33.867 + -34.567 + 1, 4 + -0.71 + 1, potRadius),
+            new SnookrTablePot(4 + 33.867 + 34.567 - 1, 4 + 136.65 - 1, potRadius),
+            new SnookrTablePot(4 + 33.867 + -34.567 + 1, 4 + 136.65 - 1, potRadius),
+        ]);
     }
 
     getBallRadius() {

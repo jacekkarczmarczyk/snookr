@@ -1,11 +1,13 @@
 class SnookrPhysics {
     /**
      *
-     * @param {SnookrTable} table
+     * @param {SnookrTableBoundary} tableBoundary
+     * @param {SnookrTablePots} tablePots
      * @param settings
      */
-    constructor(table, settings) {
-        this.table = table;
+    constructor(tableBoundary, tablePots, settings) {
+        this.tableBoundary = tableBoundary;
+        this.tablePots = tablePots;
         this.settings = Object.assign({}, {
             ballCollisionRatio: 0,
             forwardSpinLinearSlowdownRatio: 0.03,
@@ -34,7 +36,8 @@ class SnookrPhysics {
      * @returns {{eventTime: *, eventType: string}}
      */
     getFirstEvent(ballSet, frameLength) {
-        const table = this.table;
+        const tableBoundary = this.tableBoundary;
+        const tablePots = this.tablePots;
         let firstEvent = {
             eventTime: frameLength,
             eventType: 'end'
@@ -43,8 +46,8 @@ class SnookrPhysics {
         // Check whether any ball was pocketed
         //
         ballSet.forEach(function (ball) {
-            table.getPots().forEach(function (pot) {
-                const potTime = table.calculatePot(pot, ball, frameLength);
+            tablePots.getPots().forEach(function (pot) {
+                const potTime = pot.calculatePot(ball, frameLength);
                 if (potTime !== null && (firstEvent === null || potTime < firstEvent.eventTime)) {
                     firstEvent = {
                         eventTime: potTime,
@@ -58,7 +61,7 @@ class SnookrPhysics {
         // Check whether any ball hits the cushion
         //
         ballSet.forEach(function (ball) {
-            const collision = table.calculateBoundaryTouch(ball, frameLength);
+            const collision = tableBoundary.calculateBoundaryTouch(ball, frameLength);
             if (collision !== null && (firstEvent === null || collision.getCollisionTime() < firstEvent.eventTime)) {
                 firstEvent = {
                     eventTime: collision.getCollisionTime(),

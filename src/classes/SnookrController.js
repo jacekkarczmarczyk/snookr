@@ -139,6 +139,9 @@ class SnookrController {
         this.snookr = new gameConstructor;
         this.stateManager = new SnookrGameStateManager(this.getGame().getBallSet());
         this.tableRenderer.setTable(this.snookr.getTable());
+        if (gameConstructor === SnookrGameFunky) {
+            this.tableRenderer.setTableResourceName('funky-table');
+        }
         this.resetMatch();
     }
 
@@ -191,7 +194,7 @@ class SnookrController {
             return;
         }
 
-        const timeFrameData = this.getGame().getPhysics().recalculatePositions(this.getGame().getBallSet(), this.getGame().getFrameLength());
+        const timeFrameData = this.getGame().getPhysics().recalculatePositions(this.getGame().getBallSet(), 1);
         shotData.update(timeFrameData);
 
         if (timeFrameData.getBallHitsBallPower()) {
