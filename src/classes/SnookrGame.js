@@ -23,10 +23,11 @@ class SnookrGame {
 
     /**
      *
+     * @param {number} player
      * @returns {SnookrRule}
      */
-    getInitialRule() {
-        return new SnookrRuleExpectingRed();
+    getInitialRule(player) {
+        return new SnookrRuleExpectingRed(player);
     }
 
     /**

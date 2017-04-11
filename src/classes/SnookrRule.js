@@ -1,6 +1,32 @@
 class SnookrRule {
+    /**
+     *
+     * @param {number} player
+     */
+    constructor(player) {
+        this._player = player;
+    }
+
+    /**
+     *
+     * @returns {number}
+     */
+    getPlayer() {
+        return this._player;
+    }
+
     //noinspection JSUnusedLocalSymbols
-    getShotResult(shotData, ballsLeft) {
+    getNextRules(shotData, ballsLeft) {
+        throw 'Abstract method called';
+    }
+
+    /**
+     *
+     * @param {SnookrShotData} shotData
+     * @returns {SnookrBallSet}
+     */
+    //noinspection JSUnusedLocalSymbols
+    getBallsToUnpot(shotData) {
         throw 'Abstract method called';
     }
 
@@ -73,14 +99,14 @@ class SnookrRule {
      * @param color
      * @returns {SnookrRule}
      */
-    static getFreeBallRule(ballsAfterUnpot, color) {
+    getFreeBallRule(ballsAfterUnpot, color) {
         const nextBallType = ballsAfterUnpot.only('red').count() ? 'red' : color;
 
         if (SnookrRule.isFreeBall(ballsAfterUnpot, nextBallType)) {
-            return new SnookrRuleFreeBall(nextBallType);
+            return new SnookrRuleFreeBall(1 - this.getPlayer(), nextBallType);
         }
 
-        return nextBallType === 'red' ? new SnookrRuleExpectingRed() : new SnookrRuleExpectingColor(nextBallType);
+        return nextBallType === 'red' ? new SnookrRuleExpectingRed(1 - this.getPlayer()) : new SnookrRuleExpectingColor(1 - this.getPlayer(), nextBallType);
     }
 
     /**

@@ -3,22 +3,12 @@ class SnookrHistoryEntry {
      *
      * @param {Array} balls
      * @param {SnookrRule} rule
-     * @param {number} player
      * @param {[number,number]} score
      */
-    constructor(balls, rule, player, score) {
-        this.balls = balls;
-        this.rule = rule;
-        this.player = player;
-        this.score = [score[0], score[1]];
-    }
-
-    /**
-     *
-     * @returns {number}
-     */
-    getPlayer() {
-        return this.player;
+    constructor(balls, rule, score) {
+        this._balls = balls;
+        this._rule = rule;
+        this._score = [score[0], score[1]];
     }
 
     /**
@@ -26,7 +16,7 @@ class SnookrHistoryEntry {
      * @returns {SnookrRule}
      */
     getRule() {
-        return this.rule;
+        return this._rule;
     }
 
     /**
@@ -34,7 +24,7 @@ class SnookrHistoryEntry {
      * @returns {Array}
      */
     getBalls() {
-        return this.balls;
+        return this._balls;
 
     }
 
@@ -43,6 +33,6 @@ class SnookrHistoryEntry {
      * @returns {[number,number]}
      */
     getScore() {
-        return this.score;
+        return this._score;
     }
 }

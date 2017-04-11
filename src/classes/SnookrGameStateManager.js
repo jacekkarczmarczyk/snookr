@@ -2,30 +2,25 @@ class SnookrGameStateManager {
     /**
      *
      * @param {SnookrBallSet} ballSet
-     * @param {SnookrRule} initialRule
      * @param {number} player
      */
-    constructor(ballSet, initialRule, player) {
+    constructor(ballSet) {
         this._ballSet = ballSet;
         this._history = new SnookrHistory();
-        this._initialRule = initialRule;
 
-        this.reset(player);
+        this.reset();
     }
 
     /**
      *
-     * @param {number} player
+     * @param {SnookrRule|null} initialRule
      */
-    reset(player) {
+    reset(initialRule = null) {
         this._history.clear();
-        this._player = player;
         this._score = [0, 0];
         this._breakScore = [0, 0];
-        this._rule = this._initialRule;
+        this._rule = initialRule;
         this._canSetWhitePosition = true;
-        this._nextRules = null;
-        this._ballsToUnpot = null
     }
 
     /**
@@ -33,7 +28,7 @@ class SnookrGameStateManager {
      * @returns {number}
      */
     getPlayer() {
-        return this._player;
+        return this._rule.getPlayer();
     }
 
     /**
@@ -60,24 +55,12 @@ class SnookrGameStateManager {
         return this._rule;
     }
 
-    getBallsToUnpot() {
-        return this._ballsToUnpot;
-    }
-
     /**
      *
      * @returns {boolean}
      */
     canSetWhitePosition() {
         return this._canSetWhitePosition;
-    }
-
-    /**
-     *
-     * @returns {Array.<SnookrRule>}
-     */
-    getNextRules() {
-        return this._nextRules;
     }
 
     /**
@@ -113,45 +96,29 @@ class SnookrGameStateManager {
      * @param {SnookrShotData} shotData
      */
     setResult(shotData) {
-        const lastShotResult = this._rule.getShotResult(shotData, this._ballSet.unpotted());
+        this._score[this._rule.getPlayer()] += Math.max(0, this._rule.getPoints(shotData));
+        this._score[1 - this._rule.getPlayer()] += Math.max(0, -this._rule.getPoints(shotData));
 
-        this._score[this._player] += lastShotResult.getPointsForCurrentPlayer();
-        this._score[1 - this._player] += lastShotResult.getPointsForOpponent();
-
-        if (lastShotResult.playerChanges()) {
-            this._player = 1 - this._player;
+        if (this._rule.getPoints(shotData) <= 0) {
             this._breakScore = [0, 0];
         } else {
-            this._breakScore[this._player] += lastShotResult.getPointsForCurrentPlayer();
-            this._breakScore[1 - this._player] += lastShotResult.getPointsForOpponent();
+            this._breakScore[this._rule.getPlayer()] += Math.max(0, this._rule.getPoints(shotData));
+            this._breakScore[1 - this._rule.getPlayer()] += Math.max(0, -this._rule.getPoints(shotData));
         }
-
-        this._nextRules = lastShotResult.getNextRules();
-        this._ballsToUnpot = lastShotResult.getBallsToUnpot();
     }
 
     /**
      *
      * @param {SnookrRule} rule
+     * @return {SnookrGameStateManager}
      */
-    selectNextRule(rule) {
+    setRule(rule) {
         this._rule = rule;
-
-        if (this._rule instanceof SnookrRuleRepeat) {
-            const score = this._score;
-            if (this._rule.getRestoreBalls()) {
-                this.popState();
-            } else {
-                this._rule = this._rule.getRuleToRepeat();
-                this._player = 1 - this._player;
-            }
-
-            this._score = score;
-        }
+        return this;
     }
 
     pushState() {
-        const historyEntry = new SnookrHistoryEntry(this.getBallSetData(), this._rule, this._player, this._score);
+        const historyEntry = new SnookrHistoryEntry(this.getBallSetData(), this._rule, this._score);
         this._history.push(historyEntry);
     }
 
@@ -161,7 +128,6 @@ class SnookrGameStateManager {
     popState() {
         const historyEntry = this._history.pop();
 
-        this._player = historyEntry.getPlayer();
         this._score = historyEntry.getScore();
         this._breakScore = [0, 0];
         this._rule = historyEntry.getRule();

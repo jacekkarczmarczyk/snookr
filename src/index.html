@@ -38,13 +38,12 @@
 <script src="classes/SnookrEvent.js"></script>
 <script src="classes/SnookrEventListener.js"></script>
 <script src="classes/SpinPower.js"></script>
-<script src="classes/SnookrShotResult.js"></script>
 <script src="classes/SnookrRule.js"></script>
 <script src="classes/SnookrRuleExpectingAnyColor.js"></script>
 <script src="classes/SnookrRuleExpectingColor.js"></script>
 <script src="classes/SnookrRuleExpectingRed.js"></script>
 <script src="classes/SnookrRuleFreeBall.js"></script>
-<script src="classes/SnookrRuleRepeat.js"></script>
+<script src="classes/SnookrRuleFrameOver.js"></script>
 <script src="classes/SnookrHistory.js"></script>
 <script src="classes/SnookrHistoryEntry.js"></script>
 <script src="classes/SnookrRenderer.js"></script>
@@ -86,7 +85,6 @@
                     gameState: controller1.getGameState()
                 }
             });
-            controller1.run();
 
 //            const controller2 = new SnookrController(['Player 1', 'Player 2'], resources);
 //            const app2 = new Vue({

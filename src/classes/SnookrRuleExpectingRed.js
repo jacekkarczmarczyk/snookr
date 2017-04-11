@@ -1,26 +1,40 @@
 class SnookrRuleExpectingRed extends SnookrRule {
-    constructor() {
-        super();
-        this.expectedColor = 'red';
+    /**
+     *
+     * @param {number} player
+     */
+    constructor(player) {
+        super(player);
+        this._expectedColor = 'red';
     }
 
     /**
      *
      * @param {SnookrShotData} shotData
      * @param {SnookrBallSet} ballsLeft
-     * @returns {SnookrShotResult}
+     * @returns {Array.<SnookrRule>}
      */
-    getShotResult(shotData, ballsLeft) {
+    getNextRules(shotData, ballsLeft) {
         const points = this.getPoints(shotData);
         const ballsToUnpot = points < 0 ? shotData.getBallsPotted().not('red') : new SnookrBallSet();
         const nextRule = this.getNextRule(points, (new SnookrBallSet).add(ballsLeft).add(ballsToUnpot));
         const canRepeat = nextRule instanceof SnookrRuleFreeBall || shotData.getBallsPotted().first('white') || !shotData.getFirstTouched() || shotData.getFirstTouched().getBallType() !== 'red';
 
-        return new SnookrShotResult(
-            points,
-            canRepeat ? [nextRule, new SnookrRuleRepeat(this, false), new SnookrRuleRepeat(this, true)] : [nextRule],
-            ballsToUnpot
-        );
+        const nextRules = [nextRule];
+        if (canRepeat) {
+            nextRules.push(new SnookrRuleExpectingAnyColor(this.getPlayer()), new SnookrRuleExpectingAnyColor(this.getPlayer()));
+        }
+        return nextRules;
+    }
+
+    /**
+     *
+     * @param {SnookrShotData} shotData
+     * @returns {SnookrBallSet}
+     */
+    getBallsToUnpot(shotData) {
+        const points = this.getPoints(shotData);
+        return points < 0 ? shotData.getBallsPotted().not('red') : new SnookrBallSet();
     }
 
     /**
@@ -29,7 +43,7 @@ class SnookrRuleExpectingRed extends SnookrRule {
      * @return {Array}
      */
     getPointsArray(shotData) {
-        const expectedColor = this.expectedColor;
+        const expectedColor = this._expectedColor;
         const points = [];
 
         if (!shotData.getFirstTouched()) {
@@ -60,16 +74,14 @@ class SnookrRuleExpectingRed extends SnookrRule {
      * @returns {SnookrRule}
      */
     getNextRule(points, ballsAfterUnpot) {
-        if (this.expectedColor !== 'red' && points >= 0) {
-            return new SnookrRuleExpectingColor(this.expectedColor);
-        } else if (this.expectedColor === 'red' && points === 0) {
-            return new SnookrRuleExpectingRed();
-        } else if (this.expectedColor === 'red' && points > 0) {
-            return new SnookrRuleExpectingAnyColor();
-        } else if (this.expectedColor === 'black') {
-            return null;
+        if (this._expectedColor !== 'red' && points >= 0) {
+            return new SnookrRuleExpectingColor(this.getPlayer(), this._expectedColor);
+        } else if (this._expectedColor === 'red' && points === 0) {
+            return new SnookrRuleExpectingRed(1 - this.getPlayer());
+        } else if (this._expectedColor === 'red' && points > 0) {
+            return new SnookrRuleExpectingAnyColor(this.getPlayer());
         } else {
-            return SnookrRule.getFreeBallRule(ballsAfterUnpot, 'yellow');
+            return this.getFreeBallRule(ballsAfterUnpot, 'yellow');
         }
     }
 }
