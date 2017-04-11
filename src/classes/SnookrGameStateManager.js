@@ -1,20 +1,3 @@
-// pushState();
-// shotFired();
-// if (ctrlz) {
-//     popState();
-//     shotFired();
-// }
-// if (shotCompleted) {
-//     setShotResult(firstTouched, ballsPotted);
-//     setRule(chooseRule(getNextRules));
-// }
-//
-// setRule() {
-//     if (repeat) {
-//         popState()
-//     }
-// }
-//
 class SnookrGameStateManager {
     /**
      *
@@ -127,11 +110,10 @@ class SnookrGameStateManager {
 
     /**
      *
-     * @param {SnookrBall} firstTouched
-     * @param {SnookrBallSet} ballsPotted
+     * @param {SnookrShotData} shotData
      */
-    setResult(firstTouched, ballsPotted) {
-        const lastShotResult = this._rule.getShotResult(firstTouched, ballsPotted, this._ballSet.unpotted());
+    setResult(shotData) {
+        const lastShotResult = this._rule.getShotResult(shotData, this._ballSet.unpotted());
 
         this._score[this._player] += lastShotResult.getPointsForCurrentPlayer();
         this._score[1 - this._player] += lastShotResult.getPointsForOpponent();

@@ -14,15 +14,14 @@ class SnookrRuleFreeBall extends SnookrRule {
 
     /**
      *
-     * @param {SnookrBall} firstTouched
-     * @param {SnookrBallSet} ballsPotted
+     * @param {SnookrShotData} shotData
      * @param {SnookrBallSet} ballsLeft
      */
-    getShotResult(firstTouched, ballsPotted, ballsLeft) {
-        const points = this.getPoints(firstTouched, ballsPotted);
-        const ballsToUnpot = ballsPotted.not(this.expectedColor);
+    getShotResult(shotData, ballsLeft) {
+        const points = this.getPoints(shotData);
+        const ballsToUnpot = shotData.getBallsPotted().not(this.expectedColor);
         const nextRule = this.getNextRule(points, (new SnookrBallSet).add(ballsLeft).add(ballsToUnpot));
-        const canRepeat = nextRule instanceof SnookrRuleFreeBall || ballsPotted.first('white') || !firstTouched;
+        const canRepeat = nextRule instanceof SnookrRuleFreeBall || shotData.getBallsPotted().first('white') || !shotData.getFirstTouched();
 
         return new SnookrShotResult(
             points,
@@ -33,18 +32,17 @@ class SnookrRuleFreeBall extends SnookrRule {
 
     /**
      *
-     * @param {SnookrBall} firstTouched
-     * @param {SnookrBallSet} ballsPotted
+     * @param {SnookrShotData} shotData
      */
-    getPointsArray(firstTouched, ballsPotted) {
+    getPointsArray(shotData) {
         const expectedColor = this.expectedColor;
-        const points = firstTouched ? [] : [SnookrRule.getColorFaulValue(expectedColor)];
+        const points = shotData.getFirstTouched() ? [] : [SnookrRule.getColorFaulValue(expectedColor)];
 
-        ballsPotted.forEach(function (pottedBall) {
-            if (pottedBall.getBallType() !== expectedColor && pottedBall !== firstTouched) {
+        shotData.getBallsPotted().forEach(function (pottedBall) {
+            if (pottedBall.getBallType() !== expectedColor && pottedBall !== shotData.getFirstTouched()) {
                 points.push(SnookrRule.getColorFaulValue(pottedBall));
                 points.push(SnookrRule.getColorFaulValue(expectedColor))
-            } else if (expectedColor === 'red' || pottedBall === firstTouched) {
+            } else if (expectedColor === 'red' || pottedBall === shotData.getFirstTouched()) {
                 points.push(SnookrRule.getColorValue(expectedColor));
             }
         });

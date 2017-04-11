@@ -93,7 +93,7 @@ class SnookrPhysics {
      *
      * @param {SnookrBallSet} ballSet
      * @param frameLength
-     * @returns {{firstTouched: SnookrBall|null, ballsPotted: SnookrBallSet, ballHitsBallPower: number}}
+     * @returns {SnookrTimeFrameData}
      */
     recalculatePositions(ballSet, frameLength) {
         let ballHitsBallPower = 0.0;
@@ -136,11 +136,7 @@ class SnookrPhysics {
 
         ballsUnpotted.forEach(ball => this.slowDown(ball, frameLength));
 
-        return {
-            firstTouched,
-            ballsPotted: new SnookrBallSet(ballsPotted),
-            ballHitsBallPower
-        };
+        return new SnookrTimeFrameData(firstTouched, new SnookrBallSet(ballsPotted), ballHitsBallPower);
     }
 
     /**

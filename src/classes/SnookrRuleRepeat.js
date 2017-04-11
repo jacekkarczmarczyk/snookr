@@ -12,11 +12,10 @@ class SnookrRuleRepeat extends SnookrRule {
 
     /**
      *
-     * @param {SnookrBall} firstTouched
-     * @param {SnookrBallSet} ballsPotted
+     * @param {SnookrShotData} shotData
      * @returns {number}
      */
-    getPoints(firstTouched, ballsPotted) {
+    getPoints(shotData) {
         throw new TypeError('Cannot call getPoints method on SnookrRulRepeat class');
     }
 

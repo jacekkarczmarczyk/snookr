@@ -107,8 +107,7 @@ class SnookrController {
     }
 
     resetShot() {
-        this.firstTouched = null;
-        this.ballsPotted = new SnookrBallSet();
+        this.shotData = new SnookrShotData();
         this.gameState.spinPower.clear();
     }
 
@@ -167,16 +166,15 @@ class SnookrController {
         this.tableController.repaint(this.snookr.getBallSet(), this.snookr.getCueBall(), this.gameState.currentGameState);
 
         if (this.gameState.currentGameState.playing) {
-            const recalculateResult = this.getGame().getPhysics().recalculatePositions(this.getGame().getBallSet(), this.getGame().getFrameLength());
+            const timeFrameData = this.getGame().getPhysics().recalculatePositions(this.getGame().getBallSet(), this.getGame().getFrameLength());
             const allStopped = this.getGame().getBallSet().allStopped();
+            this.shotData.update(timeFrameData);
 
-            this.firstTouched = this.firstTouched || recalculateResult.firstTouched;
-            this.ballsPotted.add(recalculateResult.ballsPotted);
-
-            if (recalculateResult.ballHitsBallPower) {
-                this.audioPlayer.playBallHitsBall(recalculateResult.ballHitsBallPower);
+            if (timeFrameData.getBallHitsBallPower()) {
+                this.audioPlayer.playBallHitsBall(timeFrameData.getBallHitsBallPower());
             }
-            if (recalculateResult.ballsPotted.count()) {
+
+            if (timeFrameData.getBallsPotted().count()) {
                 this.audioPlayer.playBallHitsPocket();
             }
 
@@ -220,7 +218,7 @@ class SnookrController {
     }
 
     shotCompleted() {
-        this.stateManager.setResult(this.firstTouched, this.ballsPotted);
+        this.stateManager.setResult(this.shotData);
 
         this.resetShot();
 

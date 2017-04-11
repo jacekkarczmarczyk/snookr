@@ -1,27 +1,25 @@
 class SnookrRule {
     //noinspection JSUnusedLocalSymbols
-    getShotResult(firstTouched, ballsPotted, ballsLeft) {
+    getShotResult(shotData, ballsLeft) {
         throw 'Abstract method called';
     }
 
     /**
      *
-     * @param {SnookrBall} firstTouched
-     * @param {SnookrBallSet} ballsPotted
+     * @param {SnookrShotData} shotData
      * @returns {number}
      */
-    getPoints(firstTouched, ballsPotted) {
-        const pointsArray = this.getPointsArray(firstTouched, ballsPotted);
+    getPoints(shotData) {
+        const pointsArray = this.getPointsArray(shotData);
         return Math.min(0, ...pointsArray.filter(x => x < 0)) || pointsArray.reduce((carry, item) => carry + item, 0);
     }
 
     /**
      *
-     * @param {SnookrBall} firstTouched
-     * @param {SnookrBallSet} ballsPotted
+     * @param {SnookrShotData} shotData
      * @returns {Array}
      */
-    getPointsArray(firstTouched, ballsPotted) {
+    getPointsArray(shotData) {
         throw 'Abstract method called';
     }
 
