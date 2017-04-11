@@ -3,7 +3,15 @@ class SnookrTableBoundary {
      *
      * @param {Array.<SnookrTableBoundaryPoint>} points
      */
-    constructor(points) {
+    constructor(points = []) {
+        this.setBoundaryPoints(points);
+    }
+
+    /**
+     *
+     * @param {Array.<SnookrTableBoundaryPoint>} points
+     */
+    setBoundaryPoints(points) {
         this._boundaryElements = [];
 
         for (let i = 0; i < points.length; i++) {

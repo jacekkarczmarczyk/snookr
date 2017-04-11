@@ -52,6 +52,9 @@
 <script src="classes/ResourceLoader.js"></script>
 <script src="classes/ResourceNameResolver.js"></script>
 <script src="classes/SnookrResourceNameResolver.js"></script>
+<script src="classes/SnookrGameLoader.js"></script>
+<script src="classes/SnookrGameConfigResolver.js"></script>
+<script src="classes/ResourceStaticResolver.js"></script>
 
 <script src="vue/SnookrUiApp.js"></script>
 <script src="vue/SnookrUiBoard.js"></script>
@@ -74,27 +77,13 @@
 
 <script type="text/javascript">
     window.addEventListener('load', function () {
-        const resourceLoader = new ResourceLoader(new SnookrResourceNameResolver());
-
-        resourceLoader.loadResources(['table-canvas', 'cue', 'funky-table', 'ball-white', 'ball-black', 'ball-pink', 'ball-blue', 'ball-brown', 'ball-green', 'ball-yellow', 'ball-red']).then(function () {
-            const controller1 = new SnookrController(['Player 1', 'Player 2'], resourceLoader);
-            const app1 = new Vue({
-                el: '#app1',
-                data: {
-                    gameId: controller1.getGameId(),
-                    gameState: controller1.getGameState()
-                }
-            });
-
-//            const controller2 = new SnookrController(['Player 1', 'Player 2'], resources);
-//            const app2 = new Vue({
-//                el: '#app2',
-//                data: {
-//                    gameId: controller2.getGameId(),
-//                    gameState: controller2.getGameState()
-//                }
-//            });
-//            controller2.run();
+        const controller = new SnookrController(['Player 1', 'Player 2']);
+        new Vue({
+            el: '#app1',
+            data: {
+                gameId: controller.getGameId(),
+                gameState: controller.getGameState()
+            }
         });
     });
 </script>

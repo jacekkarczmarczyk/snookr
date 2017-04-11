@@ -23,7 +23,7 @@ class SnookrGameFunky extends SnookrGame {
      *
      * @returns {SnookrTablePots}
      */
-    createTablePots() {
+    getTablePots() {
         const cornerR = 7.8;
         const cornerCenter = 4.2;
         const midR = 3.5;
@@ -39,9 +39,9 @@ class SnookrGameFunky extends SnookrGame {
 
     /**
      *
-     * @returns {SnookrTableBoundary}
+     * @returns {Array.<SnookrTableBoundaryPoint>}
      */
-    createTableBoundary() {
+    getTableBoundaryPoints() {
         const l = this.getTableLength() * 10;
         const w = this.getTableWidth() * 10;
 
@@ -50,7 +50,7 @@ class SnookrGameFunky extends SnookrGame {
         const left = 87;
         const right = 86;
 
-        const boundaryPoints = [
+        return [
             [71, 0],
             [122, bottom, 50],
 
@@ -87,10 +87,12 @@ class SnookrGameFunky extends SnookrGame {
             [0, 71],
             [0, 0],
         ].reverse().map(array => new SnookrTableBoundaryPoint(array[1] / 10, array[0] / 10, (array[2] >>> 0) / 10));
-
-        return new SnookrTableBoundary(boundaryPoints);
     }
 
+    /**
+     *
+     * @returns {*}
+     */
 	getPhysicsSettings() {
         return {
             slowdownBreaker: 200,

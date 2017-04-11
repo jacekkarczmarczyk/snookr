@@ -1,0 +1,416 @@
+{
+  "resources": {
+    "table-background": "resources/funky-arcade-table.png",
+    "table-canvas": "resources/canvas.jpg",
+    "cue": "resources/cue.png",
+    "ball-white": "resources/ball-white.png",
+    "ball-black": "resources/ball-black.png",
+    "ball-pink": "resources/ball-pink.png",
+    "ball-blue": "resources/ball-blue.png",
+    "ball-brown": "resources/ball-brown.png",
+    "ball-green": "resources/ball-green.png",
+    "ball-yellow": "resources/ball-yellow.png",
+    "ball-red": "resources/ball-red.png"
+  },
+  "physicsSettings": {
+    "slowdownBreaker": 200,
+    "forwardSpinLinearSlowdownRatio": 0.05,
+    "slowdownRatio": 0.987,
+    "sideSpinScale": 0.1,
+    "maxShotPower": 5,
+    "forwardSpinScale": 0.2
+  },
+  "ballRandomness": 0.003,
+  "tableSize": {
+    "width": 76,
+    "length": 140.2
+  },
+  "kitchen": {
+    "center": {
+      "x": 38.4,
+      "y": 108.8
+    },
+    "radius": 11.1
+  },
+  "tableBoundaryPoints": [
+    {
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 7.1,
+        "y": 0
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 12.2,
+        "y": 8.7
+      },
+      "d": 5
+    },
+    {
+      "position": {
+        "x": 63.8,
+        "y": 8.7
+      },
+      "d": 5
+    },
+    {
+      "position": {
+        "x": 68.9,
+        "y": 0
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 76,
+        "y": 0
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 76,
+        "y": 7.1
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 67.3,
+        "y": 12.2
+      },
+      "d": 5
+    },
+    {
+      "position": {
+        "x": 67.3,
+        "y": 65.7
+      },
+      "d": 4.5
+    },
+    {
+      "position": {
+        "x": 76,
+        "y": 68.4
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 76,
+        "y": 71.8
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 67.3,
+        "y": 74.5
+      },
+      "d": 4.5
+    },
+    {
+      "position": {
+        "x": 67.3,
+        "y": 128
+      },
+      "d": 5
+    },
+    {
+      "position": {
+        "x": 76,
+        "y": 133.1
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 76,
+        "y": 140.2
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 68.9,
+        "y": 140.2
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 63.8,
+        "y": 131.6
+      },
+      "d": 5
+    },
+    {
+      "position": {
+        "x": 12.2,
+        "y": 131.6
+      },
+      "d": 5
+    },
+    {
+      "position": {
+        "x": 7.1,
+        "y": 140.2
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 0,
+        "y": 140.2
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 0,
+        "y": 133.1
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 8.6,
+        "y": 128
+      },
+      "d": 5
+    },
+    {
+      "position": {
+        "x": 8.6,
+        "y": 74.5
+      },
+      "d": 4.5
+    },
+    {
+      "position": {
+        "x": 0,
+        "y": 71.8
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 0,
+        "y": 68.4
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 8.6,
+        "y": 65.7
+      },
+      "d": 4.5
+    },
+    {
+      "position": {
+        "x": 8.6,
+        "y": 12.2
+      },
+      "d": 5
+    },
+    {
+      "position": {
+        "x": 0,
+        "y": 7.1
+      },
+      "d": 0
+    }
+  ],
+  "tablePots": [
+    {
+      "center": {
+        "x": 4.2,
+        "y": 4.2
+      },
+      "radius": 7.8
+    },
+    {
+      "center": {
+        "x": 4.2,
+        "y": 136
+      },
+      "radius": 7.8
+    },
+    {
+      "center": {
+        "x": 71,
+        "y": 4.2
+      },
+      "radius": 7.8
+    },
+    {
+      "center": {
+        "x": 71,
+        "y": 136
+      },
+      "radius": 7.8
+    },
+    {
+      "center": {
+        "x": 72,
+        "y": 70.1
+      },
+      "radius": 3.5
+    },
+    {
+      "center": {
+        "x": 3.9,
+        "y": 70.1
+      },
+      "radius": 3.5
+    }
+  ],
+  "ballRadius": 2,
+  "balls": [
+    {
+      "type": "white",
+      "radius": 2,
+      "position": {
+        "x": 44,
+        "y": 108.8
+      }
+    },
+    {
+      "type": "yellow",
+      "radius": 2,
+      "position": {
+        "x": 49.6,
+        "y": 108.8
+      }
+    },
+    {
+      "type": "green",
+      "radius": 2,
+      "position": {
+        "x": 27.2,
+        "y": 108.8
+      }
+    },
+    {
+      "type": "brown",
+      "radius": 2,
+      "position": {
+        "x": 38.4,
+        "y": 108.8
+      }
+    },
+    {
+      "type": "blue",
+      "radius": 2,
+      "position": {
+        "x": 38.4,
+        "y": 69.9
+      }
+    },
+    {
+      "type": "pink",
+      "radius": 2,
+      "position": {
+        "x": 38.4,
+        "y": 39.3
+      }
+    },
+    {
+      "type": "black",
+      "radius": 2,
+      "position": {
+        "x": 38.4,
+        "y": 17.5
+      }
+    },
+    {
+      "type": "red",
+      "radius": 2,
+      "position": {
+        "x": 38.4,
+        "y": 35.288
+      }
+    },
+    {
+      "type": "red",
+      "radius": 2,
+      "position": {
+        "x": 36.394,
+        "y": 31.811898384862243
+      }
+    },
+    {
+      "type": "red",
+      "radius": 2,
+      "position": {
+        "x": 40.406,
+        "y": 31.811898384862243
+      }
+    },
+    {
+      "type": "red",
+      "radius": 2,
+      "position": {
+        "x": 34.388,
+        "y": 28.33579676972449
+      }
+    },
+    {
+      "type": "red",
+      "radius": 2,
+      "position": {
+        "x": 38.4,
+        "y": 28.33579676972449
+      }
+    },
+    {
+      "type": "red",
+      "radius": 2,
+      "position": {
+        "x": 42.412,
+        "y": 28.33579676972449
+      }
+    },
+    {
+      "type": "red",
+      "radius": 2,
+      "position": {
+        "x": 32.382,
+        "y": 24.85969515458673
+      }
+    },
+    {
+      "type": "red",
+      "radius": 2,
+      "position": {
+        "x": 36.394,
+        "y": 24.85969515458673
+      }
+    },
+    {
+      "type": "red",
+      "radius": 2,
+      "position": {
+        "x": 40.406,
+        "y": 24.85969515458673
+      }
+    },
+    {
+      "type": "red",
+      "radius": 2,
+      "position": {
+        "x": 44.418,
+        "y": 24.85969515458673
+      }
+    }
+  ]
+}

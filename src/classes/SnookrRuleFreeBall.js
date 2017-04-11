@@ -73,7 +73,7 @@ class SnookrRuleFreeBall extends SnookrRule {
      */
     getNextRule(points, ballsAfterUnpot) {
         if (this._expectedColor !== 'red' && points >= 0) {
-            return new SnookrRuleExpectingColor(points ? this.getPlayer() : (1 - this.getPlayer()), this.getPlayethis._expectedColor);
+            return new SnookrRuleExpectingColor(points ? this.getPlayer() : (1 - this.getPlayer()), this._expectedColor);
         } else if (this._expectedColor === 'red' && points === 0) {
             return new SnookrRuleExpectingRed(1 - this.getPlayer());
         } else if (this._expectedColor === 'red' && points > 0) {

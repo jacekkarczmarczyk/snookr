@@ -3,8 +3,17 @@ class SnookrTablePots {
      *
      * @param {Array.<SnookrTablePot>} pots
      */
-    constructor(pots) {
+    constructor(pots = []) {
+        this.setPots(pots);
+    }
+
+    /**
+     *
+     * @param {Array.<SnookrTablePot>} pots
+     */
+    setPots(pots) {
         this._pots = pots;
+        return this;
     }
 
     /**

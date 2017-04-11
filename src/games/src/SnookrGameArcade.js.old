@@ -54,12 +54,12 @@ class SnookrGameArcade extends SnookrGame {
 
     /**
      *
-     * @returns {SnookrTableBoundary}
+     * @returns {Array.<SnookrTableBoundaryPoint>}
      */
-    createTableBoundary() {
+    getTableBoundaryPoints() {
         const cornerD = 2.5;
         const middleD = 1;
-        return new SnookrTableBoundary([
+        return [
             /* 22 */ new SnookrTableBoundaryPoint(4 + 33.867 + -37.867, 4 + 66.43, 0),
             /* 23 */ new SnookrTableBoundaryPoint(4 + 33.867 + -35.6, 4 + 66.43, 0),
             /* 24 */ new SnookrTableBoundaryPoint(4 + 33.867 + -33.867, 4 + 64.867, middleD),
@@ -88,14 +88,14 @@ class SnookrGameArcade extends SnookrGame {
             /* 19 */ new SnookrTableBoundaryPoint(4 + 33.867 + -33.867, 4 + 71.1, middleD),
             /* 20 */ new SnookrTableBoundaryPoint(4 + 33.867 + -35.6, 4 + 69.53, 0),
             /* 21 */ new SnookrTableBoundaryPoint(4 + 33.867 + -37.867, 4 + 69.53, 0),
-        ]);
+        ];
     }
 
     /**
      *
      * @returns {SnookrTablePots}
      */
-    createTablePots() {
+    getTablePots() {
         const potRadius = 3;
         return new SnookrTablePots([
             new SnookrTablePot(4 + 33.867 + 35.567, 4 + 67.981, potRadius),

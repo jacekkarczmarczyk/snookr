@@ -4,75 +4,90 @@ class SnookrController {
      * @param {[string, string]} playerNames
      * @param {ResourceLoader} resourceLoader
      */
-    constructor(playerNames, resourceLoader) {
-        this.gameId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            const r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
-            return v.toString(16);
-        });
+    constructor(playerNames) {
+        this.gameId = SnookrController.gameId = (SnookrController.gameId >>> 0) + 1;
+        this.gameLoader = new SnookrGameLoader(new SnookrGameConfigResolver());
+        this.tableRenderer = new SnookrRenderer();
+        this.tableController = new SnookrTableController();
+        this.tableController.onCueBallPositionChanged(this.setCueBallPosition.bind(this));
+        this.tableController.onShotFired(this.shotFired.bind(this));
+
+        this.audioPlayer = new SnookrAudioPlayer();
+        this.$bus = (new Vue).$bus;
         this.gameState = {
             players: [{
                 name: playerNames[0]
             }, {
                 name: playerNames[1]
             }],
-            spinPower: new SpinPower()
+            spinPower: new SpinPower(),
+            currentGameState: {
+                playing: false,
+                shooting: false,
+                settingCueBall: false
+            },
+            isSnooker: false,
+            currentRule: '',
+            currentPlayer: -1
         };
-        this.tableRenderer = new SnookrRenderer(resourceLoader);
-        this.tableController = new SnookrTableController(this.tableRenderer, {
-            cueBallPositionChangedCallback: this.setCueBallPosition.bind(this),
-            shotFiredCallback: this.shotFired.bind(this)
-        });
-        this.resetTable();
 
-        this.$bus = (new Vue).$bus;
-        this.$bus.on('snookrEvent.tableViewMounted', function ({gameId, containerElement, canvasElement, backgroundImageElement, cueElement}) {
-            gameId === this.getGameId() && this.tableRenderer.mount(containerElement, canvasElement, backgroundImageElement, cueElement);
+        this.initListeners();
+        this.resetTable();
+    }
+
+    initListeners() {
+        const repaint = this.repaint.bind(this);
+
+        window.addEventListener('mousedown', function () {
+            this.snookr && !this.gameState.currentGameState.playing && this.tableController.handleMouseDown(this.tableRenderer, this.snookr.getCueBall(), this.gameState.currentGameState);
+            window.requestAnimationFrame(repaint);
         }.bind(this));
 
-        const self = this;
-        window.addEventListener('mousedown', function () {
-            self.snookr && !self.gameState.currentGameState.playing && self.tableController.handleMouseDown(self.snookr.getCueBall(), self.gameState.currentGameState);
-            window.requestAnimationFrame(() => self.tableController.repaint(self.snookr.getBallSet(), self.snookr.getCueBall(), self.gameState.currentGameState))
-        });
         window.addEventListener('mouseup', function() {
-            self.snookr && self.tableController.handleMouseUp(self.snookr.getCueBall(), self.gameState.currentGameState);
-            !self.gameState.currentGameState.playing && window.requestAnimationFrame(() => self.tableController.repaint(self.snookr.getBallSet(), self.snookr.getCueBall(), self.gameState.currentGameState))
-        });
+            this.snookr && this.tableController.handleMouseUp(this.tableRenderer, this.snookr.getCueBall(), this.gameState.currentGameState);
+            !this.gameState.currentGameState.playing && window.requestAnimationFrame(repaint);
+        }.bind(this));
+
         window.addEventListener('mousemove', function (event) {
-            self.snookr && self.tableController.handleMouseMove(event, self.snookr.getCueBall(), self.snookr.getBallSet(), self.gameState.currentGameState);
-            !self.gameState.currentGameState.playing && window.requestAnimationFrame(() => self.tableController.repaint(self.snookr.getBallSet(), self.snookr.getCueBall(), self.gameState.currentGameState))
-        });
+            this.snookr && this.tableController.handleMouseMove(event, this.tableRenderer, this.snookr.getCueBall(), this.gameState.currentGameState);
+            !this.gameState.currentGameState.playing && window.requestAnimationFrame(repaint);
+        }.bind(this));
+
         window.addEventListener('hashchange', () => this.resetTable());
+
         window.addEventListener('keydown', function ({which, ctrlKey}) {
             switch (which) {
                 case 37:
-                    !self.gameState.currentGameState.playing && self.gameState.spinPower.changeSideSpinPower(-1 / 12);
+                    !this.gameState.currentGameState.playing && this.gameState.spinPower.changeSideSpinPower(-1 / 12);
                     break;
                 case 39:
-                    !self.gameState.currentGameState.playing && self.gameState.spinPower.changeSideSpinPower(1 / 12);
+                    !this.gameState.currentGameState.playing && this.gameState.spinPower.changeSideSpinPower(1 / 12);
                     break;
                 case 40:
-                    !self.gameState.currentGameState.playing && self.gameState.spinPower.changeForwardSpinPower(-1 / 12);
+                    !this.gameState.currentGameState.playing && this.gameState.spinPower.changeForwardSpinPower(-1 / 12);
                     break;
                 case 38:
-                    !self.gameState.currentGameState.playing && self.gameState.spinPower.changeForwardSpinPower(1 / 12);
+                    !this.gameState.currentGameState.playing && this.gameState.spinPower.changeForwardSpinPower(1 / 12);
                     break;
                 case 90:
-                    if (ctrlKey && self.stateManager.canPopState() && confirm('Undo?')) {
-                        self.gameState.currentGameState.playing = false;
-                        self.stateManager.popState();
-                        self.resetShot();
-                        self.updateGameState({
+                    if (ctrlKey && this.stateManager.canPopState() && confirm('Undo?')) {
+                        this.gameState.currentGameState.playing = false;
+                        this.stateManager.popState();
+                        this.resetShot();
+                        this.updateGameState({
                             shooting: true,
                             playing: false,
                             settingCueBall: false
                         });
+                        this.repaint();
                     }
                     break;
             }
-        });
+        }.bind(this));
 
-        this.audioPlayer = new SnookrAudioPlayer();
+        this.$bus.on('snookrEvent.tableViewMounted', function ({gameId, containerElement, canvasElement, backgroundImageElement, cueElement}) {
+            gameId === this.getGameId() && this.tableRenderer.mount(containerElement, canvasElement, backgroundImageElement, cueElement);
+        }.bind(this));
     }
 
     /**
@@ -81,21 +96,6 @@ class SnookrController {
      */
     getGameId() {
         return this.gameId;
-    }
-
-    /**
-     *
-     * @param {string} name
-     * @returns {*}
-     */
-    static getGameConstructor(name) {
-        return {
-            regular: SnookrGameRegular,
-            funky: SnookrGameFunky,
-            real: SnookrGameReal,
-            black: SnookrGameBlack,
-            'default': SnookrGameArcade,
-        }[name];
     }
 
     /**
@@ -135,14 +135,17 @@ class SnookrController {
     }
 
     resetTable() {
-        const gameConstructor = SnookrController.getGameConstructor(window.location.hash.replace('#', '')) || SnookrController.getGameConstructor('default');
-        this.snookr = new gameConstructor;
-        this.stateManager = new SnookrGameStateManager(this.getGame().getBallSet());
-        this.tableRenderer.setTable(this.snookr.getTable());
-        if (gameConstructor === SnookrGameFunky) {
-            this.tableRenderer.setTableResourceName('funky-table');
-        }
-        this.resetMatch();
+        const self = this;
+        return this.gameLoader.load(window.location.hash.replace(/[^a-z]/g, '')).then(function (game) {
+            self.snookr = game;
+            self.stateManager = new SnookrGameStateManager(game.getBallSet());
+            self.resetMatch();
+
+            self.tableRenderer.setTable(game.getTable());
+            self.tableRenderer.setResourceLoader(game.getResourceLoader());
+            self.tableController.setPositionValidator(game.validateCueBallPosition.bind(game));
+            self.repaint();
+        });
     }
 
     updateGameState(currentGameState) {
@@ -159,6 +162,10 @@ class SnookrController {
         this.gameState.isSnooker = false;
 
         this.gameState.currentGameState = currentGameState;
+    }
+
+    repaint() {
+        this.tableController.repaint(this.tableRenderer, this.snookr.getBallSet(), this.snookr.getCueBall(), this.gameState.currentGameState);
     }
 
     /**
@@ -188,7 +195,7 @@ class SnookrController {
      * @param {SnookrShotData} shotData
      */
     nextTimeFrame(shotData) {
-        this.tableController.repaint(this.snookr.getBallSet(), this.snookr.getCueBall(), this.gameState.currentGameState);
+        this.repaint();
 
         if (!this.gameState.currentGameState.playing) {
             return;

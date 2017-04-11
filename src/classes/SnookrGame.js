@@ -1,78 +1,46 @@
 class SnookrGame {
     constructor() {
-        if (this.constructor === SnookrGame) {
-            throw new TypeError('Cannot instantiate abstract class');
-        }
-
+        this._physicsSettings = {};
+        this._ballRandomness = 0;
+        this._tableWidth = 0;
+        this._tableHeight = 0;
+        this._dCenter = Point.create();
+        this._dRadius = 0;
+        this._tableBoundary = new SnookrTableBoundary();
+        this._tablePots = new SnookrTablePots();
         this._ballSet = new SnookrBallSet();
         this._cueBall = null;
-        this._table = new SnookrTable(this.getTableWidth(), this.getTableLength(), this.createTableBoundary(), this.createTablePots(), this.getDCenter(), this.getDRadius());
-        this._physics = new SnookrPhysics(this.createTableBoundary(), this.createTablePots(), this.getPhysicsSettings());
-        this.resetGame();
+        this._resourceLoader = null;
+        this._table = new SnookrTable(this.getTableWidth(), this.getTableLength(), this.getTableBoundary(), this.getTablePots(), this.getDCenter(), this.getDRadius());
+        this._physics = new SnookrPhysics(this.getTableBoundary(), this.getTablePots(), this.getPhysicsSettings());
     }
 
     /**
      *
-     * @returns {number}
+     * @param physicsSettings
+     * @returns {SnookrGame}
      */
-    getTableWidth() {
-        throw new TypeError('Abstract method called');
+    setPhysicsSettings(physicsSettings) {
+        this._physics.setSettings(physicsSettings);
+        return this;
     }
 
     /**
      *
-     * @returns {number}
+     * @returns {*}
      */
-    getTableLength() {
-        throw new TypeError('Abstract method called');
+    getPhysicsSettings() {
+        return this._physicsSettings;
     }
 
     /**
      *
-     * @returns {Point}
+     * @param {number} ballRandomness
+     * @returns {SnookrGame}
      */
-    getDCenter() {
-        throw new TypeError('Abstract method called');
-    }
-
-    /**
-     *
-     * @returns {number}
-     */
-    getDRadius() {
-        throw new TypeError('Abstract method called');
-    }
-
-    /**
-     *
-     * @returns {number}
-     */
-    getBallRadius() {
-        throw new TypeError('Abstract method called');
-    }
-
-    /**
-     *
-     * @returns {SnookrBallSet}
-     */
-    createBallSet() {
-        throw new TypeError('Abstract method called');
-    }
-
-    /**
-     *
-     * @returns {SnookrTableBoundary}
-     */
-    createTableBoundary() {
-        throw new TypeError('Abstract method called');
-    }
-
-    /**
-     *
-     * @returns {SnookrTablePots}
-     */
-    createTablePots() {
-        throw new TypeError('Abstract method called');
+    setBallRandomness(ballRandomness) {
+        this._ballRandomness = ballRandomness;
+        return this;
     }
 
     /**
@@ -80,43 +48,122 @@ class SnookrGame {
      * @returns {number}
      */
     getBallRandomness() {
-        throw new TypeError('Abstract method called');
+        return this._ballRandomness;
     }
 
     /**
      *
+     * @param {number} width
+     * @param {number} length
      * @returns {SnookrGame}
      */
-    resetGame() {
-        this._ballSet.import(this.createBallSet());
-        this._cueBall = this._ballSet.first('white');
+    setTableSize(width, length) {
+        this._tableWidth = width;
+        this._tableLength = length;
+        this._table.setTableWidth(width);
+        this._table.setTableLength(length);
         return this;
     }
 
     /**
      *
-     * @param {number} player
-     * @returns {SnookrRule}
+     * @returns {number}
      */
-    getInitialRule(player) {
-        return new SnookrRuleExpectingRed(player);
+    getTableWidth() {
+        return this._tableWidth;
     }
 
     /**
      *
-     * @returns {*}
+     * @returns {number}
      */
-
-    getPhysicsSettings() {
-        return {};
+    getTableLength() {
+        return this._tableLength;
     }
 
     /**
      *
-     * @returns {SnookrPhysics}
+     * @param {Point} center
+     * @returns {SnookrGame}
      */
-    getPhysics() {
-        return this._physics;
+    setDCenter(center) {
+        this._dCenter = center;
+        this._table.setDCenter(center);
+        return this;
+    }
+
+    /**
+     *
+     * @returns {Point}
+     */
+    getDCenter() {
+        return this._dCenter;
+    }
+
+    /**
+     *
+     * @param {number} radius
+     * @returns {SnookrGame}
+     */
+    setDRadius(radius) {
+        this._dRadius = radius;
+        this._table.setDRadius(radius);
+        return this;
+    }
+
+    /**
+     *
+     * @returns {number}
+     */
+    getDRadius() {
+        return this._dRadius;
+    }
+
+    /**
+     *
+     * @param {Array.<SnookrBoundaryPoint>} tableBoundaryPoints
+     * @returns {SnookrGame}
+     */
+    setTableBoundaryPoints(tableBoundaryPoints) {
+        this._tableBoundary.setBoundaryPoints(tableBoundaryPoints);
+        return this;
+    }
+
+    /**
+     *
+     * @returns {SnookrTableBoundary}
+     */
+    getTableBoundary() {
+        return this._tableBoundary;
+    }
+
+    /**
+     *
+     * @param {Array.<SnookrTablePot>} tablePots
+     * @returns {SnookrGame}
+     */
+    setTablePots(tablePots) {
+        this._tablePots.setPots(tablePots);
+        return this;
+    }
+
+    /**
+     *
+     * @returns {SnookrTablePots}
+     */
+    getTablePots() {
+        return this._tablePots;
+    }
+
+    /**
+     *
+     * @param {SnookrBallSet} ballSet
+     * @returns {SnookrGame}
+     */
+    setBallSet(ballSet) {
+        this._ballSet.import(ballSet);
+        this._cueBall = ballSet.first('white');
+        return this;
     }
 
     /**
@@ -129,6 +176,40 @@ class SnookrGame {
 
     /**
      *
+     * @returns {SnookrBall}
+     */
+    getCueBall() {
+        return this._cueBall;
+    }
+
+    /**
+     *
+     * @param {ResourceLoader} resourceLoader
+     * @returns {SnookrGame}
+     */
+    setResourceLoader(resourceLoader) {
+        this._resourceLoader = resourceLoader;
+        return this;
+    }
+
+    /**
+     *
+     * @returns {ResourceLoader}
+     */
+    getResourceLoader() {
+        return this._resourceLoader;
+    }
+
+    /**
+     *
+     * @returns {SnookrPhysics}
+     */
+    getPhysics() {
+        return this._physics;
+    }
+
+    /**
+     *
      * @returns {SnookrTable}
      */
     getTable() {
@@ -137,10 +218,27 @@ class SnookrGame {
 
     /**
      *
-     * @returns {SnookrBall}
+     * @param {number} player
+     * @returns {SnookrRule}
      */
-    getCueBall() {
-        return this._cueBall;
+    getInitialRule(player) {
+        return new SnookrRuleExpectingRed(player);
+    }
+
+
+
+
+
+
+
+
+    /**
+     *
+     * @returns {SnookrGame}
+     */
+    resetGame() {
+        this._ballSet.resetBallSet().forEach(ball => ball.randomizePosition(this.getBallRandomness()));
+        return this;
     }
 
     /**
@@ -166,11 +264,11 @@ class SnookrGame {
             do {
                 const alpha = Math.random() * Math.PI;
                 newPosition = bulkCenter.translate(Vector.create(Math.random() * bulkR).rotate(alpha));
-            } while (!this._ballSet.isPositionFree(newPosition, ballToUnpot));
+            } while (!this.getBallSet().isPositionFree(newPosition, ballToUnpot));
         } else {
             while (!newPosition && (nextBallType = ballTypes.shift())) {
-                const nextColorPosition = this._ballSet.only(nextBallType).first().getInitialPosition();
-                if (this._ballSet.isPositionFree(nextColorPosition, ballToUnpot)) {
+                const nextColorPosition = this.getBallSet().only(nextBallType).first().getInitialPosition();
+                if (this.getBallSet().isPositionFree(nextColorPosition, ballToUnpot)) {
                     newPosition = nextColorPosition;
                 }
             }
@@ -179,10 +277,10 @@ class SnookrGame {
                 newPosition = ballToUnpot.getInitialPosition();
                 do {
                     newPosition = newPosition.translate(Vector.create(0, -0.1));
-                } while (!this._ballSet.isPositionFree(newPosition, ballToUnpot) && newPosition.getY() > ballToUnpot.getBallRadius());
+                } while (!this.getBallSet().isPositionFree(newPosition, ballToUnpot) && newPosition.getY() > ballToUnpot.getBallRadius());
                 do {
                     newPosition = newPosition.translate(Vector.create(0, 0.1));
-                } while (!this._ballSet.isPositionFree(newPosition, ballToUnpot));
+                } while (!this.getBallSet().isPositionFree(newPosition, ballToUnpot));
             }
         }
 
@@ -203,5 +301,19 @@ class SnookrGame {
         }
         this.getCueBall().setPosition(position);
         return true;
+    }
+
+    /**
+     *
+     * @param {Point} position
+     * @returns {*}
+     */
+    validateCueBallPosition(position) {
+        return this.getTable().isInDArea(position) && this
+            .getBallSet()
+            .unpotted()
+            .not(this.getCueBall())
+            .map(ball => ball.getPosition().getDistance(position) >= ball.getBallRadius() + this.getCueBall().getBallRadius())
+            .reduce((carry, item) => carry && item, true);
     }
 }

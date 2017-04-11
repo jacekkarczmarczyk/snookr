@@ -3,12 +3,8 @@ const BALL_STROKE_OFFSET = 0;
 const BALL_SPRITE_PADDING = 2;
 
 class SnookrRenderer {
-    /**
-     *
-     * @param {ResourceLoader} resourceLoader
-     */
-    constructor(resourceLoader) {
-        this.resourceLoader = resourceLoader;
+    constructor() {
+        this.resourceLoader = null;
         this.scaledResources = {};
         this.table = null;
         this.containerElement = null;
@@ -36,26 +32,12 @@ class SnookrRenderer {
 
     /**
      *
-     * @returns {SnookrTable}
+     * @param {ResourceLoader} resourceLoader
+     * @returns {SnookrRenderer}
      */
-    getTable() {
-        return this.table;
-    }
-
-    /**
-     *
-     * @param {string|null} tableResourceName
-     */
-    setTableResourceName(tableResourceName) {
-        this.tableResourceName = tableResourceName;
-    }
-
-    /**
-     *
-     * @returns {string|null}
-     */
-    getTableResourceName() {
-        return this.tableResourceName;
+    setResourceLoader(resourceLoader) {
+        this.resourceLoader = resourceLoader;
+        return this;
     }
 
     /**
@@ -77,6 +59,10 @@ class SnookrRenderer {
     }
 
     invalidateCanvasSize() {
+        if (!this.table) {
+            return;
+        }
+
         let height = this.containerElement.offsetHeight;
         let width = height * this.table.getTableLength() / this.table.getTableWidth();
 
@@ -98,7 +84,16 @@ class SnookrRenderer {
         this.canvasElement.style.height = `${height}px`;
         this.backgroundImageElement.width = width;
         this.backgroundImageElement.height = height;
-        this.backgroundImageElement.src = this.getBackgroundImageDataUrl();
+
+        if (this.resourceLoader) {
+            try {
+                this.backgroundImageElement.src = this.resourceLoader.getCachedResource('table-background').src;
+            } catch (e) {
+                this.backgroundImageElement.src = this.getBackgroundImageDataUrl();
+            }
+        } else {
+            this.backgroundImageElement.src = this.getBackgroundImageDataUrl();
+        }
 
         this.scaledResources = {};
 
@@ -197,7 +192,7 @@ class SnookrRenderer {
      * @returns {Image}
      */
     getScaledBallImage(ball) {
-        const ballImage = this.resourceLoader.getCachedResource('ball-' + ball.getBallType());
+        const ballImage = this.resourceLoader ? this.resourceLoader.getCachedResource('ball-' + ball.getBallType()) : null;
         const tmpCanvas = document.createElement('canvas');
         const ballRadius = this.getScreenSize(ball.getBallRadius());
 
@@ -205,7 +200,9 @@ class SnookrRenderer {
         tmpCanvas.height = ballRadius * 2 + 2 * BALL_SPRITE_PADDING;
 
         const tmpContext = tmpCanvas.getContext('2d');
-        tmpContext.drawImage(ballImage, BALL_SPRITE_PADDING, BALL_SPRITE_PADDING, ballRadius * 2, ballRadius * 2);
+        if (ballImage) {
+            tmpContext.drawImage(ballImage, BALL_SPRITE_PADDING, BALL_SPRITE_PADDING, ballRadius * 2, ballRadius * 2);
+        }
         tmpContext.beginPath();
         tmpContext.arc(ballRadius + BALL_SPRITE_PADDING, ballRadius + BALL_SPRITE_PADDING, ballRadius + BALL_STROKE_OFFSET, 0, 2 * Math.PI, false);
         tmpContext.strokeStyle = '#000';
@@ -314,10 +311,6 @@ class SnookrRenderer {
      * @returns {string}
      */
     getBackgroundImageDataUrl() {
-        if (this.tableResourceName) {
-            return this.resourceLoader.getCachedResource(this.tableResourceName).src;
-        }
-
         const table = this.table;
         const self = this;
         const canvas = this.canvasElement;
@@ -331,9 +324,12 @@ class SnookrRenderer {
         const boundaryElements = table.getTableBoundary().getBoundaryElements();
         context.strokeStyle = '#030';
         context.lineWidth = 1;
-//        context.fillStyle = '#228B22';
-        const canvasPattern = this.resourceLoader.getCachedResource('table-canvas');
-        context.fillStyle = context.createPattern(canvasPattern, 'repeat');
+        if (this.resourceLoader && this.resourceLoader.getCachedResource('table-canvas')) {
+            const canvasPattern = this.resourceLoader.getCachedResource('table-canvas');
+            context.fillStyle = context.createPattern(canvasPattern, 'repeat');
+        } else {
+            context.fillStyle = '#228B22';
+        }
         context.beginPath();
         context.moveTo(self.getScreenPosition(boundaryElements[0].getP1()).getX(), self.getScreenPosition(boundaryElements[0].getP1()).getY());
         boundaryElements.forEach(function (element) {
@@ -376,25 +372,25 @@ class SnookrRenderer {
         // brown part
         //
         context.fillStyle = '#4A2106';
-        p = self.getScreenPosition(Point.create(4 + 0, 4 + -4));
+        p = self.getScreenPosition(Point.create(4, 4 + -4));
         context.beginPath();
         context.moveTo(p.getX(), p.getY());
         p = self.getScreenPosition(Point.create(4 + 67.8, 4 + -4));
         context.lineTo(p.getX(), p.getY());
         p = self.getScreenPosition(Point.create(4 + 67.8, 4 + -1.8));
         context.lineTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(4 + 0, 4 + -1.8));
+        p = self.getScreenPosition(Point.create(4, 4 + -1.8));
         context.lineTo(p.getX(), p.getY());
         context.closePath();
         context.fill();
-        p = self.getScreenPosition(Point.create(4 + 0, 4 + 137.8));
+        p = self.getScreenPosition(Point.create(4, 4 + 137.8));
         context.beginPath();
         context.moveTo(p.getX(), p.getY());
         p = self.getScreenPosition(Point.create(4 + 67.8, 4 + 137.8));
         context.lineTo(p.getX(), p.getY());
         p = self.getScreenPosition(Point.create(4 + 67.8, 4 + 140));
         context.lineTo(p.getX(), p.getY());
-        p = self.getScreenPosition(Point.create(4 + 0, 4 + 140));
+        p = self.getScreenPosition(Point.create(4, 4 + 140));
         context.lineTo(p.getX(), p.getY());
         context.closePath();
         context.fill();
@@ -422,11 +418,11 @@ class SnookrRenderer {
         context.fill();
 
         context.fillStyle = 'gold';
-        p = this.getScreenPosition(Point.create(4 + 0, 4 + -4));
+        p = this.getScreenPosition(Point.create(4, 4 + -4));
         context.fillRect(p.getX(), p.getY(), this.getScreenSize(4), this.getScreenSize(4));
         p = this.getScreenPosition(Point.create(4 + 71.8, 4 + -4));
         context.fillRect(p.getX(), p.getY(), this.getScreenSize(4), this.getScreenSize(4));
-        p = this.getScreenPosition(Point.create(4 + 0, 4 + 136));
+        p = this.getScreenPosition(Point.create(4, 4 + 136));
         context.fillRect(p.getX(), p.getY(), this.getScreenSize(4), this.getScreenSize(4));
         p = this.getScreenPosition(Point.create(4 + 71.8, 4 + 136));
         context.fillRect(p.getX(), p.getY(), this.getScreenSize(4), this.getScreenSize(4));

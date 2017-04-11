@@ -28,6 +28,15 @@ class SnookrBall {
         return new SnookrBall(ballRadius, ballType, position);
     }
 
+    resetBall() {
+        this.setPosition(this.getInitialPosition());
+        this.setSpeed(Vector.create());
+        this.setForwardSpin(Vector.create());
+        this.setSideSpin(0);
+        this.setPotted(false);
+        return this;
+    }
+
     /**
      *
      * @returns {boolean}

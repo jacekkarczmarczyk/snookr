@@ -35,10 +35,30 @@ class SnookrTable {
 
     /**
      *
+     * @param {number} length
+     * @returns {SnookrTable}
+     */
+    setTableWidth(width) {
+        this.outerWidth = width;
+        return this;
+    }
+
+    /**
+     *
      * @returns {number}
      */
     getTableWidth() {
         return this.outerWidth;
+    }
+
+    /**
+     *
+     * @param {number} length
+     * @returns {SnookrTable}
+     */
+    setTableLength(length) {
+        this.outerLength = length;
+        return this;
     }
 
     /**
@@ -80,10 +100,38 @@ class SnookrTable {
         return position.getY() >= this.getDCenter().getY() && (position.getDistance(this.getDCenter())) <= this.getDRadius();
     }
 
+    /**
+     *
+     * @param {Point} center
+     * @returns {SnookrTable}
+     */
+    setDCenter(center) {
+        this.dCenter = center;
+        return this;
+    }
+
+    /**
+     *
+     * @returns {Point}
+     */
     getDCenter() {
         return this.dCenter;
     }
 
+    /**
+     *
+     * @param {number} radius
+     * @returns {SnookrTable}
+     */
+    setDRadius(radius) {
+        this.dRadius = radius;
+        return this;
+    }
+
+    /**
+     *
+     * @returns {number}
+     */
     getDRadius() {
         return this.dRadius;
     }

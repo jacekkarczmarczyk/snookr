@@ -1,0 +1,456 @@
+{
+  "resources": {
+    "table-background": "",
+    "table-canvas": "resources/canvas.jpg",
+    "cue": "resources/cue.png",
+    "ball-white": "resources/ball-white.png",
+    "ball-black": "resources/ball-black.png",
+    "ball-pink": "resources/ball-pink.png",
+    "ball-blue": "resources/ball-blue.png",
+    "ball-brown": "resources/ball-brown.png",
+    "ball-green": "resources/ball-green.png",
+    "ball-yellow": "resources/ball-yellow.png",
+    "ball-red": "resources/ball-red.png"
+  },
+  "physicsSettings": {
+    "slowdownBreaker": 200,
+    "forwardSpinLinearSlowdownRatio": 0.05,
+    "slowdownRatio": 0.987,
+    "sideSpinScale": 0.1,
+    "maxShotPower": 8.3,
+    "forwardSpinScale": 0.15
+  },
+  "ballRandomness": 0.003,
+  "tableSize": {
+    "width": 75.733,
+    "length": 143.962
+  },
+  "kitchen": {
+    "center": {
+      "x": 37.867,
+      "y": 111.886
+    },
+    "radius": 11
+  },
+  "tableBoundaryPoints": [
+    {
+      "position": {
+        "x": 0,
+        "y": 70.43
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 2.266999999999996,
+        "y": 70.43
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 4,
+        "y": 68.867
+      },
+      "d": 1
+    },
+    {
+      "position": {
+        "x": 4,
+        "y": 7
+      },
+      "d": 2.5
+    },
+    {
+      "position": {
+        "x": 2,
+        "y": 4
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 4,
+        "y": 2
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 6.9999999999999964,
+        "y": 4
+      },
+      "d": 2.5
+    },
+    {
+      "position": {
+        "x": 68.734,
+        "y": 4
+      },
+      "d": 2.5
+    },
+    {
+      "position": {
+        "x": 71.734,
+        "y": 2
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 73.734,
+        "y": 4
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 71.734,
+        "y": 7
+      },
+      "d": 2.5
+    },
+    {
+      "position": {
+        "x": 71.734,
+        "y": 68.867
+      },
+      "d": 1
+    },
+    {
+      "position": {
+        "x": 73.467,
+        "y": 70.43
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 75.734,
+        "y": 70.43
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 75.734,
+        "y": 73.53
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 73.467,
+        "y": 73.53
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 71.734,
+        "y": 75.1
+      },
+      "d": 1
+    },
+    {
+      "position": {
+        "x": 71.734,
+        "y": 136.967
+      },
+      "d": 2.5
+    },
+    {
+      "position": {
+        "x": 73.797,
+        "y": 139.937
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 71.717,
+        "y": 142.05
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 68.734,
+        "y": 139.937
+      },
+      "d": 2.5
+    },
+    {
+      "position": {
+        "x": 6.9999999999999964,
+        "y": 139.937
+      },
+      "d": 2.5
+    },
+    {
+      "position": {
+        "x": 4.016999999999996,
+        "y": 142.05
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 1.9369999999999976,
+        "y": 139.937
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 4,
+        "y": 136.967
+      },
+      "d": 2.5
+    },
+    {
+      "position": {
+        "x": 4,
+        "y": 75.1
+      },
+      "d": 1
+    },
+    {
+      "position": {
+        "x": 2.266999999999996,
+        "y": 73.53
+      },
+      "d": 0
+    },
+    {
+      "position": {
+        "x": 0,
+        "y": 73.53
+      },
+      "d": 0
+    }
+  ],
+  "tablePots": [
+    {
+      "center": {
+        "x": 73.434,
+        "y": 71.981
+      },
+      "radius": 3
+    },
+    {
+      "center": {
+        "x": 2.299999999999997,
+        "y": 71.981
+      },
+      "radius": 3
+    },
+    {
+      "center": {
+        "x": 71.434,
+        "y": 4.29
+      },
+      "radius": 3
+    },
+    {
+      "center": {
+        "x": 4.299999999999997,
+        "y": 4.29
+      },
+      "radius": 3
+    },
+    {
+      "center": {
+        "x": 71.434,
+        "y": 139.65
+      },
+      "radius": 3
+    },
+    {
+      "center": {
+        "x": 4.299999999999997,
+        "y": 139.65
+      },
+      "radius": 3
+    }
+  ],
+  "ballRadius": 1.5,
+  "balls": [
+    {
+      "type": "white",
+      "radius": 1.5,
+      "position": {
+        "x": 43.428999999999995,
+        "y": 111.886
+      }
+    },
+    {
+      "type": "yellow",
+      "radius": 1.5,
+      "position": {
+        "x": 48.991,
+        "y": 111.886
+      }
+    },
+    {
+      "type": "green",
+      "radius": 1.5,
+      "position": {
+        "x": 26.742999999999995,
+        "y": 111.886
+      }
+    },
+    {
+      "type": "brown",
+      "radius": 1.5,
+      "position": {
+        "x": 37.867,
+        "y": 111.886
+      }
+    },
+    {
+      "type": "blue",
+      "radius": 1.5,
+      "position": {
+        "x": 37.867,
+        "y": 71.981
+      }
+    },
+    {
+      "type": "pink",
+      "radius": 1.5,
+      "position": {
+        "x": 37.867,
+        "y": 37.99
+      }
+    },
+    {
+      "type": "black",
+      "radius": 1.5,
+      "position": {
+        "x": 37.867,
+        "y": 16.343
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 37.867,
+        "y": 34.981
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 36.3625,
+        "y": 32.373923788646685
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 39.3715,
+        "y": 32.373923788646685
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 34.858,
+        "y": 29.76684757729337
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 37.867,
+        "y": 29.76684757729337
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 40.876,
+        "y": 29.76684757729337
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 33.3535,
+        "y": 27.159771365940053
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 36.3625,
+        "y": 27.159771365940053
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 39.3715,
+        "y": 27.159771365940053
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 42.3805,
+        "y": 27.159771365940053
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 31.848999999999997,
+        "y": 24.552695154586736
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 34.858,
+        "y": 24.552695154586736
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 37.867,
+        "y": 24.552695154586736
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 40.876,
+        "y": 24.552695154586736
+      }
+    },
+    {
+      "type": "red",
+      "radius": 1.5,
+      "position": {
+        "x": 43.885,
+        "y": 24.552695154586736
+      }
+    }
+  ]
+}

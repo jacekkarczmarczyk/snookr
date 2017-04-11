@@ -8,6 +8,15 @@ class SnookrPhysics {
     constructor(tableBoundary, tablePots, settings) {
         this.tableBoundary = tableBoundary;
         this.tablePots = tablePots;
+        this.setSettings(settings);
+    }
+
+    /**
+     *
+     * @param settings
+     * @returns {SnookrPhysics}
+     */
+    setSettings(settings) {
         this.settings = Object.assign({}, {
             ballCollisionRatio: 0,
             forwardSpinLinearSlowdownRatio: 0.03,
@@ -18,6 +27,7 @@ class SnookrPhysics {
             forwardSpinScale: 0.5,
             sideSpinScale: 1/15
         }, settings);
+        return this;
     }
 
     /**

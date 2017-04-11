@@ -9,6 +9,15 @@ class SnookrBallSet {
 
     /**
      *
+     * @returns {SnookrBallSet}
+     */
+    resetBallSet() {
+        this.forEach(ball => ball.resetBall());
+        return this;
+    }
+
+    /**
+     *
      * @param {SnookrBallSet} ballSet
      * @returns {SnookrBallSet}
      */
