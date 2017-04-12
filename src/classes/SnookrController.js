@@ -12,6 +12,7 @@ class SnookrController {
         this.tableController.onShotFired(this.shotFired.bind(this));
 
         this.audioPlayer = new SnookrAudioPlayer();
+        this.audioPlayer.playBackgroundSilence();
         this.$bus = (new Vue).$bus;
         this.gameState = {
             players: [{
@@ -201,6 +202,8 @@ class SnookrController {
         }
 
         const timeFrameData = this.getGame().getPhysics().recalculatePositions(this.getGame().getBallSet(), 1);
+        const alreadyPotted = !!shotData.getBallsPotted().count();
+        const alreadyTouched = !!shotData.getFirstTouched();
         shotData.update(timeFrameData);
 
         if (timeFrameData.getBallHitsBallPower()) {
@@ -209,9 +212,23 @@ class SnookrController {
 
         if (timeFrameData.getBallsPotted().count()) {
             this.audioPlayer.playBallHitsPocket();
+
+            if (!alreadyPotted && timeFrameData.getBallsPotted().count() && this.stateManager.getRule().getPoints(shotData) > 0) {
+                this.audioPlayer.playApplause();
+            }
+            if (!alreadyPotted && timeFrameData.getBallsPotted().count() && this.stateManager.getRule().getPoints(shotData) < 0) {
+                this.audioPlayer.playDisappointment();
+            }
+        }
+
+        if (!alreadyTouched && timeFrameData.getFirstTouched() && this.stateManager.getRule().getPoints(shotData) < 0) {
+            this.audioPlayer.playDisappointment();
         }
 
         if (this.getGame().getBallSet().allStopped()) {
+            if (!shotData.getFirstTouched()) {
+                this.audioPlayer.playDisappointment();
+            }
             this.shotCompleted(shotData);
         }
 
