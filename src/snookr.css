@@ -47,6 +47,7 @@ html, body {
 
 .snookr-ui-board {
     width: 60%;
+    min-width: 600px;
     height: 50px;
     margin: 8px 20%;
     background: linear-gradient(to bottom, #281c26 0%,#565058 5%,#0f0f0e 30%,#30292b 98%,#231e1f 100%);
@@ -144,8 +145,10 @@ html, body {
 }
 
 .snookr-ui-spinner-ball {
-    display: none;
     width: 68px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 .snookr-ui-spinner-ball > div {

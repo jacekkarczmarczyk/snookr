@@ -88,7 +88,11 @@ class SnookrTableController {
      * @param {boolean} shooting
      * @param {boolean} settingCueBall
      */
-    handleMouseDown(tableRenderer, cueBall, {shooting, settingCueBall}) {
+    handleMouseDown(event, tableRenderer, cueBall, {shooting, settingCueBall}) {
+        if (event.target !== tableRenderer.canvasElement) {
+            return false;
+        }
+
         if ((!shooting && !settingCueBall) || !this.ghostScreenPosition) {
             return;
         }
@@ -115,7 +119,7 @@ class SnookrTableController {
      * @param {SnookrBall} cueBall
      * @param {boolean} settingCueBall
      */
-    handleMouseUp(tableRenderer, cueBall, {settingCueBall}) {
+    handleMouseUp(event, tableRenderer, cueBall, {settingCueBall}) {
         if (this.isDraggingCueBall(settingCueBall)) {
             this.cueBallPositionChangedCallback({
                 position: tableRenderer.getTablePosition(tableRenderer.getScreenPosition(cueBall.getPosition()).translate(this.dragData.dragOffset))
@@ -150,7 +154,7 @@ class SnookrTableController {
      * @param {boolean} settingCueBall
      */
     handleMouseMove(event, tableRenderer, cueBall, {shooting, settingCueBall}) {
-        this.ghostScreenPosition = Point.create(event.layerX, event.layerY);
+        this.ghostScreenPosition = Point.create(event.clientX, event.clientY);
         const cueBallTablePosition = cueBall.getPosition();
         const mouseTablePosition = tableRenderer.getTablePosition(this.ghostScreenPosition);
         this.mouseOnCueBall = this.isDraggingCueBall(settingCueBall) || cueBallTablePosition.getDistance(mouseTablePosition) < cueBall.getBallRadius();

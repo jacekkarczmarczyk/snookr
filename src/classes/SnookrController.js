@@ -37,13 +37,13 @@ class SnookrController {
     initListeners() {
         const repaint = this.repaint.bind(this);
 
-        window.addEventListener('mousedown', function () {
-            this.snookr && !this.gameState.currentGameState.playing && this.tableController.handleMouseDown(this.tableRenderer, this.snookr.getCueBall(), this.gameState.currentGameState);
+        window.addEventListener('mousedown', function (event) {
+            this.snookr && !this.gameState.currentGameState.playing && this.tableController.handleMouseDown(event, this.tableRenderer, this.snookr.getCueBall(), this.gameState.currentGameState);
             window.requestAnimationFrame(repaint);
         }.bind(this));
 
-        window.addEventListener('mouseup', function() {
-            this.snookr && this.tableController.handleMouseUp(this.tableRenderer, this.snookr.getCueBall(), this.gameState.currentGameState);
+        window.addEventListener('mouseup', function(event) {
+            this.snookr && this.tableController.handleMouseUp(event, this.tableRenderer, this.snookr.getCueBall(), this.gameState.currentGameState);
             !this.gameState.currentGameState.playing && window.requestAnimationFrame(repaint);
         }.bind(this));
 

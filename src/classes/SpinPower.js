@@ -14,12 +14,10 @@ class SpinPower {
      * @param {number} sideSpinPower
      */
     setPower(forwardSpinPower, sideSpinPower) {
-        if (forwardSpinPower ** 2 + sideSpinPower ** 2 > 1) {
-            throw new TypeError('Invalid value');
-        }
+        const scale = Math.max(1, Math.sqrt(forwardSpinPower ** 2 + sideSpinPower ** 2));
 
-        this._forwardSpinPower = forwardSpinPower;
-        this._sideSpinPower = sideSpinPower;
+        this._forwardSpinPower = forwardSpinPower / scale;
+        this._sideSpinPower = sideSpinPower / scale;
     }
 
     /**
