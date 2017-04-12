@@ -246,7 +246,8 @@ class SnookrGame {
      * @param {SnookrBallSet} ballsToUnpot
      */
     unpotBalls(ballsToUnpot) {
-        ballsToUnpot.forEach(ballToUnpot => this.unpotBall(ballToUnpot));
+        ballsToUnpot.not('white').forEach(ballToUnpot => this.unpotBall(ballToUnpot));
+        ballsToUnpot.only('white').forEach(ballToUnpot => this.unpotBall(ballToUnpot));
     }
 
     /**
